@@ -1,0 +1,14 @@
+export { default as HomePage } from './home';
+export { default as AppPage } from './app';
+export { default as Login } from './login';
+export { default as ChurchesPage } from './churches';
+export { default as ChurchBranchPage } from './branches';
+export { default as SingleChurchBranch } from './branches/SingleChurchBranch';
+export { default as ChurchServicePage } from './services';
+export { default as ChurchMinistriesPage } from './ministries';
+export { default as ChurchEmployeesPage } from './staffs';
+export { default as SingleStaff } from './staffs/SingleStaff';
+export { default as NewStaff } from './staffs/NewStaff';
+export { default as ChurchMemberPage } from './church-members';
+export { default as BlogPage } from './blogs';
+export { default as SingleBlog } from './blogs/SingleBlog';
