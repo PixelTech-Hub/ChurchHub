@@ -16,7 +16,7 @@ const registerNewUser = async (userData: User) => {
 };
 
 const loginUser = async (userData: User) => {
-    const response = await axios.post(`${API_BASE_URL}/users/auth/signup`, userData)
+    const response = await axios.post(`${API_BASE_URL}/users/auth/login`, userData)
     if (response.data) {
         const user = localStorage.getItem("users")
         if (user !== null) {

@@ -1,63 +1,37 @@
-import logo from '@/assets/logo/pixel tech.png'
+import Input from "@/components/forms/Input"
+import { useState } from "react"
+
 
 const Login = () => {
+	const [email, setEmail] = useState("")
+	const [password, setPassword] = useState("")
+
 	return (
-		<main className="grid md:grid-cols-2 grid-cols-1 h-screen w-full">
-			<div className="hidden lg:flex flex-col justify-center w-1/2">
-			</div>
-			<div className="bg-[#081A51]  flex flex-col items-center justify-center ">
-				<form
-					className="max-w-[500px] lg:h-auto h-screen w-full mx-auto bg-gray-900 p-8  px-8 rounded-lg"
-
-				>
-					<div className="flex flex-col items-center">
-						<img
-							src={logo}
-							alt=""
-							className="w-[150px]  flex items-center justify-center rounded-md"
-						/>
-						<h2 className="mt-3 text-4xl text-white font-bold text-center">ADMIN LOGIN</h2>
+		<div className="relative bg-image">
+			<div className="absolute lg:top-[20rem] md:top-[25rem] top-[10rem] lg:left-[40rem] md:left-[8rem] left-[1rem] lg:right-[40rem] md:right-[8rem] right-[1rem]  bg-white rounded-lg p-4 pt-10 pb-10 ">
+				<div className="font-bold lg:text-xl text-lg flex items-center justify-center">
+					<h1>CHURCHPRO LOGIN </h1>
+				</div>
+				<form className="flex flex-col space-y-3 m-2">
+					<div>
+						<Input value={email} setValue={setEmail} label="Email" type="text" placeholder="admin@church.org" />
 					</div>
-					<div className="flex flex-col text-xl font-medium text-gray-400 py-2">
-						<label htmlFor="user">Username</label>
-						<input
-							type="text"
-							className="p-2 outline-none rounded-sm"
-							id="text"
-							name="user"
-							autoComplete="off"
-							autoFocus
-						/>
+					<div>
+						<Input value={password} setValue={setPassword} label="Password" type="text" placeholder="admin@church.org" />
 					</div>
-					{/* password */}
-					<div className="flex flex-col text-xl font-medium text-gray-400 py-2">
-						<label htmlFor="pwd">Password</label>
-						<input
-							type="password"
-							className="p-2 outline-none rounded-sm"
-							// required
-
-							name="pwd"
-							id="pwd"
-
-						/>
+					<div className="flex flex-row items-center justify-between ">
+						<p className="cursor-pointer text-red-500 lg:text-[16px] text-[12px]">Forgot password?</p>
+						<p className="cursor-pointer lg:text-[16px] text-[12px]">Terms of Condition</p>
 					</div>
-					<div className="flex justify-between text-gray-400 py-2">
-						<p className="flex items-center">
-							<input
-								type="checkbox"
-								id="persist"
-							/>
-							Remember Me
-						</p>
-						<p>Forgot Password </p>
+					<div className="bg-green-500 p-2 flex items-center justify-center rounded-lg ">
+						<button className="uppercase font-semibold lg:text-base text-sm">login</button>
 					</div>
-					<button type="submit" className="uppercase w-full bg-[#081A51] shadow-lg shadow-[#081A51]  rounded px-4 text-white py-2 text-xl my-5">
-						Login
-					</button>
 				</form>
 			</div>
-		</main>
+			<div className="absolute lg:bottom-4 bottom-2 left-0 right-0 flex items-center justify-center  lg:px-4 px-2 font-bold lg:text-xl text-lg lg:text-black text-white ">
+				<p className="">Designed by PixelTech 2024</p>
+			</div>
+		</div>
 	)
 }
 

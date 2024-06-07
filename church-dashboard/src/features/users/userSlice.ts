@@ -26,9 +26,9 @@ export const signup = createAsyncThunk("auth/user/register", async (user: User) 
 	}
 })
 
-export const login = createAsyncThunk("auth/user/login", async (user: User) => {
+export const login = createAsyncThunk("auth/user/login", async (userData: User) => {
 	try {
-		return await userService.loginUser(user)
+		return await userService.loginUser(userData)
 	} catch (error) {
 		throw error
 

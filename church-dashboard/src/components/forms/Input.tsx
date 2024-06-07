@@ -8,13 +8,13 @@ interface Props {
 	type: string
 }
 
-const Input = ({value, label, type, placeholder, setValue}: Props) => {
+const Input = ({ value, label, type, placeholder, setValue }: Props) => {
 	return (
 		<div className=' gap-2'>
-			<label htmlFor="name" className='text-gray-500 '>{label}</label>
+			<label htmlFor="name" className='text-gray-500 lg:text-[16px] text:[12px]'>{label}:</label>
 			<input
 				type={type}
-				className='outline-[#200e32] bg-gray-200 text-black w-full rounded-md p-1 lg:text-[14px] text-[12px]'
+				className='outline-[#200e32] bg-gray-200 text-black w-full h-[2.5rem] px-2 rounded-md p-1 lg:text-[16px] text-[12px]'
 				placeholder={placeholder}
 				value={value}
 				onChange={(e) => setValue(e.target.value)}

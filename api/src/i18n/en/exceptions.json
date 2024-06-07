@@ -1,0 +1,33 @@
+{
+	"unauthorized": "Oops! It looks like you are not authorized to do this operation!",
+	"badRequest" : "Bad request !",
+	"roleUnauthorized" : "Oops! It looks like you are not authorized to perform this operation!",
+	"notFound" : "Not Found",
+  
+	"badCombo": "Sorry! The credentials entered are do not match any existing account!",
+	"tokenInvalid": "Oops! Invalid token! Please start over again!",
+  
+	"emailTaken" : "Sorry, the email address taken is already taken!",
+	"emailRequired" : "Please enter the email address!",
+	"emailInvalid" : "Please enter a valid email address!",
+	"emailUnverified" : "The email address entered is invalid!",
+  
+	"phoneRequired" : "Please enter the phone number!",
+	"phoneInvalid" : "Please enter a valid phone number!",
+	"phoneUnverified" : "The phone number entered is not yet verified!",
+  
+	"otpInvalid" : "Please enter a valid OTP!",
+	"otpRequired" : "Please enter the OTP sent to you!",
+	"otpIncorrect" : "Please enter a valid OTP!",
+	"otpExpired" : "Oops, the OTP entered has expired; Please start over!",
+  
+	"passwordRequired" : "Password required!",
+	"passwordTooShort" : "The password entered is too short",
+	"passwordIncorrect" : "The password entered is incorrect!",
+  
+	"firstNameRequired" : "First name required!",
+	"lastNameRequired" : "Last name required!",
+	"userNotFound" : "User not found!",
+	"userDisabled" : "User account disabled!",
+	"newPasswordRequired" : "New password required!"
+  }
