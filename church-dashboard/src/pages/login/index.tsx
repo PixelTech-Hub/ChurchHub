@@ -4,33 +4,39 @@ import { Link } from "react-router-dom"
 
 
 const Login = () => {
-	const [email, setEmail] = useState("")
-	const [password, setPassword] = useState("")
+	const [email, setEmail] = useState(" ")
+	const [password, setPassword] = useState(" ")
 
 	return (
 		<div className="relative bg-image">
-			<div className="border border-[#49d205] absolute lg:top-[20rem] h-[27rem] md:top-[25rem] top-[10rem] lg:left-[40rem] md:left-[8rem] left-[1rem] lg:right-[40rem] md:right-[8rem] right-[1rem]  bg-white rounded-lg  pt-10 pb-10 ">
-				<div className="font-extrabold flex flex-col items-center justify-center">
-					<h1 className="lg:text-3xl text-xl"> CHURCHPRO </h1>
-					<h1 className="lg:text-xl text-sm"> ADMIN LOGIN </h1>
-
+			<div className="absolute border-8 border-white bg-white lg:top-[5rem] md:top-[20rem] top-[10rem] lg:left-[10rem] md:left-[10rem] left-[1rem] lg:right-[10rem] md:right-[10rem] right-[1rem]  lg:bottom-[5rem] z-10 rounded-lg   flex flex-row">
+				<div className="hidden lg:flex flex-col bg-orange-500 w-1/2 rounded-3xl p-2 m-10 text-white ">
+					<div className="pt-16 px-10 text-3xl font-bold space-y-1">
+						<p className=" ">Simplify</p>
+						<p>management with</p>
+						<p>our dashboard.</p>
+					</div>
+					<div className="text-lg px-10 pt-16">
+						<p>Simplify your church management with our user-friendly admin dashboard.</p>
+					</div>
 				</div>
-				<div className="h-[2px] w-auto px-0 bg-gray-500 mt-4" />
-				<form className="flex flex-col space-y-3 m-2 mt-8 p-2 ">
-					<div>
-						<Input value={email} setValue={setEmail} label="Email" type="text" placeholder="" />
+				<div className=" lg:w-1/2 w-full  rounded-r-lg p-2 lg:m-28 m-0">
+					<div className=" flex flex-col items-center justify-center lg:py-6 md:py-4 py-2">
+						<h1 className="font-bold text-2xl">CHURCH-HUB</h1>
+						<p className="lg:pt-24 md:pt-10 pt-2  lg:text-xl md:text-xl text-lg font-bold">Welcome Back</p>
+						<p className="lg:text-sm md:text-sm text-[12px] text-gray-500">Please login to your account</p>
 					</div>
-					<div>
-						<Input value={password} setValue={setPassword} label="Password" type="password" placeholder="" />
-					</div>
-					<div className="flex flex-row items-center justify-between mb-4">
-						<Link to='/forgot-password' className="cursor-pointer text-red-500 lg:text-[16px] text-[12px]">Forgot password?</Link>
-						<Link to='/terms-and-conditions' className="cursor-pointer  text-[#49d205] lg:text-[16px] text-[12px]">Terms of Condition</Link>
-					</div>
-					<div className=" bg-[#49d205] p-2 flex items-center justify-center rounded-lg ">
-						<button className="uppercase font-semibold lg:text-base text-sm">login</button>
-					</div>
-				</form>
+					<form className="lg:mx-10 md:mx-8 mx-2 space-y-5">
+						<Input placeholder="" value={email} setValue={setEmail} label="Email" type="email" />
+						<Input placeholder=" " value={password} setValue={setPassword} label="Password" type="password" />
+						<div className="flex items-end justify-end text-orange-500 ">
+							<p className="lg:text-base md:text-base text-sm">Forgot Password?</p>
+						</div>
+						<div className="bg-orange-500  p-2 flex text-white lg:text-lg text-sm rounded-xl items-center justify-center">
+							<button type="submit" className="">Login</button>
+						</div>
+					</form>
+				</div>
 			</div>
 			<div className="absolute lg:bottom-4 bottom-2 left-0 right-0 flex items-center justify-center  lg:px-4 px-2 font-bold lg:text-xl md:text-lg text-sm text-white ">
 				<p className="">Designed by PixelTech 2024</p>

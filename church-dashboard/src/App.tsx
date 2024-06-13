@@ -10,21 +10,20 @@ function App() {
 
   return (
     <>
-      <AuthProvider>
+      {/* <AuthProvider> */}
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <Routes>
             {/* Public routes */}
             <Route path='/login' element={<Login />} />
             <Route path='/forgot-password' element={<ForgotPassword />} />
-            <Route path='/reset-password' element={<ResetPassword />} />
             <Route path='/lock' element={<LockScreen />} />
 
 
             {/* Private routes */}
-            <Route element={
+            {/* <Route element={
               <ProtectedRoute />
             }
-            >
+            > */}
               <Route element={<AppLayout />}>
 
 
@@ -41,7 +40,7 @@ function App() {
                 <Route path='church-staff/new' element={<NewStaff />} />
                 <Route path='church-members' element={<ChurchMemberPage />} />
               </Route>
-            </Route>
+            {/* </Route> */}
 
 
             <Route path='/unauthorized' element={<UnAuthorizedPage />} />
@@ -70,7 +69,7 @@ function App() {
           />
 
         </ThemeProvider>
-      </AuthProvider>
+      {/* </AuthProvider> */}
     </>
   )
 }
