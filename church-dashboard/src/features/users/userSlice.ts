@@ -1,82 +1,67 @@
-import { User } from "@/types/User";
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import userService from "./userService";
+import { User } from "@/types/User";
 
-// const user = JSON.parse(localStorage.getItem("users"));
 
-export interface UserState {
-	data: User[] | null,
-	loading: boolean,
-	error: string | null
+// Get user from local storage
+const user = JSON.parse(localStorage.getItem('user'))
+
+const initialState = {
+	user: null || user, // Initialize with the user from local storage if available
+	isError: false,
+	isSuccess: false,
+	isLoading: false,
+	message: ''
 }
 
-const initialState: UserState = {
-	data: [],
-	loading: false,
-	error: ""
-}
-
-
-export const signup = createAsyncThunk("auth/user/register", async (user: User) => {
+// LOgin admin or Partner
+export const LoginChurchAdmin = createAsyncThunk('login', async (user: User, thunkAPI) => {
 	try {
-		return await userService.registerNewUser(user)
-	} catch (error) {
-		throw error
-
+		return await userService.login(user)
 	}
+	catch (error) {
+		const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+		return thunkAPI.rejectWithValue(message)
+	}
+
 })
 
-export const login = createAsyncThunk("auth/user/login", async (userData: User) => {
-	try {
-		return await userService.loginUser(userData)
-	} catch (error) {
-		throw error
-
-	}
-})
 
 
 export const userSlice = createSlice({
-	name: "users",
-	initialState: initialState,
+	name: 'auth',
+	initialState,
 	reducers: {
 		reset: (state) => {
-			state.loading = false;
-			state.error = "";
+			state.isLoading = false
+			state.isError = false
+			state.isSuccess = false
+			state.message = ''
 		}
 	},
-	extraReducers(builder) {
+	extraReducers: (builder) => {
 		builder
-			.addCase(signup.pending, (state) => {
-				state.loading = true
-				state.error = "Processing..."
-			})
-			.addCase(signup.fulfilled, (state, action) => {
-				state.loading = false
-				state.error = "Data created successfully..."
-				state.data = action.payload
-			})
-			.addCase(signup.rejected, (state, action: PayloadAction<any>) => {
-				state.loading = false
-				state.error = action.payload
-				state.data = []
-			})
-			.addCase(login.pending, (state) => {
-				state.loading = true
-				state.error = "Processing..."
-			})
-			.addCase(login.fulfilled, (state, action) => {
-				state.loading = false
-				state.error = "Data created successfully..."
-				state.data = action.payload
-			})
-			.addCase(login.rejected, (state, action: PayloadAction<any>) => {
-				state.loading = false
-				state.error = action.payload
-				state.data = []
-			})
+			
+			.addCase(LoginChurchAdmin.pending, (state) => {
+				state.isLoading = true
 
-	},
+			})
+			.addCase(LoginChurchAdmin.fulfilled, (state, action) => {
+				state.isLoading = false
+				state.isSuccess = true
+				state.user = action.payload
+			})
+			.addCase(LoginChurchAdmin.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload
+				state.user = null
+
+			})
+			
+	}
 })
 
-export default userSlice.reducer;
+
+export const { reset } = userSlice.actions
+export default userSlice.reducer
