@@ -14,5 +14,3 @@ Welcome to the Church Hub web application! This platform is designed to help chu
 - **Online Meetings**: Go live for sermons
 
 ## Installation
-
-To get started with the Church Hub web application, follow these steps:
