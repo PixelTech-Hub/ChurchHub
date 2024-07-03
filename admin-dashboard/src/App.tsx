@@ -23,13 +23,13 @@ import UserFeedPage from "./pages/users/feed";
 import UserListPage from "./pages/users/list";
 import UserProfilePage from "./pages/users/profile";
 import UserSettingsPage from "./pages/users/settings";
-import FlowbiteWrapper from "./components/flowbite-wrapper";
+import AppWrapper from "./components/app-wrapper";
 
 const App: FC = function () {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<FlowbiteWrapper />}>
+        <Route element={<AppWrapper />}>
           <Route path="/" element={<DashboardPage />} index />
           <Route path="/mailing/compose" element={<MailingComposePage />} />
           <Route path="/mailing/inbox" element={<MailingInboxPage />} />

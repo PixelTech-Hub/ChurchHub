@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Outlet } from "react-router";
 import theme from "../flowbite-theme";
 
-const FlowbiteWrapper: FC = function () {
+const AppWrapper: FC = function () {
   const dark = localStorage.getItem("theme") === "dark";
 
   return (
@@ -25,4 +25,4 @@ const PersistFlowbiteThemeToLocalStorage: FC = function () {
   return <></>;
 };
 
-export default FlowbiteWrapper;
+export default AppWrapper;

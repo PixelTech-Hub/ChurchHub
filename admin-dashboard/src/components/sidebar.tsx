@@ -79,7 +79,7 @@ const ExampleSidebar: FC = function () {
                       : ""
                   }
                 >
-                  Kanban
+                  Task Management
                 </Sidebar.Item>
                 <Sidebar.Item
                   href="/mailing/inbox"
@@ -91,11 +91,11 @@ const ExampleSidebar: FC = function () {
                       : ""
                   }
                 >
-                  Inbox
+                  Message
                 </Sidebar.Item>
                 <Sidebar.Collapse
                   icon={HiShoppingBag}
-                  label="E-commerce"
+                  label="Church Initiatives"
                   open={isEcommerceOpen}
                 >
                   <Sidebar.Item
@@ -106,7 +106,7 @@ const ExampleSidebar: FC = function () {
                         : ""
                     }
                   >
-                    Products
+                    Church Branches
                   </Sidebar.Item>
                   <Sidebar.Item
                     href="/e-commerce/billing"
@@ -116,7 +116,7 @@ const ExampleSidebar: FC = function () {
                         : ""
                     }
                   >
-                    Billing
+                    Church Services
                   </Sidebar.Item>
                   <Sidebar.Item
                     href="/e-commerce/invoice"
@@ -126,7 +126,7 @@ const ExampleSidebar: FC = function () {
                         : ""
                     }
                   >
-                    Invoice
+                    Church Ministries
                   </Sidebar.Item>
                 </Sidebar.Collapse>
                 <Sidebar.Collapse
@@ -134,7 +134,7 @@ const ExampleSidebar: FC = function () {
                   label="Users"
                   open={isUsersOpen}
                 >
-                  <Sidebar.Item
+                  {/* <Sidebar.Item
                     href="/users/list"
                     className={
                       "/users/list" === currentPage
@@ -143,7 +143,7 @@ const ExampleSidebar: FC = function () {
                     }
                   >
                     Users list
-                  </Sidebar.Item>
+                  </Sidebar.Item> */}
                   <Sidebar.Item
                     href="/users/profile"
                     className={
@@ -152,7 +152,7 @@ const ExampleSidebar: FC = function () {
                         : ""
                     }
                   >
-                    Profile
+                    Church Members
                   </Sidebar.Item>
                   <Sidebar.Item
                     href="/users/feed"
@@ -162,9 +162,9 @@ const ExampleSidebar: FC = function () {
                         : ""
                     }
                   >
-                    Feed
+                    Church Staffs
                   </Sidebar.Item>
-                  <Sidebar.Item
+                  {/* <Sidebar.Item
                     href="/users/settings"
                     className={
                       "/users/settings" === currentPage
@@ -173,19 +173,19 @@ const ExampleSidebar: FC = function () {
                     }
                   >
                     Settings
-                  </Sidebar.Item>
+                  </Sidebar.Item> */}
                 </Sidebar.Collapse>
-                <Sidebar.Collapse icon={HiChartSquareBar} label="Pages">
-                  <Sidebar.Item href="/pages/pricing">Pricing</Sidebar.Item>
+                <Sidebar.Collapse icon={HiChartSquareBar} label="Financial Records">
+                  <Sidebar.Item href="/pages/pricing">Transactions</Sidebar.Item>
                   <Sidebar.Item href="/pages/maintenance">
-                    Maintenace
+                    Staff Payment
                   </Sidebar.Item>
-                  <Sidebar.Item href="/pages/404">404 not found</Sidebar.Item>
+                  {/* <Sidebar.Item href="/pages/404">404 not found</Sidebar.Item>
                   <Sidebar.Item href="/pages/500">
                     500 server error
-                  </Sidebar.Item>
+                  </Sidebar.Item> */}
                 </Sidebar.Collapse>
-                <Sidebar.Collapse icon={HiLockClosed} label="Authentication">
+                {/* <Sidebar.Collapse icon={HiLockClosed} label="Authentication">
                   <Sidebar.Item href="/authentication/sign-in">
                     Sign in
                   </Sidebar.Item>
@@ -201,9 +201,9 @@ const ExampleSidebar: FC = function () {
                   <Sidebar.Item href="/authentication/profile-lock">
                     Profile lock
                   </Sidebar.Item>
-                </Sidebar.Collapse>
+                </Sidebar.Collapse> */}
               </Sidebar.ItemGroup>
-              <Sidebar.ItemGroup>
+              {/* <Sidebar.ItemGroup>
                 <Sidebar.Item
                   href="https://github.com/themesberg/flowbite-react/"
                   icon={HiClipboard}
@@ -222,7 +222,7 @@ const ExampleSidebar: FC = function () {
                 >
                   Help
                 </Sidebar.Item>
-              </Sidebar.ItemGroup>
+              </Sidebar.ItemGroup> */}
             </Sidebar.Items>
           </div>
           <BottomMenu />
@@ -235,24 +235,25 @@ const ExampleSidebar: FC = function () {
 const BottomMenu: FC = function () {
   return (
     <div className="flex items-center justify-center gap-x-5">
-      <button className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+      {/* <button className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
         <span className="sr-only">Tweaks</span>
         <HiAdjustments className="text-2xl text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white " />
-      </button>
+      </button> */}
       <div>
         <Tooltip content="Settings page">
           <a
             href="/users/settings"
-            className="inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+            className="inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 gap-2 dark:hover:text-white"
           >
-            <span className="sr-only">Settings page</span>
+            <span className="sr-only">Settings</span>
             <HiCog className="text-2xl text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" />
+            Settings
           </a>
         </Tooltip>
       </div>
-      <div>
+      {/* <div>
         <LanguageDropdown />
-      </div>
+      </div> */}
     </div>
   );
 };
