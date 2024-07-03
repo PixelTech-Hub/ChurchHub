@@ -247,7 +247,7 @@ const BottomMenu: FC = function () {
           >
             <span className="sr-only">Settings</span>
             <HiCog className="text-2xl text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" />
-            Settings
+
           </a>
         </Tooltip>
       </div>
