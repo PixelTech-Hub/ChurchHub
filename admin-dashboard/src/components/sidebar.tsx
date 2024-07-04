@@ -145,9 +145,9 @@ const ExampleSidebar: FC = function () {
                     Users list
                   </Sidebar.Item> */}
                   <Sidebar.Item
-                    href="/users/profile"
+                    href="/users/church-members"
                     className={
-                      "/users/profile" === currentPage
+                      "/users/church-members" === currentPage
                         ? "bg-gray-100 dark:bg-gray-700"
                         : ""
                     }
@@ -155,9 +155,9 @@ const ExampleSidebar: FC = function () {
                     Church Members
                   </Sidebar.Item>
                   <Sidebar.Item
-                    href="/users/feed"
+                    href="/users/church-staffs"
                     className={
-                      "/users/feed" === currentPage
+                      "/users/church-staffs" === currentPage
                         ? "bg-gray-100 dark:bg-gray-700"
                         : ""
                     }

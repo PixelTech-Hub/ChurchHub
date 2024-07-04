@@ -1,30 +1,21 @@
 import { FC } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { BrowserRouter } from "react-router-dom";
 import DashboardPage from "./pages";
 import ForgotPasswordPage from "./pages/authentication/forgot-password";
 import ProfileLockPage from "./pages/authentication/profile-lock";
 import ResetPasswordPage from "./pages/authentication/reset-password";
 import SignInPage from "./pages/authentication/sign-in";
 import SignUpPage from "./pages/authentication/sign-up";
-import EcommerceBillingPage from "./pages/e-commerce/billing";
-import EcommerceInvoicePage from "./pages/e-commerce/invoice";
-import EcommerceProductsPage from "./pages/e-commerce/products";
-import KanbanPage from "./pages/kanban";
-import MailingComposePage from "./pages/mailing/compose";
-import MailingInboxPage from "./pages/mailing/inbox";
-import MailingReadPage from "./pages/mailing/read";
-import MailingReplyPage from "./pages/mailing/reply";
 import NotFoundPage from "./pages/pages/404";
 import ServerErrorPage from "./pages/pages/500";
 import MaintenancePage from "./pages/pages/maintenance";
 import PricingPage from "./pages/pages/pricing";
-import UserFeedPage from "./pages/users/feed";
-import UserListPage from "./pages/users/list";
-import UserProfilePage from "./pages/users/profile";
-import UserSettingsPage from "./pages/users/settings";
 import AppWrapper from "./components/app-wrapper";
 import { useAppSelector } from "./app/hooks";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
+import ChurchStaffPage from "./pages/church-staff";
+import ChurchMembersPage from "./pages/church-members/ChurchMembersPage";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -39,7 +30,12 @@ const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const App: FC = function () {
   return (
-    <BrowserRouter>
+    <>
+      <ToastContainer
+        theme="colored"
+        position="top-right"
+        className="toast-container absolute top-0 right-44 mt-10"
+      ></ToastContainer>
       <Routes>
         <Route element={<AppWrapper />}>
           {/* Public routes */}
@@ -63,6 +59,8 @@ const App: FC = function () {
           <Route path="/pages/500" element={<ServerErrorPage />} />
 
           {/* Protected routes */}
+
+
           <Route
             path="/"
             element={
@@ -70,9 +68,23 @@ const App: FC = function () {
                 <DashboardPage />
               </ProtectedRoute>
             }
-            index
+            
           />
           <Route
+            path="/users/church-staffs"
+            element={
+                <ChurchStaffPage />
+            }
+            
+          />
+          <Route
+            path="/users/church-members"
+            element={
+                <ChurchMembersPage />
+            }
+            
+          />
+          {/* <Route
             path="/mailing/compose"
             element={
               <ProtectedRoute>
@@ -107,17 +119,16 @@ const App: FC = function () {
           <Route
             path="/kanban"
             element={
-              <ProtectedRoute>
+              
                 <KanbanPage />
-              </ProtectedRoute>
             }
           />
           <Route
             path="/e-commerce/billing"
             element={
-              <ProtectedRoute>
+              // <ProtectedRoute>
                 <EcommerceBillingPage />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route
@@ -131,9 +142,9 @@ const App: FC = function () {
           <Route
             path="/e-commerce/products"
             element={
-              <ProtectedRoute>
+              // <ProtectedRoute>
                 <EcommerceProductsPage />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route
@@ -167,10 +178,10 @@ const App: FC = function () {
                 <UserSettingsPage />
               </ProtectedRoute>
             }
-          />
+          /> */}
         </Route>
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 

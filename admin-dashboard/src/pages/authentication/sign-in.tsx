@@ -4,6 +4,7 @@ import { useState, type FC } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useNavigate } from "react-router";
 import { login } from "../../features/auth/authSlice";
+import { toast } from "react-toastify";
 
 const SignInPage: FC = function () {
   const [email, setEmail] = useState("");
@@ -23,11 +24,13 @@ const SignInPage: FC = function () {
       setIsLoading(true);
       await dispatch(login({ email, password })).unwrap();
       setIsLoading(false);
+      toast.success('Logged in successfully')
       navigate("/"); // Redirect to home page after successful login
     } catch (err) {
       // Error is handled by the Redux slice
       setIsLoading(false);
       console.error("Error:", error);
+      toast.error('Invalid email or password')
     }
   };
   return (

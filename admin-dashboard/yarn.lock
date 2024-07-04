@@ -1873,6 +1873,7 @@ __metadata:
     react-router: ^6.14.2
     react-router-dom: ^6.14.2
     react-sortablejs: ^6.1.4
+    react-toastify: ^10.0.5
     sortablejs: ^1.15.0
     svgmap: ^2.10.1
     tailwindcss: ^3.3.3
@@ -1930,6 +1931,13 @@ __metadata:
   version: 1.0.4
   resolution: "clone@npm:1.0.4"
   checksum: d06418b7335897209e77bdd430d04f882189582e67bd1f75a04565f3f07f5b3f119a9d670c943b6697d0afb100f03b866b3b8a1f91d4d02d72c4ecf2bb64b5dd
+  languageName: node
+  linkType: hard
+
+"clsx@npm:^2.1.0":
+  version: 2.1.1
+  resolution: "clsx@npm:2.1.1"
+  checksum: acd3e1ab9d8a433ecb3cc2f6a05ab95fe50b4a3cfc5ba47abb6cbf3754585fcb87b84e90c822a1f256c4198e3b41c7f6c391577ffc8678ad587fc0976b24fd57
   languageName: node
   linkType: hard
 
@@ -5087,6 +5095,18 @@ __metadata:
     react-dom: ">=16.9.0"
     sortablejs: 1
   checksum: d53eebb29abb5366108b4295c489b1eb822a504da017e98ea710be032aefd8b38340043c1aa057ea16858f69f47ca0ecbe4a0a2dae43473ff91d4b79e26cd6aa
+  languageName: node
+  linkType: hard
+
+"react-toastify@npm:^10.0.5":
+  version: 10.0.5
+  resolution: "react-toastify@npm:10.0.5"
+  dependencies:
+    clsx: ^2.1.0
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 982d33918c63e99464623a1b3b023ab5fe18fe341143cb0cb04287e37fd0611c560d9ef451e151ac8ade15a1cda09df09d4c442b3db582965d71aaf42d49b230
   languageName: node
   linkType: hard
 

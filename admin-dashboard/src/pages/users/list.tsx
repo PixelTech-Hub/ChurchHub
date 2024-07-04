@@ -1329,7 +1329,7 @@ const DeleteUserModal: FC = function () {
 
 export const Pagination: FC = function () {
   return (
-    <div className="sticky bottom-0 right-0 w-full items-center border-t border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex sm:justify-between">
+    <div className="mx-2 mt-2 sticky bottom-0 right-0 items-center border-t border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex sm:justify-between">
       <div className="mb-4 flex items-center sm:mb-0">
         <a
           href="#"
