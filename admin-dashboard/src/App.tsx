@@ -28,7 +28,7 @@ import { useAppSelector } from "./app/hooks";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const isAuthenticated = useAppSelector((state) => state.auth.user !== null);
+  const isAuthenticated = useAppSelector((state) => state.auth.data !== null);
 
   if (!isAuthenticated) {
     return <Navigate to="/authentication/sign-in" replace />;

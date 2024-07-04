@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import type { FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import {
   Avatar,
   DarkThemeToggle,
@@ -27,22 +27,44 @@ import {
 } from "react-icons/hi";
 import { useSidebarContext } from "../context/SidebarContext";
 import isSmallScreen from "../helpers/is-small-screen";
-import { useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import axios from "axios";
+import { API_BASE_URL } from "../app/api";
+import { Churches } from "../types/Churches";
 
 const ExampleNavbar: FC = function () {
   const { isOpenOnSmallScreens, isPageWithSidebar, setOpenOnSmallScreens } =
     useSidebarContext();
+    const [loading, setLoading] = useState(false);
+    const [church, setChurch] = useState<Churches>({} as Churches);
 
 
-    const { data, accessToken } = useAppSelector((state) => state.auth);
+  const { data, accessToken } = useAppSelector((state) => state.auth);
 
-    console.log(data?.churchId);
-    console.log(accessToken);
+  // console.log(data?.churchId);
+  // console.log(accessToken);
 
 
-    const churchId = data?.churchId;
+  // const churchId = data?.churchId;
 
-    
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/churches/${data?.churchId}`)
+      .then((response) => {
+        setChurch(response.data)
+        setLoading(false)
+      }
+      )
+      .catch((error) => {
+        console.error(error)
+        setLoading(false)
+      })
+  }, []);
+
+
+  console.log('church data', church)
+
 
   return (
     <Navbar fluid>
@@ -86,8 +108,8 @@ const ExampleNavbar: FC = function () {
                 type="search"
               />
             </form> */}
-            <div className="text-white text-xl ml-16">
-              <p>Church Name here</p>
+            <div className=" text-xl ml-16 font-bold">
+              <p className="dark:text-white">{church.name}</p>
             </div>
           </div>
           <div className="flex items-center lg:gap-3">
