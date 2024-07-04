@@ -27,10 +27,22 @@ import {
 } from "react-icons/hi";
 import { useSidebarContext } from "../context/SidebarContext";
 import isSmallScreen from "../helpers/is-small-screen";
+import { useAppSelector } from "../app/hooks";
 
 const ExampleNavbar: FC = function () {
   const { isOpenOnSmallScreens, isPageWithSidebar, setOpenOnSmallScreens } =
     useSidebarContext();
+
+
+    const { data, accessToken } = useAppSelector((state) => state.auth);
+
+    console.log(data?.churchId);
+    console.log(accessToken);
+
+
+    const churchId = data?.churchId;
+
+    
 
   return (
     <Navbar fluid>
@@ -60,7 +72,7 @@ const ExampleNavbar: FC = function () {
                 Church Hub
               </span>
             </Navbar.Brand>
-            <form className="ml-16 hidden md:block">
+            {/* <form className="ml-16 hidden md:block">
               <Label htmlFor="search" className="sr-only">
                 Search
               </Label>
@@ -73,7 +85,10 @@ const ExampleNavbar: FC = function () {
                 size={32}
                 type="search"
               />
-            </form>
+            </form> */}
+            <div className="text-white text-xl ml-16">
+              <p>Church Name here</p>
+            </div>
           </div>
           <div className="flex items-center lg:gap-3">
             <div className="flex items-center">

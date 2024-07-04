@@ -1,5 +1,5 @@
-import type { FC } from "react";
-import { Routes, Route } from "react-router";
+import { FC } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 import DashboardPage from "./pages";
 import ForgotPasswordPage from "./pages/authentication/forgot-password";
@@ -24,22 +24,25 @@ import UserListPage from "./pages/users/list";
 import UserProfilePage from "./pages/users/profile";
 import UserSettingsPage from "./pages/users/settings";
 import AppWrapper from "./components/app-wrapper";
+import { useAppSelector } from "./app/hooks";
+
+// Protected route component
+const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isAuthenticated = useAppSelector((state) => state.auth.user !== null);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/authentication/sign-in" replace />;
+  }
+
+  return <>{children}</>;
+};
 
 const App: FC = function () {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<AppWrapper />}>
-          <Route path="/" element={<DashboardPage />} index />
-          <Route path="/mailing/compose" element={<MailingComposePage />} />
-          <Route path="/mailing/inbox" element={<MailingInboxPage />} />
-          <Route path="/mailing/read" element={<MailingReadPage />} />
-          <Route path="/mailing/reply" element={<MailingReplyPage />} />
-          <Route path="/kanban" element={<KanbanPage />} />
-          <Route path="/pages/pricing" element={<PricingPage />} />
-          <Route path="/pages/maintenance" element={<MaintenancePage />} />
-          <Route path="/pages/404" element={<NotFoundPage />} />
-          <Route path="/pages/500" element={<ServerErrorPage />} />
+          {/* Public routes */}
           <Route path="/authentication/sign-in" element={<SignInPage />} />
           <Route path="/authentication/sign-up" element={<SignUpPage />} />
           <Route
@@ -54,22 +57,117 @@ const App: FC = function () {
             path="/authentication/profile-lock"
             element={<ProfileLockPage />}
           />
+          <Route path="/pages/pricing" element={<PricingPage />} />
+          <Route path="/pages/maintenance" element={<MaintenancePage />} />
+          <Route path="/pages/404" element={<NotFoundPage />} />
+          <Route path="/pages/500" element={<ServerErrorPage />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+            index
+          />
+          <Route
+            path="/mailing/compose"
+            element={
+              <ProtectedRoute>
+                <MailingComposePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mailing/inbox"
+            element={
+              <ProtectedRoute>
+                <MailingInboxPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mailing/read"
+            element={
+              <ProtectedRoute>
+                <MailingReadPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mailing/reply"
+            element={
+              <ProtectedRoute>
+                <MailingReplyPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/kanban"
+            element={
+              <ProtectedRoute>
+                <KanbanPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/e-commerce/billing"
-            element={<EcommerceBillingPage />}
+            element={
+              <ProtectedRoute>
+                <EcommerceBillingPage />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/e-commerce/invoice"
-            element={<EcommerceInvoicePage />}
+            element={
+              <ProtectedRoute>
+                <EcommerceInvoicePage />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/e-commerce/products"
-            element={<EcommerceProductsPage />}
+            element={
+              <ProtectedRoute>
+                <EcommerceProductsPage />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/users/feed" element={<UserFeedPage />} />
-          <Route path="/users/list" element={<UserListPage />} />
-          <Route path="/users/profile" element={<UserProfilePage />} />
-          <Route path="/users/settings" element={<UserSettingsPage />} />
+          <Route
+            path="/users/feed"
+            element={
+              <ProtectedRoute>
+                <UserFeedPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/list"
+            element={
+              <ProtectedRoute>
+                <UserListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/settings"
+            element={
+              <ProtectedRoute>
+                <UserSettingsPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>
