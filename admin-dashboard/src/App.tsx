@@ -11,7 +11,6 @@ import ServerErrorPage from "./pages/pages/500";
 import MaintenancePage from "./pages/pages/maintenance";
 import PricingPage from "./pages/pages/pricing";
 import AppWrapper from "./components/app-wrapper";
-import { useAppSelector } from "./app/hooks";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import ChurchStaffPage from "./pages/church-staff";
@@ -95,9 +94,9 @@ const App: FC = function () {
           <Route
             path="/users/church-members"
             element={
-              // <ProtectedRoute>
+              <ProtectedRoute>
                 <ChurchMembersPage />
-              // </ProtectedRoute>
+               </ProtectedRoute>
             }
 
           />
