@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import DashboardPage from "./pages";
 import ForgotPasswordPage from "./pages/authentication/forgot-password";
 import ProfileLockPage from "./pages/authentication/profile-lock";
@@ -19,10 +19,23 @@ import ChurchMembersPage from "./pages/church-members/ChurchMembersPage";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const isAuthenticated = useAppSelector((state) => state.auth.data !== null);
+  // const auth = useAppSelector((state) => state.auth);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/authentication/sign-in" replace />;
+ 
+  const location = useLocation();
+
+  const auth = localStorage.getItem('token');
+
+  
+
+  // if (auth) {
+  //   // You might want to show a loading spinner here
+  //   return <div>Loading...</div>;
+  // }
+
+  if (!auth) {
+    // Redirect to the sign-in page, but save the current location
+    return <Navigate to="/authentication/sign-in" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
@@ -68,21 +81,25 @@ const App: FC = function () {
                 <DashboardPage />
               </ProtectedRoute>
             }
-            
+
           />
           <Route
             path="/users/church-staffs"
             element={
+              <ProtectedRoute>
                 <ChurchStaffPage />
+              </ProtectedRoute>
             }
-            
+
           />
           <Route
             path="/users/church-members"
             element={
+              // <ProtectedRoute>
                 <ChurchMembersPage />
+              // </ProtectedRoute>
             }
-            
+
           />
           {/* <Route
             path="/mailing/compose"

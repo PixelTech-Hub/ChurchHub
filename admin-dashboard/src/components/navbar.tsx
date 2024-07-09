@@ -4,9 +4,7 @@ import {
   Avatar,
   DarkThemeToggle,
   Dropdown,
-  Label,
   Navbar,
-  TextInput,
 } from "flowbite-react";
 import {
   HiArchive,
@@ -31,39 +29,98 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import axios from "axios";
 import { API_BASE_URL } from "../app/api";
 import { Churches } from "../types/Churches";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+import { logout } from "../features/auth/authSlice";
+
+
+interface AuthData {
+  accessToken: string;
+  data: {
+    id: string;
+    churchId: string;
+    name: string;
+    email: string;
+    role: string;
+    // Add other fields as needed
+  };
+}
 
 const ExampleNavbar: FC = function () {
   const { isOpenOnSmallScreens, isPageWithSidebar, setOpenOnSmallScreens } =
     useSidebarContext();
     const [loading, setLoading] = useState(false);
     const [church, setChurch] = useState<Churches>({} as Churches);
+    const [authData, setAuthData] = useState<AuthData | null>(null);
 
 
-  const { data, accessToken } = useAppSelector((state) => state.auth);
+  // const { data } = useAppSelector((state) => state.auth);
+  const data = localStorage.getItem('auth');
 
   // console.log(data?.churchId);
   // console.log(accessToken);
 
+  console.log('********------*****:', data)
+
 
   // const churchId = data?.churchId;
 
+  // useEffect(() => {
+  //   setLoading(true);
+  //   axios
+  //     .get(`${API_BASE_URL}/churches`)
+  //     .then((response) => {
+  //       setChurch(response.data)
+  //       setLoading(false)
+  //     }
+  //     )
+  //     .catch((error) => {
+  //       console.error(error)
+  //       setLoading(false)
+  //     })
+  // }, []);
+
+
+  // console.log('church data', church)
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${API_BASE_URL}/churches/${data?.churchId}`)
-      .then((response) => {
-        setChurch(response.data)
-        setLoading(false)
+    const storedData = localStorage.getItem('auth');
+    if (storedData) {
+      try {
+        const parsedData: AuthData = JSON.parse(storedData);
+        setAuthData(parsedData);
+      } catch (error) {
+        console.error('Error parsing auth data:', error);
       }
-      )
-      .catch((error) => {
-        console.error(error)
-        setLoading(false)
-      })
+    }
   }, []);
 
+  useEffect(() => {
+    if (authData && authData.data.churchId) {
+      setLoading(true);
+      axios
+        .get(`${API_BASE_URL}/churches/${authData.data.churchId}`, {
+          headers: {
+            Authorization: `Bearer ${authData.accessToken}`
+          }
+        })
+        .then((response) => {
+          setChurch(response.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching church data:', error);
+          setLoading(false);
+        });
+    }
+  }, [authData]);
 
-  console.log('church data', church)
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!authData) {
+    return <div>Please log in to view church data.</div>;
+  }
 
 
   return (
@@ -386,6 +443,14 @@ const NewVideoIcon: FC = function () {
 };
 
 const AppDrawerDropdown: FC = function () {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    dispatch(logout());
+    navigate('/authentication/sign-in'); // Redirect to login page after logout
+  };
   return (
     <Dropdown
       arrowIcon={false}
@@ -476,6 +541,7 @@ const AppDrawerDropdown: FC = function () {
         <a
           href="#"
           className="block rounded-lg p-4 text-center hover:bg-gray-100 dark:hover:bg-gray-600"
+          onClick={handleLogout}
         >
           <HiLogout className="mx-auto mb-1 h-7 w-7 text-gray-500 dark:text-white" />
           <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -488,6 +554,14 @@ const AppDrawerDropdown: FC = function () {
 };
 
 const UserDropdown: FC = function () {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    dispatch(logout());
+    navigate('/authentication/sign-in'); // Redirect to login page after logout
+  };
   return (
     <Dropdown
       arrowIcon={false}
@@ -514,7 +588,7 @@ const UserDropdown: FC = function () {
       <Dropdown.Item>Settings</Dropdown.Item>
       <Dropdown.Item>Earnings</Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item>Sign out</Dropdown.Item>
+      <Dropdown.Item >Sign out</Dropdown.Item>
     </Dropdown>
   );
 };

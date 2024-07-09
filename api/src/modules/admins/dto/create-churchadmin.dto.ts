@@ -1,6 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CreateBaseUserDto } from 'src/common/dto/create-base-user.dto';
 import { EntityNameEnum } from 'src/common/enums/entity-name.enum';
 import { EntityChurchAdminRoleEnum } from '../enums/admin.enum';
 
