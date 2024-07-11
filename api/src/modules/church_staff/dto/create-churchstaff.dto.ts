@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsInt, IsNotEmpty, IsPhoneNumber, IsString, Min, ValidateNested } from 'class-validator';
-import { EntityChurchMinistriesEnum } from 'src/common/enums/EntityChurchMinistriesEnum';
-import { EntityAgeEnum } from 'src/common/enums/entity-age.enum';
-import { EntityEducationalLevelEnum } from 'src/common/enums/entity-education.enum';
+import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
 import { EntityGenderEnum } from 'src/common/enums/entity-gender.enum';
 import { EntityMaritalStatusEnum } from 'src/common/enums/entity-maritalstatus.enum';
-import { EntitySundayServiceEnum } from 'src/common/enums/entity-sunday_service.enum';
 
 export class CreateChurchStaffDto {
 	@ApiProperty()

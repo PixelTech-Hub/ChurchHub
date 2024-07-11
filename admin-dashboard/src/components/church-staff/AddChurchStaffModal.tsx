@@ -1,40 +1,57 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Button, Label, Modal, TextInput, Select } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
 import PhoneInput from 'react-phone-input-2';
 import 'react-day-picker/dist/style.css';
 import 'react-phone-input-2/lib/style.css';
+import { ChurchStaff } from '../../types/ChurchStaff';
+import { toast } from 'react-toastify';
+import { AuthData } from '../../types/AuthData';
 
-interface FormData {
-	firstName: string;
-	lastName: string;
-	gender: string;
-	dob: Date | null;
-	disability: boolean;
-	phoneNumber: string;
-	email: string;
-	residence: string;
-	position: string;
-	maritalStatus: string;
-	accountName: string;
-	accountNo: string;
-	baptised: boolean;
-}
 
-const initialFormData: FormData = {
-	firstName: '', lastName: '', gender: '', dob: null, disability: false,
-	phoneNumber: '', email: '', residence: '', position: '', maritalStatus: '',
-	accountName: '', accountNo: '', baptised: false,
+
+
+
+const initialFormData: ChurchStaff = {
+	first_name: '', last_name: '', gender: '', dob: null, disability: false,
+	phone_number: '', email: '', residence: '', position: '', marital_status: '',
+	account_name: '', account_no: '', baptised: false, churchId: '', career: ''
 };
 
 const AddChurchStaffModal: React.FC = () => {
 	const [isOpen, setOpen] = useState<boolean>(false);
 	const [step, setStep] = useState<number>(1);
-	const [formData, setFormData] = useState<FormData>(initialFormData);
-	const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+	const [formData, setFormData] = useState<ChurchStaff>(initialFormData);
+	const [errors, setErrors] = useState<Partial<Record<keyof ChurchStaff, string>>>({});
 
 
 	const [loading, setLoading] = useState(false);
+
+	const [authData, setAuthData] = useState<AuthData | null>(null);
+
+
+	// const { data } = useAppSelector((state) => state.auth);
+	// const data = localStorage.getItem('auth');
+  
+	// console.log(data?.churchId);
+	// console.log(accessToken);
+  
+	// console.log('********------*****:', data)
+  
+  
+  
+	// console.log('church data', church)
+	useEffect(() => {
+	  const storedData = localStorage.getItem('auth');
+	  if (storedData) {
+		try {
+		  const parsedData: AuthData = JSON.parse(storedData);
+		  setAuthData(parsedData);
+		} catch (error) {
+		  console.error('Error parsing auth data:', error);
+		}
+	  }
+	}, []);
 
 
 
@@ -44,36 +61,53 @@ const AddChurchStaffModal: React.FC = () => {
 			...prevData,
 			[name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
 		}));
-		validateField(name as keyof FormData, value);
+		validateField(name as keyof ChurchStaff, value);
 	};
 
 	const handlePhoneChange = (phone: string) => {
-		setFormData(prevData => ({ ...prevData, phoneNumber: phone }));
-		validateField('phoneNumber', phone);
+		setFormData(prevData => ({ ...prevData, phone_number: phone }));
+		validateField('phone_number', phone);
 	};
+
+	const handleDobChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const date = e.target.value ? new Date(e.target.value) : null;
+		setFormData(prevData => ({ ...prevData, dob: date }));
+		validateField('dob', date);
+	};
+
+	const handleBaptisedChange = (isBaptised: boolean) => {
+		setFormData(prevData => ({ ...prevData, baptised: isBaptised }));
+		validateField('baptised', isBaptised);
+	};
+
+	const handleMaritalStatusChange = (status: string) => {
+		setFormData(prevData => ({ ...prevData, marital_status: status }));
+		validateField('marital_status', status);
+	};
+
 
 	// const handleDateChange = (date: Date | null) => {
 	// 	setFormData(prevData => ({ ...prevData, dob: date }));
 	// 	validateField('dob', date);
 	// };
 
-	const validateField = (name: keyof FormData, value: any) => {
+	const validateField = (name: keyof ChurchStaff, value: any) => {
 		let error = '';
 		switch (name) {
 			case 'email':
 				if (!/\S+@\S+\.\S+/.test(value)) error = 'Invalid email address';
 				break;
-			case 'phoneNumber':
+			case 'phone_number':
 				if (value.length < 10) error = 'Phone number must be at least 10 digits';
 				break;
 			case 'dob':
 				if (!value) error = 'Date of birth is required';
 				break;
 			case 'position':
-				if (!value.trim()) error = 'This field is required';
+				// if (!value.trim()) error = 'This field is required';
 				break;
-			case 'maritalStatus':
-				if (!value.trim()) error = 'This field is required';
+			case 'marital_status':
+				// if (!value.trim()) error = 'This field is required';
 				break;
 			case 'baptised':
 				if (value === '') error = 'Please select an option';
@@ -82,6 +116,7 @@ const AddChurchStaffModal: React.FC = () => {
 				if (typeof value === 'string' && !value.trim()) error = 'This field is required';
 		}
 		setErrors(prev => ({ ...prev, [name]: error }));
+		console.log(`Validation ${name}: ${error}`); // Log to check validation errors
 	};
 
 	const handleNextStep = () => {
@@ -94,14 +129,14 @@ const AddChurchStaffModal: React.FC = () => {
 
 	const validateStep = (): boolean => {
 		const currentStepFields = getStepFields(step);
-		const stepErrors: Partial<Record<keyof FormData, string>> = {};
+		const stepErrors: Partial<Record<keyof ChurchStaff, string>> = {};
 		let isValid = true;
 
 		currentStepFields.forEach(field => {
-			const value = formData[field as keyof FormData];
-			validateField(field as keyof FormData, value);
-			if (errors[field as keyof FormData]) {
-				stepErrors[field as keyof FormData] = errors[field as keyof FormData];
+			const value = formData[field as keyof ChurchStaff];
+			validateField(field as keyof ChurchStaff, value);
+			if (errors[field as keyof ChurchStaff]) {
+				stepErrors[field as keyof ChurchStaff] = errors[field as keyof ChurchStaff];
 				isValid = false;
 			}
 		});
@@ -110,26 +145,83 @@ const AddChurchStaffModal: React.FC = () => {
 		return isValid;
 	};
 
-	const getStepFields = (stepNumber: number): (keyof FormData)[] => {
+	const getStepFields = (stepNumber: number): (keyof ChurchStaff)[] => {
 		switch (stepNumber) {
-			case 1: return ['firstName', 'lastName', 'gender', 'dob'];
-			case 2: return ['phoneNumber', 'email', 'residence'];
-			case 3: return ['position', 'maritalStatus', 'baptised'];
-			case 4: return ['accountName', 'accountNo'];
+			case 1: return ['first_name', 'last_name', 'gender', 'dob'];
+			case 2: return ['phone_number', 'email', 'residence'];
+			case 3: return ['position', 'marital_status', 'baptised'];
+			case 4: return ['account_name', 'account_no', 'career'];
 			default: return [];
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		console.log('click: submit');
 		if (validateStep()) {
-			// Submit logic here
-			console.log(formData);
-			setOpen(false);
-			setFormData(initialFormData);
-			setStep(1);
+			setLoading(true);
+	
+			// Handle submission logic
+			const formDataToSubmit = {
+				...formData,
+				churchId: authData?.data.churchId,
+				dob: formData.dob ? formData.dob.toISOString() : null,
+			};
+	
+			console.log('processing...');
+			console.log("++++++++++++", formDataToSubmit);
+	
+			try {
+				const response = await fetch('http://localhost:8000/church-staffs', {
+					method: 'POST',
+					// headers: {
+					// 	'Content-Type': 'application/json',
+					// 	//  Authorization: `Bearer ${authData?.accessToken}`
+					// },
+					body: JSON.stringify(formDataToSubmit),
+				});
+				if (response.ok) {
+					console.log('Form submitted successfully!');
+					toast.success('Church staff successfully added');
+					setOpen(false);
+					setFormData(initialFormData);
+					setStep(1);
+					setLoading(false); // Make sure to reset loading state if needed
+				} else {
+					console.error('Submission failed:', response.statusText);
+					console.log('Please try again', response.status, response.statusText);
+					toast.error('Failed to add church staff****1');
+					// Handle error scenarios or display error messages
+				}
+	
+				// if (!response.ok) {
+				// 	console.log('error');
+				// 	throw new Error(`HTTP error! status: ${response.status}`);
+				// }
+	
+				// const data = await response.json();
+				// console.log('Submission successful:', data);
+				// toast.success('Church staff successfully added');
+				// // Reset form and close modal
+				// setFormData(initialFormData);
+				// setStep(1);
+				// setOpen(false);
+			} catch (error) {
+				console.error('Submission failed:', error);
+				
+				toast.error('Failed to add church staff*****2');
+				
+				setLoading(false);
+			} finally {
+				setLoading(false);
+			}
+		} else {
+			console.log("Form has errors");
+			toast.error('Form has errors');
 		}
 	};
+	
+
 
 	const renderStep = () => {
 		switch (step) {
@@ -139,26 +231,26 @@ const AddChurchStaffModal: React.FC = () => {
 						<h3 className="mb-4 text-lg font-medium">Personal Information</h3>
 						<div className="grid grid-cols-2 gap-4">
 							<div>
-								<Label htmlFor="firstName">First Name</Label>
+								<Label htmlFor="first_name">First Name</Label>
 								<TextInput
-									id="firstName"
-									name="firstName"
-									value={formData.firstName}
+									id="first_name"
+									name="first_name"
+									value={formData.first_name}
 									onChange={handleInputChange}
-									color={errors.firstName ? 'failure' : undefined}
-									helperText={errors.firstName}
+									color={errors.first_name ? 'failure' : undefined}
+									helperText={errors.first_name}
 									required
 								/>
 							</div>
 							<div>
-								<Label htmlFor="lastName">Last Name</Label>
+								<Label htmlFor="last_name">Last Name</Label>
 								<TextInput
-									id="lastName"
-									name="lastName"
-									value={formData.lastName}
+									id="last_name"
+									name="last_name"
+									value={formData.last_name}
 									onChange={handleInputChange}
-									color={errors.lastName ? 'failure' : undefined}
-									helperText={errors.lastName}
+									color={errors.last_name ? 'failure' : undefined}
+									helperText={errors.last_name}
 									required
 								/>
 							</div>
@@ -183,6 +275,8 @@ const AddChurchStaffModal: React.FC = () => {
 									id="dob"
 									name="dob"
 									type="date"
+									value={formData.dob ? formData.dob.toISOString().split('T')[0] : ''}
+									onChange={handleDobChange}
 									className="mt-1"
 								/>
 							</div>
@@ -199,7 +293,7 @@ const AddChurchStaffModal: React.FC = () => {
 								<div className="phone-input-container">
 									<PhoneInput
 										country={'ug'}
-										value={formData.phoneNumber}
+										value={formData.phone_number}
 										onChange={handlePhoneChange}
 										inputProps={{
 											name: 'phoneNumber',
@@ -210,7 +304,7 @@ const AddChurchStaffModal: React.FC = () => {
 										buttonClass="absolute top-0 left-0 h-full"
 									/>
 								</div>
-								{errors.phoneNumber && <p className="mt-1 text-sm text-red-500">{errors.phoneNumber}</p>}
+								{errors.phone_number && <p className="mt-1 text-sm text-red-500">{errors.phone_number}</p>}
 							</div>
 							<div className="col-span-2 sm:col-span-1">
 								<Label htmlFor="email">Email Address</Label>
@@ -264,18 +358,18 @@ const AddChurchStaffModal: React.FC = () => {
 										<div key={status} className="flex items-center">
 											<input
 												type="radio"
-												id={`maritalStatus-${status.toLowerCase()}`}
-												name="maritalStatus"
-												value={status.toLowerCase()}
-												checked={formData.maritalStatus === status.toLowerCase()}
-												onChange={handleInputChange}
+												id={`marital_status-${status}`}
+												name="marital_status"
+												value={status}
+												checked={formData.marital_status === status}
+												onChange={() => handleMaritalStatusChange(status)}
 												className="mr-2"
 											/>
-											<Label htmlFor={`maritalStatus-${status.toLowerCase()}`}>{status}</Label>
+											<Label htmlFor={`marital_status-${status}`}>{status}</Label>
 										</div>
 									))}
 								</div>
-								{errors.maritalStatus && <p className="mt-1 text-sm text-red-500">{errors.maritalStatus}</p>}
+								{errors.marital_status && <p className="mt-1 text-sm text-red-500">{errors.marital_status}</p>}
 							</div>
 							<div className="col-span-2">
 								<Label>Baptised</Label>
@@ -288,10 +382,7 @@ const AddChurchStaffModal: React.FC = () => {
 												name="baptised"
 												// value={option.toLowerCase() === 'yes'}
 												checked={formData.baptised === (option.toLowerCase() === 'yes')}
-												// onChange={(e) => handleInputChange({
-												// 	...e,
-												// 	target: { ...e.target, value: e.target.value === 'true' }
-												// } as ChangeEvent<HTMLInputElement>)}
+												onChange={() => handleBaptisedChange(option.toLowerCase() === 'yes')}
 												className="mr-2"
 											/>
 											<Label htmlFor={`baptised-${option.toLowerCase()}`}>{option}</Label>
@@ -310,26 +401,38 @@ const AddChurchStaffModal: React.FC = () => {
 						<h3 className="mb-4 text-lg font-medium">Account Details</h3>
 						<div className="grid grid-cols-2 gap-4">
 							<div className="col-span-2">
-								<Label htmlFor="residence">Account Name</Label>
+								<Label htmlFor="account_name">Account Name</Label>
 								<TextInput
-									id="accountName"
-									name="accountName"
-									value={formData.accountName}
+									id="account_name"
+									name="account_name"
+									value={formData.account_name}
 									onChange={handleInputChange}
-									color={errors.accountName ? 'failure' : undefined}
-									helperText={errors.accountName}
+									color={errors.account_name ? 'failure' : undefined}
+									helperText={errors.account_name}
 									required
 								/>
 							</div>
 							<div className="col-span-2">
-								<Label htmlFor="residence">Account Number</Label>
+								<Label htmlFor="account_no">Account Number</Label>
 								<TextInput
-									id="accountNo"
-									name="accountNo"
-									value={formData.accountNo}
+									id="account_no"
+									name="account_no"
+									value={formData.account_no}
 									onChange={handleInputChange}
-									color={errors.accountNo ? 'failure' : undefined}
-									helperText={errors.accountNo}
+									color={errors.account_no ? 'failure' : undefined}
+									helperText={errors.account_no}
+									required
+								/>
+							</div>
+							<div className="col-span-2">
+								<Label htmlFor="career">Career</Label>
+								<TextInput
+									id="career"
+									name="career"
+									value={formData.career}
+									onChange={handleInputChange}
+									color={errors.career ? 'failure' : undefined}
+									helperText={errors.career}
 									required
 								/>
 							</div>
@@ -367,7 +470,7 @@ const AddChurchStaffModal: React.FC = () => {
 							</Button>
 						) : (
 							<Button color="success" onClick={handleSubmit}>
-								{loading ? 'Please wait...' : 'Submit'}
+								{!loading ? 'Submit' : 'Processing...'}
 							</Button>
 						)}
 					</div>
