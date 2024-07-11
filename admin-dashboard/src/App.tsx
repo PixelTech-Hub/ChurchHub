@@ -15,6 +15,19 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import ChurchStaffPage from "./pages/church-staff";
 import ChurchMembersPage from "./pages/church-members/ChurchMembersPage";
+import UserProfilePage from "./pages/users/profile";
+import UserSettingsPage from "./pages/users/settings";
+import UserListPage from "./pages/users/list";
+import UserFeedPage from "./pages/users/feed";
+import EcommerceProductsPage from "./pages/e-commerce/products";
+import EcommerceInvoicePage from "./pages/e-commerce/invoice";
+import EcommerceBillingPage from "./pages/e-commerce/billing";
+import KanbanPage from "./pages/kanban";
+import MailingReplyPage from "./pages/mailing/reply";
+import MailingReadPage from "./pages/mailing/read";
+import MailingInboxPage from "./pages/mailing/inbox";
+import MailingComposePage from "./pages/mailing/compose";
+import SingleChurchStaff from "./pages/church-staff/SingleChurchStaff";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -92,6 +105,15 @@ const App: FC = function () {
 
           />
           <Route
+            path="/users/church-staffs/:id"
+            element={
+              <ProtectedRoute>
+                <SingleChurchStaff />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
             path="/users/church-members"
             element={
               <ProtectedRoute>
@@ -100,7 +122,7 @@ const App: FC = function () {
             }
 
           />
-          {/* <Route
+          <Route
             path="/mailing/compose"
             element={
               <ProtectedRoute>
@@ -194,7 +216,7 @@ const App: FC = function () {
                 <UserSettingsPage />
               </ProtectedRoute>
             }
-          /> */}
+          />
         </Route>
       </Routes>
     </>

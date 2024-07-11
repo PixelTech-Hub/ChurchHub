@@ -31,12 +31,12 @@ const ExampleNavbar: FC = function () {
 
 
   // const { data } = useAppSelector((state) => state.auth);
-  const data = localStorage.getItem('auth');
+  // const data = localStorage.getItem('auth');
 
   // console.log(data?.churchId);
   // console.log(accessToken);
 
-  console.log('********------*****:', data)
+  // console.log('********------*****:', data)
 
 
 
