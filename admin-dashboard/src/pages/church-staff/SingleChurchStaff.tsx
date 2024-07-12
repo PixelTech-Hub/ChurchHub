@@ -33,9 +33,9 @@ const SingleChurchStaff: FC = function () {
 
 	console.log('staff++++', staff);
 
-	if (!staff) {
-		return <div>Loading...</div>;
-	}
+	// if (!staff) {
+	// 	return <div>Loading...</div>;
+	// }
 	return (
 		<NavbarSidebarLayout>
 			<div className="mb-6 grid grid-cols-1 gap-y-6 px-4 pt-6 dark:border-gray-700 dark:bg-gray-900 xl:grid-cols-2 xl:gap-4">
@@ -56,13 +56,19 @@ const SingleChurchStaff: FC = function () {
 						{staff.first_name}  {staff.last_name}
 					</h1> */}
 				</div>
-				<IntroCard />
-				<TransactionHistoryCard />
+				{!staff ? <div>Loading... </div> : (
+					<><IntroCard /><TransactionHistoryCard /></>
+				)}
 			</div>
-			<div className="grid grid-cols-1 gap-y-6 px-4">
-				<GeneralInfoCard />
-				<CardDetailsCard />
-			</div>
+			{!staff ? <div className="px-4">Loading... </div> : (
+				<>
+					<div className="grid grid-cols-1 gap-y-6 px-4">
+						<GeneralInfoCard />
+						<CardDetailsCard />
+					</div>
+				</>
+			)}
+
 		</NavbarSidebarLayout>
 	);
 };

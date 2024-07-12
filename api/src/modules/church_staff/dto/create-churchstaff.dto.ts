@@ -46,7 +46,8 @@ export class CreateChurchStaffDto {
 
 
 	@ApiProperty()
-	@IsPhoneNumber()
+	// @IsPhoneNumber()
+	@IsString()
 	phone_number: string;
 
 	@ApiProperty()

@@ -64,8 +64,9 @@ export class ChurchStaffEntity extends BaseEntity {
 
 
 	@ApiProperty()
-	@IsPhoneNumber()
-	@Column({ type: 'varchar', length: 100 })
+	// @IsPhoneNumber()
+	@IsString()
+	@Column({ type: 'varchar' })
 	phone_number: string;
 
 	@ApiProperty()

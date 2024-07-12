@@ -11,7 +11,7 @@ const ChurchStaffTable: FC = function () {
 
 	useEffect(() => {
 		fetchChurchStaffs();
-	}, []);
+	}, [churchStaffs]);
 
 	const fetchChurchStaffs = async () => {
 		try {
@@ -27,7 +27,7 @@ const ChurchStaffTable: FC = function () {
 		}
 	};
 
-	
+
 
 	return (
 		<Table className="min-w-full  divide-y divide-gray-200 dark:divide-gray-600">
@@ -58,14 +58,14 @@ const ChurchStaffTable: FC = function () {
 							{staff.gender}
 						</Table.Cell>
 						<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
-						{staff.dob}
+							{staff.dob}
 						</Table.Cell>
 						<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
 							{staff.residence}
 						</Table.Cell>
 						<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 							<div className="flex items-center gap-x-3">
-								
+
 								<DeleteChurchStaffModal
 									staffId={staff.id ?? ''}
 									staffFirstName={staff.first_name}
