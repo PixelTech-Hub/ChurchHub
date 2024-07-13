@@ -1,6 +1,9 @@
-import { Button, Modal } from "flowbite-react";
-import { useState } from "react";
-import { HiTrash, HiOutlineExclamationCircle } from "react-icons/hi";
+
+import { FormEvent, useState } from "react";
+import DeleteItem from "../modals/DeleteItem";
+import { toast } from "react-toastify";
+import { API_BASE_URL } from "../../app/api";
+import axios from "axios";
 
 
 type DeleteStaffProp = {
@@ -9,38 +12,52 @@ type DeleteStaffProp = {
 	staffLastName: string;
 }
 
-const DeleteChurchStaffModal = function ({ staffId, staffFirstName, staffLastName }: DeleteStaffProp) {
-	const [isOpen, setOpen] = useState(false);
+const DeleteChurchStaffModal = function ({staffId,  staffFirstName }: DeleteStaffProp) {
+	const [isOpen, setIsOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleDeleteChurchStaff = async (e: FormEvent<HTMLElement>) => {
+		e.preventDefault();
+		console.log("handleDeleteChurchStaff", staffId);
+	
+		try {
+			setIsLoading(true);
+			console.log('Processing deletion for staffId:', staffId);
+			
+			const response = await axios.delete(`${API_BASE_URL}/church-staffs/${staffId}`);
+			
+			console.log("Delete Church Staff Response:", response);
+			toast.success('Church staff deleted successfully');
+			setIsOpen(false);
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				console.error("Delete Church Staff Axios Error:", error.response?.data);
+				toast.error(`Failed to delete church staff: ${error.response?.data?.message || error.message}`);
+			} else {
+				console.error("Delete Church Staff Error:", error);
+				toast.error('Failed to delete church staff');
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 
-	console.log("staffId:++++++++",staffId)
+
+	// console.log("staffId:++++++++",staffId)
 	return (
 		<>
-			<Button color="failure" onClick={() => setOpen(!isOpen)}>
-				<HiTrash className="mr-2 text-lg" />
+			<DeleteItem
+				title={staffFirstName}
+				handleSubmit={handleDeleteChurchStaff}
+				isOpen={isOpen}
+				setIsOpen={setIsOpen}
+				isLoading={isLoading}
+				setIsLoading={setIsLoading}
+			>
 
-			</Button>
-			<Modal onClose={() => setOpen(false)} show={isOpen} size="md">
-				<Modal.Header className="px-3 pb-0 pt-3">
-					<span className="sr-only">Delete Church Staff</span>
-				</Modal.Header>
-				<Modal.Body className="px-6 pb-6 pt-0">
-					<div className="flex flex-col items-center gap-y-6 text-center">
-						<HiOutlineExclamationCircle className="text-7xl text-red-600" />
-						<p className="text-lg text-gray-500 dark:text-gray-300">
-							Are you sure you want to delete <span className="text-red-600">{staffFirstName} {staffLastName}</span>?
-						</p>
-						<div className="flex items-center gap-x-3">
-							<Button color="failure" onClick={() => setOpen(false)}>
-								Yes, I'm sure
-							</Button>
-							<Button color="gray" onClick={() => setOpen(false)}>
-								No, cancel
-							</Button>
-						</div>
-					</div>
-				</Modal.Body>
-			</Modal>
+
+			</DeleteItem>
 		</>
 	);
 };

@@ -63,6 +63,7 @@ const ChurchStaffTable: FC = function () {
 						<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
 							{staff.residence}
 						</Table.Cell>
+						
 						<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 							<div className="flex items-center gap-x-3">
 
