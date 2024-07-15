@@ -24,12 +24,10 @@ export class CreateChurchMemberDto {
 	gender: EntityGenderEnum;
 
 	@ApiProperty()
-	@IsPhoneNumber()
+	// @IsPhoneNumber()
+	@IsString()
 	phone_number: string;
 
-	@ApiProperty()
-	@IsPhoneNumber()
-	whatsapp_number: string;
 
 	@ApiProperty()
 	@IsEmail()
@@ -56,13 +54,12 @@ export class CreateChurchMemberDto {
 	marital_status: EntityMaritalStatusEnum;
 
 	@ApiProperty()
-	@IsInt()
-	@Min(0)
-	no_of_children: number;
+	@IsString()
+	no_of_children: string;
 
 	@ApiProperty()
 	@IsEnum(EntityEducationalLevelEnum)
-	@IsNotEmpty()
+	// @IsNotEmpty()
 	education_level: EntityEducationalLevelEnum;
 
 

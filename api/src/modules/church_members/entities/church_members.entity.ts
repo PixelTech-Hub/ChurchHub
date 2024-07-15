@@ -32,14 +32,10 @@ export class ChurchMemberEntity extends BaseEntity {
 	gender: EntityGenderEnum;
 
 	@ApiProperty()
-	@IsPhoneNumber()
+	// @IsPhoneNumber()
 	@Column({ type: 'varchar', length: 100 })
 	phone_number: string;
 
-	@ApiProperty()
-	@IsPhoneNumber()
-	@Column({ type: 'varchar', length: 100 })
-	whatsapp_number: string;
 
 	@ApiProperty()
 	@IsEmail()
@@ -77,16 +73,16 @@ export class ChurchMemberEntity extends BaseEntity {
 	marital_status: EntityMaritalStatusEnum;
 
 	@ApiProperty()
-	@IsNumber()
+	@IsString()
 	@Column()
-	no_of_children: number;
+	no_of_children: string;
 
 	@ApiProperty({
 		enum: EntityEducationalLevelEnum,
 		enumName: 'Educational Level',
 	})
 	@IsDefined()
-	@IsNotEmpty()
+	// @IsNotEmpty()
 	@Column({ nullable: true })
 	@IsEnum(EntityEducationalLevelEnum, { message: 'Please select your educational level' })
 	education_level: EntityEducationalLevelEnum;

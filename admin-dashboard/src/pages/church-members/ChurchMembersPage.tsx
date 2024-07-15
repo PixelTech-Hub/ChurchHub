@@ -10,6 +10,7 @@ import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Pagination } from "../users/list";
 import SearchChurchMembers from "../../components/church-members/SearchChurchMembers";
 import ChurchMemberTable from "../../components/church-members/ChurchMemberTable";
+import AddChurchMemberModal from "../../components/church-members/AddChurchMemberModal";
 
 const ChurchMembersPage: FC = function () {
 	return (
@@ -35,9 +36,9 @@ const ChurchMembersPage: FC = function () {
 					</div>
 					<div className="block items-center sm:flex">
 						<SearchChurchMembers />
-						{/* <div className="flex w-full items-center sm:justify-end">
-							<AddChurchStaffModal />
-						</div> */}
+						<div className="flex w-full items-center sm:justify-end">
+							<AddChurchMemberModal />
+						</div>
 					</div>
 				</div>
 			</div>
