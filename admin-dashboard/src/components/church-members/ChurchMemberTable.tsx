@@ -5,7 +5,12 @@ import { HiArrowRight } from "react-icons/hi";
 import DeleteChurchMemberModal from "./DeleteChurchMemberModal";
 import { ChurchMembers } from "../../types/ChurchMember";
 
-const ChurchMemberTable: FC = function () {
+
+interface ChurchMemberTableProps {
+	searchTerm: string;
+  }
+
+const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({searchTerm}) {
 
 	const [members, setMembers] = useState<ChurchMembers[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -13,6 +18,10 @@ const ChurchMemberTable: FC = function () {
 	useEffect(() => {
 		fetchChurchMembers();
 	}, []);
+
+	const filteredMembers = members.filter((member) =>
+		member.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+	  );
 
 	const fetchChurchMembers = async () => {
 		try {
@@ -33,7 +42,7 @@ const ChurchMemberTable: FC = function () {
 
 	console.log("members", members);
 
-	if(loading) {
+	if (loading) {
 		<p>Loading....</p>
 	}
 	return (
@@ -48,7 +57,7 @@ const ChurchMemberTable: FC = function () {
 				<Table.HeadCell>Actions</Table.HeadCell>
 			</Table.Head>
 			<Table.Body className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-				{members.map(member => (
+				{filteredMembers.map(member => (
 					<Table.Row className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
 
 						<Table.Cell className="whitespace-nowrap p-4 text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -77,11 +86,13 @@ const ChurchMemberTable: FC = function () {
 						<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 							<div className="flex items-center gap-x-3">
 
-								<DeleteChurchMemberModal />
-								<Link to="#" color="primary" className="">
-									<Button color="success" >
+								<DeleteChurchMemberModal
+									memberId={member.id ?? ''}
+									fullName={member.full_name}
+								/>
+								<Link to={`/users/church-members/${member.id}`} className="">
+									<Button color="success">
 										<HiArrowRight className="mr-2 text-lg" />
-
 									</Button>
 								</Link>
 							</div>

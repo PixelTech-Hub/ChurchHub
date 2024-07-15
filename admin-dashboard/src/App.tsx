@@ -28,6 +28,7 @@ import MailingReadPage from "./pages/mailing/read";
 import MailingInboxPage from "./pages/mailing/inbox";
 import MailingComposePage from "./pages/mailing/compose";
 import SingleChurchStaff from "./pages/church-staff/SingleChurchStaff";
+import SingleChurchMember from "./pages/church-members/SingleChurchMember";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -119,6 +120,15 @@ const App: FC = function () {
               <ProtectedRoute>
                 <ChurchMembersPage />
                </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/users/church-members/:id"
+            element={
+              <ProtectedRoute>
+                <SingleChurchMember />
+              </ProtectedRoute>
             }
 
           />

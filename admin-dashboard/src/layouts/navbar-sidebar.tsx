@@ -12,13 +12,13 @@ interface NavbarSidebarLayoutProps {
 }
 
 const NavbarSidebarLayout: FC<PropsWithChildren<NavbarSidebarLayoutProps>> =
-  function ({ children, isFooter = true }) {
+  function ({ children = true }) {
     return (
       <SidebarProvider>
         <Navbar />
         <div className="flex items-start pt-16">
           <Sidebar />
-          <MainContent isFooter={isFooter}>{children}</MainContent>
+          <MainContent>{children}</MainContent>
         </div>
       </SidebarProvider>
     );

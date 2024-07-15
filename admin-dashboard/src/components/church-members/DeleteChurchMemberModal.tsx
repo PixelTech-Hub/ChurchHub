@@ -1,38 +1,61 @@
-import { Button, Modal } from "flowbite-react";
-import { FC, useState } from "react";
-import { HiTrash, HiOutlineExclamationCircle } from "react-icons/hi";
+import axios from "axios";
+import { FC, FormEvent, useState } from "react";
+import { API_BASE_URL } from "../../app/api";
+import { toast } from "react-toastify";
+import DeleteItem from "../modals/DeleteItem";
+
+type DeleteStaffProp = {
+	memberId: string;
+	fullName: string;
+}
+
+const DeleteChurchMemberModal: FC<DeleteStaffProp> = function ({memberId, fullName}) {
+	const [isOpen, setIsOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+
+	// console.log("handleDeleteChurchStaff", memberId);
+	const handleDeleteChurchStaff = async (e: FormEvent<HTMLElement>) => {
+		e.preventDefault();
+		console.log("processing member id", memberId);
+	
+		try {
+			setIsLoading(true);
+			console.log('Processing deletion for memberId:', memberId);
+			
+			const response = await axios.delete(`${API_BASE_URL}/church-members/${memberId}`);
+			
+			console.log("Delete Church Staff Response:", response);
+			toast.success('Church staff deleted successfully');
+			setIsOpen(false);
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				console.error("Delete Church Staff Axios Error:", error.response?.data);
+				toast.error(`Failed to delete church staff: ${error.response?.data?.message || error.message}`);
+			} else {
+				console.error("Delete Church Staff Error:", error);
+				toast.error('Failed to delete church staff');
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 
-const DeleteChurchMemberModal: FC = function () {
-	const [isOpen, setOpen] = useState(false);
 
+	// console.log("staffId:++++++++",staffId)
 	return (
 		<>
-			<Button color="failure" onClick={() => setOpen(!isOpen)}>
-				<HiTrash className="mr-2 text-lg" />
-				
-			</Button>
-			<Modal onClose={() => setOpen(false)} show={isOpen} size="md">
-				<Modal.Header className="px-3 pb-0 pt-3">
-					<span className="sr-only">Delete Church Member</span>
-				</Modal.Header>
-				<Modal.Body className="px-6 pb-6 pt-0">
-					<div className="flex flex-col items-center gap-y-6 text-center">
-						<HiOutlineExclamationCircle className="text-7xl text-red-600" />
-						<p className="text-lg text-gray-500 dark:text-gray-300">
-							Are you sure you want to delete this church member?
-						</p>
-						<div className="flex items-center gap-x-3">
-							<Button color="failure" onClick={() => setOpen(false)}>
-								Yes, I'm sure
-							</Button>
-							<Button color="gray" onClick={() => setOpen(false)}>
-								No, cancel
-							</Button>
-						</div>
-					</div>
-				</Modal.Body>
-			</Modal>
+			<DeleteItem
+				title={fullName}
+				handleSubmit={handleDeleteChurchStaff}
+				isOpen={isOpen}
+				setIsOpen={setIsOpen}
+				isLoading={isLoading}
+				setIsLoading={setIsLoading}
+			>
+
+
+			</DeleteItem>
 		</>
 	);
 };
