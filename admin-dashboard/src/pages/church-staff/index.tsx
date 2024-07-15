@@ -51,7 +51,7 @@ const ChurchStaffPage: FC = function () {
 					</div>
 				</div>
 			</div>
-			<Pagination />
+			{/* <Pagination /> */}
 		</NavbarSidebarLayout>
 	);
 };

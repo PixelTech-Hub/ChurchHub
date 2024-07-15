@@ -201,7 +201,19 @@ const AddChurchMemberModal = () => {
 					console.error('Server error response:', errorData);
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
-
+				setFullName("")
+				setGender("")
+				setPhoneNumber("")
+				setEmail("")
+				setJob("")
+				setResidence("")
+				setAge("")
+				setMaritalStatus("")
+				setNoOfChildren("")
+				setEducation("")
+				setMinistry([])
+				setSelectedMinistries([])
+				
 				toast.success('Church staff added successfully');
 				setOpen(false);
 				// Reset form fields here

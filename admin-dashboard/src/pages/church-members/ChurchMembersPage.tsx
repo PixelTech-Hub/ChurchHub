@@ -7,13 +7,15 @@ import {
 	HiHome,
 } from "react-icons/hi";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
-import { Pagination } from "../users/list";
+// import { Pagination } from "../users/list";
 import SearchChurchMembers from "../../components/church-members/SearchChurchMembers";
 import ChurchMemberTable from "../../components/church-members/ChurchMemberTable";
 import AddChurchMemberModal from "../../components/church-members/AddChurchMemberModal";
 
 const ChurchMembersPage: FC = function () {
 	const [searchTerm, setSearchTerm] = useState("");
+
+	
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -57,7 +59,7 @@ const ChurchMembersPage: FC = function () {
 					</div>
 				</div>
 			</div>
-			<Pagination />
+			{/* <Pagination /> */}
 		</NavbarSidebarLayout>
 	);
 };
