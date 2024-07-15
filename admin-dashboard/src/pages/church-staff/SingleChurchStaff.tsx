@@ -1,7 +1,4 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import {
-    Breadcrumb,
-} from "flowbite-react";
+import { Breadcrumb } from "flowbite-react";
 import { useEffect, useState, type FC } from "react";
 import { HiHome } from "react-icons/hi";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
@@ -9,33 +6,36 @@ import { useParams } from "react-router";
 import axios from "axios";
 import { API_BASE_URL } from "../../app/api";
 import IntroCard from "../../components/church-staff/IntroCard";
-import TransactionHistoryCard from "../../components/church-staff/Transaction";
 import GeneralInfoCard from "../../components/church-staff/GeneralInfoCard";
-import CardDetailsCard from "../../components/church-staff/CardDetailsCard";
 
 const SingleChurchStaff: FC = function () {
     const { id } = useParams();
-    console.log(id);
-
     const [staff, setStaff] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchStaffDetails = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/church-staffs/${id}`);
-                setStaff(response.data);
-                setIsLoading(false);
-            } catch (error) {
-                console.error('Error fetching staff details:', error);
-                setIsLoading(false);
-            }
-        };
-
         fetchStaffDetails();
     }, [id]);
 
-    console.log('staff++++', staff);
+    const fetchStaffDetails = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/church-staffs/${id}`);
+            setStaff(response.data);
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Error fetching staff details:', error);
+            setIsLoading(false);
+        }
+    };
+
+    const handleUpdate = async (updatedStaff: any) => {
+        try {
+            await axios.put(`${API_BASE_URL}/church-staffs/${id}`, updatedStaff);
+            fetchStaffDetails(); // Refresh the data after update
+        } catch (error) {
+            console.error('Error updating staff details:', error);
+        }
+    };
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -61,21 +61,20 @@ const SingleChurchStaff: FC = function () {
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>Church Staffs</Breadcrumb.Item>
                     </Breadcrumb>
-                    
                 </div>
-                <IntroCard 
-					firstName={staff.first_name}
-					lastName={staff.last_name}
-					position={staff.position}
-					email={staff.email} 
-					phoneNumber={staff.phone_number} 
-					residence={staff.residence} 
-					career={staff.career}               />
-                <TransactionHistoryCard staff={staff} />
+                <IntroCard
+                    firstName={staff.first_name}
+                    lastName={staff.last_name}
+                    position={staff.position}
+                    email={staff.email}
+                    phoneNumber={staff.phone_number}
+                    residence={staff.residence}
+                    career={staff.career}
+                />
             </div>
             <div className="grid grid-cols-1 gap-y-6 px-4">
-                <GeneralInfoCard staff={staff} />
-                <CardDetailsCard staff={staff} />
+                <GeneralInfoCard staff={staff} onUpdate={handleUpdate} />
+                {/* <CardDetailsCard staff={staff} /> */}
             </div>
         </NavbarSidebarLayout>
     );

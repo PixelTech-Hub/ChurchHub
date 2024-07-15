@@ -1,6 +1,7 @@
-import { Card } from "flowbite-react";
 import { FC } from "react";
+import { HiMail, HiPhone, HiLocationMarker, HiBriefcase } from "react-icons/hi";
 import Image01 from '../../assets/images/dan.png'
+import InfoItem from "./InfoItem";
 
 interface IntroCardProps {
 	firstName: string;
@@ -12,46 +13,63 @@ interface IntroCardProps {
 	career: string;
 }
 
+
+
+
 const IntroCard: FC<IntroCardProps> = ({ firstName, lastName, position, email, phoneNumber, residence, career }) => {
-	console.log('email address', email)
 	return (
-		<Card>
-			<div className="font-bold dark:text-white">
-			<h1 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-			General Information
-                    </h1>
-			</div>
-			<div className="flex text-2xl  dark:text-white">
-				<div>
+		<div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg overflow-hidden">
+			<div className="p-8">
+				<div className="flex flex-col md:flex-row items-center md:items-start">
 					<img
 						alt={firstName}
 						src={Image01}
-						className="mr-4 h-32 w-24 rounded-lg object-cover" />
+						className="w-40 h-40 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-md mb-6 md:mb-0 md:mr-8"
+					/>
+					<div className="text-center md:text-left">
+						<h2 className="text-3xl font-extrabold text-gray-800 dark:text-white">{firstName} {lastName}</h2>
+						<p className="text-xl text-indigo-600 dark:text-indigo-300 font-semibold mt-1">{position}</p>
+						<p className="text-gray-600 dark:text-gray-300 mt-1 italic">{career}</p>
+					</div>
 				</div>
-				<div>
-					<span>{firstName} {lastName}</span>
-					<p className="text-2xl font-medium text-gray-600 dark:text-gray-400">
-						{position}
-					</p>
-					<p className="text-lg font-medium text-gray-600 dark:text-gray-400">
-						{career}
-					</p>
-				</div>
-			</div>
 
-			<div className="mt-4 space-y-2">
-				<p className="text-base font-normal text-gray-500 dark:text-gray-400">
-					Email: <span className="font-semibold text-gray-900 dark:text-white">{email}</span>
-				</p>
-				<p className="text-base font-normal text-gray-500 dark:text-gray-400">
-					Phone: <span className="font-semibold text-gray-900 dark:text-white">+{phoneNumber}</span>
-				</p>
-				<p className="text-base font-normal text-gray-500 dark:text-gray-400">
-					Residence: <span className="font-semibold text-gray-900 dark:text-white">{residence}</span>
-				</p>
+				<div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+					<InfoItem
+						icon={<HiMail className="w-6 h-6 text-indigo-500" />}
+						label="Email"
+						value={firstName + " " + lastName}
+						href={`mailto:${email}`}
+						tooltip="Compose an email"
+						recipientEmail={email} 
+						isEmail={true}
+					/>
+					<InfoItem
+						icon={<HiPhone className="w-6 h-6 text-green-500" />}
+						label="Phone"
+						value={`+${phoneNumber}`}
+						href={`tel:+${phoneNumber}`}
+						tooltip="Make a call"
+					/>
+					<InfoItem
+						icon={<HiLocationMarker className="w-6 h-6 text-red-500" />}
+						label="Residence"
+						value={residence}
+						href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(residence)}`}
+						tooltip="View on map"
+					/>
+					<InfoItem
+						icon={<HiBriefcase className="w-6 h-6 text-purple-500" />}
+						label="Career"
+						value={career}
+					/>
+				</div>
 			</div>
-		</Card >
+		</div>
 	);
 };
+
+
+
+
 
 export default IntroCard;

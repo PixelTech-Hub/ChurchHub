@@ -31,7 +31,7 @@ const ExampleNavbar: FC = function () {
 
 
   // const { data } = useAppSelector((state) => state.auth);
-  // const data = localStorage.getItem('auth');
+  const data = localStorage.getItem('auth');
 
   // console.log(data?.churchId);
   // console.log(accessToken);
@@ -52,6 +52,8 @@ const ExampleNavbar: FC = function () {
       }
     }
   }, []);
+
+  console.log('********------*****stored data:', data)
 
   useEffect(() => {
     if (authData && authData.data.churchId) {
@@ -81,6 +83,8 @@ const ExampleNavbar: FC = function () {
     return <div>Please log in to view church data.</div>;
   }
 
+
+  console.log('......chrc________________________________________________________________', church)
 
   return (
     <Navbar fluid>
