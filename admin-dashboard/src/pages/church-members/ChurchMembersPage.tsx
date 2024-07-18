@@ -20,6 +20,7 @@ const ChurchMembersPage: FC = function () {
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
+  
 
 	return (
 		<NavbarSidebarLayout isFooter={false}>

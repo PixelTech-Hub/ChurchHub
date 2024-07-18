@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateChurchMemberDto } from '../dto/create-churchmember.dto';
 import { ChurchMemberEntity } from '../entities/church_members.entity';
 import { UpdateChurchMemberDto } from '../dto/update-churchmember.dto';

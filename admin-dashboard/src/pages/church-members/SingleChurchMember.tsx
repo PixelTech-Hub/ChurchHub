@@ -53,19 +53,33 @@ const SingleChurchMember = () => {
 	};
 	const getAgePercentage = (ageRange: string): number => {
 		const parts = ageRange.split('-')
-		  .map(part => parseInt(part.trim(), 10))
-		  .filter((num): num is number => !isNaN(num));
-	  
+			.map(part => parseInt(part.trim(), 10))
+			.filter((num): num is number => !isNaN(num));
+
 		if (parts.length !== 2) {
-		  // Return a default value if we don't have exactly two valid numbers
-		  return 50; // You can adjust this default value as needed
+			// Return a default value if we don't have exactly two valid numbers
+			return 50; // You can adjust this default value as needed
 		}
-	  
+
 		// Use type assertion to tell TypeScript that parts is a tuple of two numbers
 		const [min, max] = parts as [number, number];
-	  
+
 		return ((min + max) / 2 / 100) * 100;
-	  };
+	};
+
+
+	const updateMemberField = async (field: keyof ChurchMember, value: string) => {
+		try {
+			const response = await axios.patch(`${API_BASE_URL}/church-members/${id}`, {
+				[field]: value
+			});
+			if (response.status === 200) {
+				setMember(prevMember => prevMember ? { ...prevMember, [field]: value } : null);
+			}
+		} catch (error) {
+			console.error('Error updating member field:', error);
+		}
+	};
 
 	return (
 		<NavbarSidebarLayout>
@@ -97,12 +111,12 @@ const SingleChurchMember = () => {
 
 						<div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 							<div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-								<InfoItem icon={<HiPhone />} label="Phone" value={member.phone_number} />
-								<InfoItem icon={<HiMail />} label="Email" value={member.email} />
-								<InfoItem icon={<HiOfficeBuilding />} label="Job" value={member.job} />
-								<InfoItem icon={<HiHome />} label="Residence" value={member.residence} />
-								<InfoItem icon={<HiHeart />} label="Marital Status" value={member.marital_status} />
-								<InfoItem icon={<HiAcademicCap />} label="Education" value={member.education_level || 'Not specified'} />
+								<InfoItem icon={<HiPhone />} label="Phone" value={member.phone_number} field="phone_number" onUpdate={updateMemberField} />
+								<InfoItem icon={<HiMail />} label="Email" value={member.email} field="email" onUpdate={updateMemberField} />
+								<InfoItem icon={<HiOfficeBuilding />} label="Job" value={member.job} field="job" onUpdate={updateMemberField} />
+								<InfoItem icon={<HiHome />} label="Residence" value={member.residence} field="residence" onUpdate={updateMemberField} />
+								<InfoItem icon={<HiHeart />} label="Marital Status" value={member.marital_status} field="marital_status" onUpdate={updateMemberField} />
+								<InfoItem icon={<HiAcademicCap />} label="Education" value={member.education_level || 'Not specified'} field="education_level" onUpdate={updateMemberField} />
 							</div>
 
 							<div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg">
@@ -147,14 +161,49 @@ const SingleChurchMember = () => {
 	);
 };
 
-const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
-	<div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-		<div className="text-blue-500 dark:text-blue-400 text-2xl">{icon}</div>
-		<div>
-			<p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-			<p className="font-medium text-lg">{value}</p>
+const InfoItem: React.FC<{
+	icon: React.ReactNode;
+	label: string;
+	value: string;
+	field: keyof ChurchMember;
+	onUpdate: (field: keyof ChurchMember, value: string) => Promise<void>;
+}> = ({ icon, label, value, field, onUpdate }) => {
+	const [isEditing, setIsEditing] = useState(false);
+	const [editValue, setEditValue] = useState(value);
+
+	const handleUpdate = async () => {
+		await onUpdate(field, editValue);
+		setIsEditing(false);
+	};
+
+	return (
+		<div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
+			<div className="text-blue-500 dark:text-blue-400 text-2xl">{icon}</div>
+			<div className="flex-grow">
+				<p className="text-sm text-gray-500 dark:text-white">{label}</p>
+				{isEditing ? (
+					<input
+						type="text"
+						value={editValue}
+						onChange={(e) => setEditValue(e.target.value)}
+						className="font-medium text-lg dark:text-gray-300 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
+					/>
+				) : (
+					<p className="font-medium text-lg dark:text-gray-300">{value}</p>
+				)}
+			</div>
+			<div>
+				{isEditing ? (
+					<>
+						<button onClick={handleUpdate} className="text-green-500 mr-2">Save</button>
+						<button onClick={() => setIsEditing(false)} className="text-red-500">Cancel</button>
+					</>
+				) : (
+					<button onClick={() => setIsEditing(true)} className="text-blue-500">Edit</button>
+				)}
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 export default SingleChurchMember;

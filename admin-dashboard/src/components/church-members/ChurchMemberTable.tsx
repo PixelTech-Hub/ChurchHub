@@ -34,12 +34,12 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 
 	useEffect(() => {
 		fetchChurchMembers();
-	}, [members]);
+	}, [authData]);
 
 	useEffect(() => {
 		// Reset to first page when search term changes
 		setCurrentPage(1);
-	}, [searchTerm]);
+	}, [searchTerm, members]);
 
 	const filteredMembers = members.filter((member) =>
 		member.full_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -55,6 +55,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 	const fetchChurchMembers = async () => {
 		try {
 			const response = await fetch(`http://localhost:8000/church-members/church/${authData?.data.churchId}`);
+			// console.log('response', response)
 			if (response.ok) {
 				const data = await response.json();
 				setMembers(data); // Assuming data.data contains the array of church staffs
@@ -69,7 +70,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 		}
 	};
 
-	console.log("members", members);
+	// console.log("members", members);
 
 	if (loading) {
 		<p>Loading....</p>
@@ -77,7 +78,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 	if (filteredMembers.length === 0) {
 		return (
 			<div className="text-center py-4">
-				<p className="text-red-500 dark:text-gray-400">No Church Member found</p>
+				<p className="text-red-500 dark:text-gray-400">No Church Member Found</p>
 			</div>
 		);
 	}
@@ -96,7 +97,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 				</Table.Head>
 				<Table.Body className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
 					{paginatedMembers.map(member => (
-						<Table.Row className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+						<Table.Row key={member.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
 
 							<Table.Cell className="whitespace-nowrap p-4 text-sm font-normal text-gray-500 dark:text-gray-400">
 								<div className="text-base font-semibold text-gray-900 dark:text-white">
@@ -110,7 +111,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 								{member.email}
 							</Table.Cell>
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
-								{member.phone_number}
+								<a href={`tel:+${member.phone_number}`}>+{member.phone_number}</a>
 							</Table.Cell>
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white capitalize">
 								{member.gender}
