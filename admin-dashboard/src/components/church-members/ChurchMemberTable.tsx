@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { HiArrowRight } from "react-icons/hi";
 import DeleteChurchMemberModal from "./DeleteChurchMemberModal";
 import { ChurchMembers } from "../../types/ChurchMember";
+import { AuthData } from "../../types/AuthData";
 
 
 interface ChurchMemberTableProps {
@@ -17,6 +18,19 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 	const [members, setMembers] = useState<ChurchMembers[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
+	const [authData, setAuthData] = useState<AuthData | null>(null);
+
+	useEffect(() => {
+		const storedData = localStorage.getItem('auth');
+		if (storedData) {
+			try {
+				const parsedData: AuthData = JSON.parse(storedData);
+				setAuthData(parsedData);
+			} catch (error) {
+				console.error('Error parsing auth data:', error);
+			}
+		}
+	}, []);
 
 	useEffect(() => {
 		fetchChurchMembers();
@@ -40,7 +54,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 
 	const fetchChurchMembers = async () => {
 		try {
-			const response = await fetch("http://localhost:8000/church-members");
+			const response = await fetch(`http://localhost:8000/church-members/church/${authData?.data.churchId}`);
 			if (response.ok) {
 				const data = await response.json();
 				setMembers(data); // Assuming data.data contains the array of church staffs
@@ -63,7 +77,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 	if (filteredMembers.length === 0) {
 		return (
 			<div className="text-center py-4">
-				<p className="text-red-500 dark:text-gray-400">No Church Member with that name found</p>
+				<p className="text-red-500 dark:text-gray-400">No Church Member found</p>
 			</div>
 		);
 	}

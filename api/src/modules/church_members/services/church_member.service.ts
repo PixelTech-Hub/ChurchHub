@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateChurchMemberDto } from '../dto/create-churchmember.dto';
 import { ChurchMemberEntity } from '../entities/church_members.entity';
-import { FindChurchMemberDto } from '../dto/find-churchmember.dto';
-import { BaseService } from 'src/common/services/base.service';
 import { UpdateChurchMemberDto } from '../dto/update-churchmember.dto';
 import { MinistryEntity } from 'src/modules/ministries/entities/ministry.entity';
 import { ChurchEntity } from 'src/modules/churches/entities/church.entity';
@@ -19,9 +17,6 @@ export class ChurchMemberService {
 		@InjectRepository(ChurchEntity)
 		private readonly churchRepository: Repository<ChurchEntity>,
 	) { }
-
-
-
 
 	async createMember(createChurchMemberDto: CreateChurchMemberDto): Promise<ChurchMemberEntity> {
 		// Check if the church with the provided churchId exists

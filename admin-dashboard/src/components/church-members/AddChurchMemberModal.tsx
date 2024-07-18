@@ -84,10 +84,12 @@ const AddChurchMemberModal = () => {
 	};
 
 	const handleNextStep = () => {
-		if (validateStep()) {
-			setStep(prevStep => prevStep + 1);
-		}
-	};
+        if (validateStep()) {
+            setStep(prevStep => prevStep + 1);
+        } else {
+            toast.error('Please fill in all required fields before proceeding.');
+        }
+    };
 
 	const handlePrevStep = () => setStep(prevStep => prevStep - 1);
 
