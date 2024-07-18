@@ -110,7 +110,7 @@ const ExampleNavbar: FC = function () {
                 src=""
                 className="mr-3 h-6 sm:h-8"
               />
-              <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
+              <span className="self-center whitespace-nowrap lg:text-2xl text-lg font-semibold dark:text-white">
                 Church Hub
               </span>
             </Navbar.Brand>
@@ -128,7 +128,7 @@ const ExampleNavbar: FC = function () {
                 type="search"
               />
             </form> */}
-            <div className=" text-xl ml-16 font-bold">
+            <div className="hidden lg:flex lg:text-xl  ml-16 font-bold">
               <p className="dark:text-white">{church.name}</p>
             </div>
           </div>

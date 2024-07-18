@@ -4,4 +4,5 @@ export interface ChurchMinistries {
 	name: string;
 	leader: string;
 	description: string;
+	updatedAt: string;
 }

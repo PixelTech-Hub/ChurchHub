@@ -5,6 +5,7 @@ import { CreateMinistryDto } from "../dto/create-ministry.dto";
 import { FindMinistryDto } from "../dto/find-ministry.dto";
 import { NotFoundException } from "@nestjs/common";
 import { MinistryEntity } from "../entities/ministry.entity";
+import { ChurchEntity } from "src/modules/churches/entities/church.entity";
 
 
 export class ChurchMinistryService extends BaseService<
@@ -15,6 +16,8 @@ export class ChurchMinistryService extends BaseService<
 	constructor(
 		@InjectRepository(MinistryEntity)
 		private readonly ministryRepository: Repository<MinistryEntity>,
+		@InjectRepository(ChurchEntity)
+		private readonly churchRepository: Repository<ChurchEntity>,
 	) {
 		super(ministryRepository, ChurchMinistryService.dtoToFindOptionsWhere, []);
 	}
@@ -34,6 +37,24 @@ export class ChurchMinistryService extends BaseService<
 	}
 	async findAllChurchMinistries(dto: FindMinistryDto): Promise<MinistryEntity[]> {
 		return this.ministryRepository.find({ relations: ['church'] });
+	}
+
+	async findAllChurchMinistriesByChurchId(churchId: string): Promise<MinistryEntity[]> {
+		// First, check if the church exists
+		const church = await this.churchRepository.findOne({ where: { id: churchId } });
+		if (!church) {
+			throw new NotFoundException(`Church with id ${churchId} not found`);
+		}
+
+		// Fetch all ministries for this church
+		const ministry = await this.ministryRepository.find({
+			where: { churchId },
+			order: {
+				createdAt: 'DESC' // Order by creation date, newest first
+			}
+		});
+
+		return ministry;
 	}
 
 	async findOneChurchMinistry(id: string): Promise<MinistryEntity> {

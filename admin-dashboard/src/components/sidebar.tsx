@@ -114,6 +114,16 @@ const ExampleSidebar: FC = function () {
                     Church Services
                   </Sidebar.Item>
                   <Sidebar.Item
+                    href="/church-ministries"
+                    className={
+                      "/church-ministries" === currentPage
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }
+                  >
+                    Church Ministries
+                  </Sidebar.Item>
+                  {/* <Sidebar.Item
                     href="/e-commerce/invoice"
                     className={
                       "/e-commerce/invoice" === currentPage
@@ -122,7 +132,7 @@ const ExampleSidebar: FC = function () {
                     }
                   >
                     Church Ministries
-                  </Sidebar.Item>
+                  </Sidebar.Item> */}
                 </Sidebar.Collapse>
                 <Sidebar.Collapse
                   icon={HiUsers}

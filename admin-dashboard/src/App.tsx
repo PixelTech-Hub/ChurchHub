@@ -29,6 +29,8 @@ import MailingInboxPage from "./pages/mailing/inbox";
 import MailingComposePage from "./pages/mailing/compose";
 import SingleChurchStaff from "./pages/church-staff/SingleChurchStaff";
 import SingleChurchMember from "./pages/church-members/SingleChurchMember";
+import ChurchMinistryPage from "./pages/church-staff/church-ministries/ChurchMinistryPage";
+import SingleChurchMinistry from "./pages/SingleChurchMinistry";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -92,6 +94,24 @@ const App: FC = function () {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-ministries"
+            element={
+              <ProtectedRoute>
+                <ChurchMinistryPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-ministries/:id"
+            element={
+              <ProtectedRoute>
+                <SingleChurchMinistry />
               </ProtectedRoute>
             }
 
