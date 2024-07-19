@@ -56,7 +56,7 @@ const SingleChurchMinistry = () => {
 						<p className='lg:text-base text-[10px]'>Church Initiatives</p>
 					</Breadcrumb.Item>
 					<Breadcrumb.Item href='/church-ministries'>
-					<p className='lg:text-base text-[10px]'>Church Ministries</p>
+						<p className='lg:text-base text-[10px]'>Church Ministries</p>
 					</Breadcrumb.Item>
 				</Breadcrumb>
 
@@ -82,6 +82,7 @@ const SingleChurchMinistry = () => {
 									value={ministry.name}
 									field="name"
 									onUpdate={updateMinistryField}
+									inputType="text"
 								/>
 								<InfoItem
 									icon={<HiUsers />}
@@ -89,19 +90,17 @@ const SingleChurchMinistry = () => {
 									value={ministry.leader}
 									field="leader"
 									onUpdate={updateMinistryField}
+									inputType="text"
 								/>
 								<InfoItem
-									icon={<HiOutlineDocumentText />}
+									icon={" "}
 									label="Description"
 									value={ministry.description}
 									field="description"
 									onUpdate={updateMinistryField}
+									inputType="textarea"
 								/>
-
-
 							</div>
-
-
 						</div>
 
 
@@ -119,49 +118,59 @@ const SingleChurchMinistry = () => {
 }
 
 const InfoItem: React.FC<{
-	icon: React.ReactNode;
-	label: string;
-	value: string;
-	field: keyof ChurchMinistries;
-	onUpdate: (field: keyof ChurchMinistries, value: string) => Promise<void>;
-}> = ({ icon, label, value, field, onUpdate }) => {
-	const [isEditing, setIsEditing] = useState(false);
-	const [editValue, setEditValue] = useState(value);
+    icon: React.ReactNode;
+    label: string;
+    value: string;
+    field: keyof ChurchMinistries;
+    onUpdate: (field: keyof ChurchMinistries, value: string) => Promise<void>;
+    inputType: 'text' | 'textarea';
+}> = ({ icon, label, value, field, onUpdate, inputType }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editValue, setEditValue] = useState(value);
 
-	const handleUpdate = async () => {
-		await onUpdate(field, editValue);
-		setIsEditing(false);
-	};
+    const handleUpdate = async () => {
+        await onUpdate(field, editValue);
+        setIsEditing(false);
+    };
 
-	return (
-		<div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-			<div className="text-blue-500 dark:text-blue-400 lg:text-2xl text-xl">{icon}</div>
-			<div className="flex-grow">
-				<p className="lg:text-sm text-[12px] text-gray-500 dark:text-white">{label}</p>
-				{isEditing ? (
-					<textarea
-						value={editValue}
-						onChange={(e) => setEditValue(e.target.value)}
-						className="font-medium rounded-md lg:text-lg text-[14px] dark:text-gray-300 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
-					/>
-				) : (
-					<p className="font-medium lg:text-lg text-[12px] dark:text-gray-300">{value}</p>
-				)}
-			</div>
-			<div>
-				{isEditing ? (
-					<>
-						<button onClick={handleUpdate} className="text-green-500 mr-2">Save</button>
-						<button onClick={() => setIsEditing(false)} className="text-red-500">Cancel</button>
-					</>
-				) : (
-					<button onClick={() => setIsEditing(true)} className="text-blue-500">
-						<MdEdit color='green'/>
-					</button>
-				)}
-			</div>
-		</div>
-	);
+    return (
+        <div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
+            <div className="text-blue-500 dark:text-blue-400 lg:text-2xl text-xl">{icon}</div>
+            <div className="flex-grow">
+                <p className="lg:text-sm text-[12px] text-gray-500 dark:text-white">{label}</p>
+                {isEditing ? (
+                    inputType === 'textarea' ? (
+                        <textarea
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            className="w-full font-medium rounded-md lg:text-lg text-[14px] dark:text-gray-300 h-[20rem] bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
+                        />
+                    ) : (
+                        <input
+                            type="text"
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            className="w-full font-medium rounded-md lg:text-lg text-[14px] dark:text-gray-300 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
+                        />
+                    )
+                ) : (
+                    <p className="font-medium lg:text-lg text-[12px] dark:text-gray-300">{value}</p>
+                )}
+            </div>
+            <div>
+                {isEditing ? (
+                    <>
+                        <button onClick={handleUpdate} className="text-green-500 mr-2">Save</button>
+                        <button onClick={() => setIsEditing(false)} className="text-red-500">Cancel</button>
+                    </>
+                ) : (
+                    <button onClick={() => setIsEditing(true)} className="text-blue-500">
+                        <MdEdit color='green'/>
+                    </button>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default SingleChurchMinistry
