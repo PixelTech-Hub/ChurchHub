@@ -5,36 +5,21 @@ import { API_BASE_URL } from "../../app/api";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Breadcrumb, Progress } from "flowbite-react";
 import { HiAcademicCap, HiHeart, HiHome, HiMail, HiOfficeBuilding, HiPhone, HiUsers, HiClock, HiUser } from "react-icons/hi";
+import { EntityAgeEnum } from "../../enums/entity-age.enum";
+import { EntityGenderEnum } from "../../enums/entity-gender.enum";
+import { EntityMaritalStatusEnum } from "../../enums/entity-maritalstatus.enum";
+import { EntityEducationalLevelEnum } from "../../enums/entity-education.enum";
+import { toast } from "react-toastify";
+import ChurchMemberInfoItem from "../../components/church-members/ChurchMemberInfoItem";
+import { ChurchMembers } from "../../types/ChurchMember";
 
-interface Ministry {
-	id: string;
-	name: string;
-	leader: string;
-	description: string;
-}
 
-interface ChurchMember {
-	id: string;
-	updatedAt: string
-	full_name: string;
-	gender: string;
-	phone_number: string;
-	email: string;
-	job: string;
-	residence: string;
-	age: string;
-	marital_status: string;
-	no_of_children: string;
-	education_level: string | null;
-	ministries: Ministry[];
-	church: {
-		name: string;
-	};
-}
+
+
 
 const SingleChurchMember = () => {
 	const { id } = useParams<{ id: string }>();
-	const [member, setMember] = useState<ChurchMember | null>(null);
+	const [member, setMember] = useState<ChurchMembers | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
@@ -43,7 +28,7 @@ const SingleChurchMember = () => {
 
 	const fetchMemberDetails = async () => {
 		try {
-			const response = await axios.get<ChurchMember>(`${API_BASE_URL}/church-members/${id}`);
+			const response = await axios.get<ChurchMembers>(`${API_BASE_URL}/church-members/${id}`);
 			setMember(response.data);
 			setIsLoading(false);
 		} catch (error) {
@@ -68,18 +53,76 @@ const SingleChurchMember = () => {
 	};
 
 
-	const updateMemberField = async (field: keyof ChurchMember, value: string) => {
+	// const updateMemberField = async (field: keyof ChurchMember, value: string) => {
+	// 	try {
+	// 		const response = await axios.patch(`${API_BASE_URL}/church-members/${id}`, {
+	// 			[field]: value
+	// 		});
+	// 		if (response.status === 200) {
+	// 			setMember(prevMember => prevMember ? { ...prevMember, [field]: value } : null);
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Error updating member field:', error);
+	// 	}
+	// };
+	const updateMemberField = async (field: keyof ChurchMembers, value: string) => {
 		try {
-			const response = await axios.patch(`${API_BASE_URL}/church-members/${id}`, {
-				[field]: value
-			});
-			if (response.status === 200) {
-				setMember(prevMember => prevMember ? { ...prevMember, [field]: value } : null);
-			}
+		  let validatedValue: string | EntityAgeEnum | EntityGenderEnum | EntityMaritalStatusEnum | EntityEducationalLevelEnum = value;
+	  
+		  switch (field) {
+			case 'gender':
+			  if (!Object.values(EntityGenderEnum).includes(value as EntityGenderEnum)) {
+				throw new Error('Invalid gender value');
+			  }
+			  validatedValue = value as EntityGenderEnum;
+			  break;
+			case 'age':
+			  if (!Object.values(EntityAgeEnum).includes(value as EntityAgeEnum)) {
+				throw new Error('Invalid age range');
+			  }
+			  validatedValue = value as EntityAgeEnum;
+			  break;
+			case 'marital_status':
+			  if (!Object.values(EntityMaritalStatusEnum).includes(value as EntityMaritalStatusEnum)) {
+				throw new Error('Invalid marital status');
+			  }
+			  validatedValue = value as EntityMaritalStatusEnum;
+			  break;
+			case 'education_level':
+			  if (!Object.values(EntityEducationalLevelEnum).includes(value as EntityEducationalLevelEnum)) {
+				throw new Error('Invalid education level');
+			  }
+			  validatedValue = value as EntityEducationalLevelEnum;
+			  break;
+			case 'email':
+			  // Simple email validation
+			  if (!/^\S+@\S+\.\S+$/.test(value)) {
+				throw new Error('Invalid email format');
+			  }
+			  break;
+			case 'phone_number':
+			  // Simple phone number validation (you might want to use a library for more robust validation)
+			  if (!/^\+?[0-9]{10,14}$/.test(value)) {
+				throw new Error('Invalid phone number format');
+			  }
+			  break;
+			// Add other field-specific validations as needed
+		  }
+	  
+		  const response = await axios.patch(`${API_BASE_URL}/church-members/${id}`, {
+			[field]: validatedValue
+		  });
+		  
+		  if (response.status === 200) {
+			setMember(prevMember => prevMember ? { ...prevMember, [field]: validatedValue } : null);
+			toast.success(`${field.replace('_', ' ')} updated successfully!`);
+		  }
 		} catch (error) {
-			console.error('Error updating member field:', error);
+		  console.error('Error updating member field:', error);
+		  toast.error(`Failed to update ${field.replace('_', ' ')}. Please try again.`);
+		  // You might want to show an error message to the user here
 		}
-	};
+	  };
 
 	return (
 		<NavbarSidebarLayout>
@@ -109,12 +152,12 @@ const SingleChurchMember = () => {
 
 						<div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 							<div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-								<InfoItem icon={<HiPhone />} label="Phone" value={`+${member.phone_number}`} field="phone_number" onUpdate={updateMemberField} />
-								<InfoItem icon={<HiMail />} label="Email" value={member.email} field="email" onUpdate={updateMemberField} />
-								<InfoItem icon={<HiOfficeBuilding />} label="Job" value={member.job} field="job" onUpdate={updateMemberField} />
-								<InfoItem icon={<HiHome />} label="Residence" value={member.residence} field="residence" onUpdate={updateMemberField} />
-								<InfoItem icon={<HiHeart />} label="Marital Status" value={member.marital_status} field="marital_status" onUpdate={updateMemberField} />
-								<InfoItem icon={<HiAcademicCap />} label="Education" value={member.education_level || 'Not specified'} field="education_level" onUpdate={updateMemberField} />
+								<ChurchMemberInfoItem icon={<HiPhone />} label="Phone" value={`+${member.phone_number}`} field="phone_number" onUpdate={updateMemberField} />
+								<ChurchMemberInfoItem icon={<HiMail />} label="Email" value={member.email} field="email" onUpdate={updateMemberField} />
+								<ChurchMemberInfoItem icon={<HiOfficeBuilding />} label="Job" value={member.job} field="job" onUpdate={updateMemberField} />
+								<ChurchMemberInfoItem icon={<HiHome />} label="Residence" value={member.residence} field="residence" onUpdate={updateMemberField} />
+								<ChurchMemberInfoItem icon={<HiHeart />} label="Marital Status" value={member.marital_status} field="marital_status" onUpdate={updateMemberField} />
+								<ChurchMemberInfoItem icon={<HiAcademicCap />} label="Education" value={member.education_level || 'Not specified'} field="education_level" onUpdate={updateMemberField} />
 							</div>
 
 							<div className="bg-gradient-to-r from-blue-500 to-purple-600 dark:bg-gray-700 p-6 rounded-lg">
@@ -134,9 +177,9 @@ const SingleChurchMember = () => {
 
 						<div className="bg-gray-50 dark:bg-gray-900 lg:p-8 p-0 pt-8">
 							<h2 className="lg:text-2xl text-xl dark:text-white lg:text-start text-center font-semibold mb-6">Ministries</h2>
-							{member.ministries.length > 0 ? (
+							{member.church_ministries_ids?.length > 0 ? (
 								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-								{member.ministries.map((ministry) => (
+								{member.church_ministries_ids.map((ministry) => (
 									<div key={ministry.id} className="bg-white dark:text-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-200">
 										<h3 className="font-bold text-xl mb-2 text-blue-600 dark:text-blue-400">{ministry.name}</h3>
 										<p className="text-sm opacity-70 mb-3 flex items-center">
@@ -165,49 +208,5 @@ const SingleChurchMember = () => {
 	);
 };
 
-const InfoItem: React.FC<{
-	icon: React.ReactNode;
-	label: string;
-	value: string;
-	field: keyof ChurchMember;
-	onUpdate: (field: keyof ChurchMember, value: string) => Promise<void>;
-}> = ({ icon, label, value, field, onUpdate }) => {
-	const [isEditing, setIsEditing] = useState(false);
-	const [editValue, setEditValue] = useState(value);
-
-	const handleUpdate = async () => {
-		await onUpdate(field, editValue);
-		setIsEditing(false);
-	};
-
-	return (
-		<div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-			<div className="text-blue-500 dark:text-blue-400 text-2xl">{icon}</div>
-			<div className="flex-grow">
-				<p className="text-sm text-gray-500 dark:text-white">{label}</p>
-				{isEditing ? (
-					<input
-						type="text"
-						value={editValue}
-						onChange={(e) => setEditValue(e.target.value)}
-						className="font-medium lg:text-lg text-[12px] dark:text-gray-300 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
-					/>
-				) : (
-					<p className="font-medium lg:text-lg text-[12px] dark:text-gray-300">{value}</p>
-				)}
-			</div>
-			<div>
-				{isEditing ? (
-					<>
-						<button onClick={handleUpdate} className="text-green-500 mr-2">Save</button>
-						<button onClick={() => setIsEditing(false)} className="text-red-500">Cancel</button>
-					</>
-				) : (
-					<button onClick={() => setIsEditing(true)} className="text-blue-500">Edit</button>
-				)}
-			</div>
-		</div>
-	);
-};
 
 export default SingleChurchMember;

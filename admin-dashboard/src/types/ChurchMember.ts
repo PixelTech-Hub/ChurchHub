@@ -1,3 +1,5 @@
+import { ChurchMinistries } from "./ChurchMinistries";
+
 export interface ChurchMembers {
 	id?: string;
 	churchId: string;
@@ -11,5 +13,6 @@ export interface ChurchMembers {
 	marital_status: string;
 	no_of_children: string;
 	education_level: string;
-	church_ministries_ids: string[];
+	church_ministries_ids: ChurchMinistries[];
+	updatedAt: string;
 }
