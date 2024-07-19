@@ -38,7 +38,7 @@ const AddMinistryModal: React.FC<AddMinistryModalProps> = ({ isOpen, onClose, on
 		}
 	};
 
-	console.log('API Response:', allMinistries)
+	// console.log('API Response:', allMinistries)
 
 
 
@@ -50,11 +50,16 @@ const AddMinistryModal: React.FC<AddMinistryModalProps> = ({ isOpen, onClose, on
 		);
 	};
 
-	const handleSubmit = () => {
-		onAddMinistries(selectedMinistries);
-		setSelectedMinistries([]);
-		onClose();
+	const handleSubmit = async () => {
+		try {
+			await onAddMinistries(selectedMinistries);
+			setSelectedMinistries([]);
+			onClose();
+		} catch (error) {
+			console.error('Error updating ministries:', error);
+		}
 	};
+	
 
 	return (
 		<Modal show={isOpen} onClose={onClose}>
@@ -71,7 +76,6 @@ const AddMinistryModal: React.FC<AddMinistryModalProps> = ({ isOpen, onClose, on
 						) : Array.isArray(allMinistries) && allMinistries?.map(ministry => {
 
 							return (
-								<>
 									<div key={ministry.id} className="flex items-center">
 										<Checkbox
 											id={ministry.id}
@@ -83,7 +87,6 @@ const AddMinistryModal: React.FC<AddMinistryModalProps> = ({ isOpen, onClose, on
 											{ministry.name}
 										</label>
 									</div>
-								</>
 							)
 						}
 
