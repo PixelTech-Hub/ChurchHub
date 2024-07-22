@@ -33,9 +33,8 @@ const AddChurchStaffModal: React.FC = () => {
     const [accountName, setAccountName] = useState("");
     const [accountNo, setAccountNo] = useState("");
     const [career, setCareer] = useState("");
+    const [ministry, setMinistry] = useState<ChurchMinistries[]>([]);
 
-    const [ministry, setMinistry] = useState<ChurchMinistries[]>([]);;
-    const [selectedMinistries, setSelectedMinistries] = useState<string[]>([]);
 
     const [errors, setErrors] = useState<Partial<Record<keyof ChurchStaff, string>>>({});
     const [loading, setLoading] = useState(false);
@@ -141,15 +140,6 @@ const AddChurchStaffModal: React.FC = () => {
         }
     };
 
-    const handleMinistryChange = (position: string) => {
-        setSelectedMinistries(prev => {
-            if (prev.includes(position)) {
-                return prev.filter(id => id !== position);
-            } else {
-                return [...prev, position];
-            }
-        });
-    };
     useEffect(() => {
         fetchChurchMinistries();
     }, [ministry]);
@@ -223,13 +213,14 @@ const AddChurchStaffModal: React.FC = () => {
         }
     };
 
+    // console.log('ministreis::::', ministry)
 
     const renderStep = () => {
         switch (step) {
             case 1:
                 return (
                     <>
-                        <h3 className="mb-4 text-lg font-medium">Personal Information</h3>
+                        <h3 className="mb-4 text-lg font-medium dark:text-white">Personal Information</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <Label htmlFor="first_name">First Name</Label>
@@ -301,7 +292,7 @@ const AddChurchStaffModal: React.FC = () => {
             case 2:
                 return (
                     <>
-                        <h3 className="mb-4 text-lg font-medium">Contact Details</h3>
+                        <h3 className="mb-4 text-lg font-medium dark:text-white">Contact Details</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2 sm:col-span-1">
                                 <Label htmlFor="phoneNumber">Phone Number</Label>
@@ -352,7 +343,7 @@ const AddChurchStaffModal: React.FC = () => {
             case 3:
                 return (
                     <>
-                        <h3 className="mb-4 text-lg font-medium">Other Details</h3>
+                        <h3 className="mb-4 text-lg font-medium dark:text-white">Other Details</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2">
                                 <Label htmlFor="position">Position</Label>
@@ -365,13 +356,20 @@ const AddChurchStaffModal: React.FC = () => {
                                     required
                                 >
                                     <option value="">Select Position</option>
-                                    {ministry.map((min) => (
-                                        <option key={min.id} value={min.name}>
+                                    {ministry?.map(item => {
+                                        console.log('item', item)
+                                        return (
+                                            <option key={item.id} value={item.id}>
+                                                {item.name}
+                                            </option>
+                                        )
+                                    })}
+                                    {/* {ministry.map((min) => (
+                                        <option key={min.id} value={min.id}>
                                             {min.name}
                                         </option>
-                                    ))}
+                                    ))} */}
                                 </Select>
-                                {errors.position && <p className="mt-1 text-sm text-red-500">{errors.position}</p>}
                             </div>
                             <div className="">
                                 <Label>Marital Status</Label>
@@ -419,7 +417,7 @@ const AddChurchStaffModal: React.FC = () => {
             case 4:
                 return (
                     <>
-                        <h3 className="mb-4 text-lg font-medium">Account Details</h3>
+                        <h3 className="mb-4 text-lg font-medium dark:text-white">Account Details</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2">
                                 <Label htmlFor="account_name">Account Name</Label>

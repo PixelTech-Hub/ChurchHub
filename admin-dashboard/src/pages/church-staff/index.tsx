@@ -7,7 +7,6 @@ import {
 	HiHome,
 } from "react-icons/hi";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
-import { Pagination } from "../users/list";
 import SearchChurchStaffs from "../../components/church-staff/SearchChurchStaff";
 import AddChurchStaffModal from "../../components/church-staff/AddChurchStaffModal";
 import ChurchStaffTable from "../../components/church-staff/ChurchStaffTable";

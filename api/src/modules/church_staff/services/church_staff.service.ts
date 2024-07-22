@@ -52,14 +52,13 @@ export class ChurchStaffService extends BaseService<
 			throw new NotFoundException(`Email already with id ${dto.email} exist`);
 		}
 		// First, check if a ministry with the same name already exists for the given church
-		const existingMinistry = await this.ministryRepository.findOne({
+		const existingMinistry = await this.staffRepository.findOne({
 			where: {
-				name: dto.position,
-				churchId: dto.churchId
+				position: dto.position
 			}
 		});
 
-		if (!existingMinistry) {
+		if (existingMinistry) {
 			throw new NotFoundException(`Church ministry  with id ${dto.position} not found`);
 		}
 
@@ -75,7 +74,7 @@ export class ChurchStaffService extends BaseService<
 		return this.create(dto);
 	}
 	async findAllChurchBranch(dto: FindChurchStaffDto): Promise<ChurchStaffEntity[]> {
-		return this.staffRepository.find({ relations: ['church'] });
+		return this.staffRepository.find({ relations: ['church', 'ministryId'] });
 	}
 
 	async findOneChurchBranch(id: string): Promise<ChurchStaffEntity> {

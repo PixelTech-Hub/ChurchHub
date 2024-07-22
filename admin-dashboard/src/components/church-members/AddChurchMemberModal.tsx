@@ -425,7 +425,6 @@ const AddChurchMemberModal = () => {
 					<div>
 						<h3 className="mb-4 text-lg font-medium">Church Ministries</h3>
 						<div className="col-span-2">
-							{/* <Label>Educational Level</Label> */}
 							<div className="flex flex-col gap-4 mt-2">
 								{ministry?.map((item) => {
 									if (typeof item.id === 'string') {
