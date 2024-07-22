@@ -5,6 +5,7 @@ import { Button, Pagination, Table } from 'flowbite-react';
 import DeleteChurchMinistryModal from './DeleteChurchMinistryModal';
 import { Link } from 'react-router-dom';
 import { HiArrowRight } from 'react-icons/hi';
+import { truncateText } from '../../helpers/truncateText';
 
 
 interface ChurchMinistryTableProps {
@@ -77,7 +78,7 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 	if (filteredMinistries.length === 0) {
 		return (
 			<div className="text-center py-4">
-				<p className="text-red-500 dark:text-gray-400">No Church Member Found</p>
+				<p className="text-red-500 dark:text-gray-400">No Church Ministry Found</p>
 			</div>
 		);
 	}
@@ -87,7 +88,6 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 			<Table className="min-w-full  divide-y divide-gray-200 dark:divide-gray-600">
 				<Table.Head className="bg-gray-100 dark:bg-gray-700">
 					<Table.HeadCell>Name</Table.HeadCell>
-					<Table.HeadCell>Leader</Table.HeadCell>
 					<Table.HeadCell>Description</Table.HeadCell>
 					<Table.HeadCell>Actions</Table.HeadCell>
 				</Table.Head>
@@ -100,11 +100,9 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 									{ministry.name}
 								</div>
 							</Table.Cell>
-							<Table.Cell className="whitespace-nowrap p-4 lg:text-base text-sm font-medium text-gray-900 dark:text-white">
-								{ministry.leader}
-							</Table.Cell>
+
 							<Table.Cell className="whitespace-nowrap p-4 lg:text-base text-sm font-medium text-gray-900 dark:text-white capitalize truncate">
-								{ministry.description}
+								{truncateText(ministry.description, 100)}
 							</Table.Cell>
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
