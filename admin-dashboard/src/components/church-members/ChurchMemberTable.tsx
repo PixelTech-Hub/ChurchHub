@@ -1,10 +1,12 @@
 import { Button, Pagination, Table } from "flowbite-react";
 import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { HiArrowRight } from "react-icons/hi";
+import { HiArrowRight, HiDownload } from "react-icons/hi";
 import DeleteChurchMemberModal from "./DeleteChurchMemberModal";
 import { ChurchMembers } from "../../types/ChurchMember";
 import { AuthData } from "../../types/AuthData";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 
 interface ChurchMemberTableProps {
@@ -19,6 +21,8 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [authData, setAuthData] = useState<AuthData | null>(null);
+
+	const [isDownloading, setIsDownloading] = useState(false);
 
 	useEffect(() => {
 		const storedData = localStorage.getItem('auth');
@@ -70,6 +74,36 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 		}
 	};
 
+	const handleDownloadPDF = async () => {
+		setIsDownloading(true);
+		try {
+			const doc = new jsPDF();
+
+			doc.text('Church Members', 14, 15);
+
+			const tableData = filteredMembers.map(member => [
+				member.full_name,
+				member.email,
+				member.phone_number,
+				member.gender,
+				member.job,
+				member.residence
+			]);
+
+			(doc as any).autoTable({
+				head: [['Full Name', 'Email', 'Phone', 'Gender', 'Career', 'Residence']],
+				body: tableData,
+				startY: 20,
+			});
+
+			doc.save('church_members.pdf');
+		} catch (error) {
+			console.error('Error generating PDF:', error);
+		} finally {
+			setIsDownloading(false);
+		}
+	};
+
 	// console.log("members", members);
 
 	if (loading) {
@@ -85,6 +119,23 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 
 	return (
 		<>
+			<div className="flex justify-end mb-4">
+				<Button
+					color="light"
+					onClick={handleDownloadPDF}
+					disabled={isDownloading}
+					className={`transition-transform duration-300 ${isDownloading ? '' : 'hover:scale-110'
+						}`}
+				>
+					<HiDownload className={`mr-2 h-5 w-5 ${isDownloading ? 'opacity-0' : ''}`} />
+					<span className={isDownloading ? 'opacity-0' : ''}>Download PDF</span>
+					{isDownloading && (
+						<div className="absolute inset-0 flex items-center justify-center">
+							<div className="h-5 w-5 border-t-2 border-b-2 border-gray-300 rounded-full animate-spin"></div>
+						</div>
+					)}
+				</Button>
+			</div>
 			<Table className="min-w-full  divide-y divide-gray-200 dark:divide-gray-600">
 				<Table.Head className="bg-gray-100 dark:bg-gray-700">
 					<Table.HeadCell>Full Name</Table.HeadCell>
