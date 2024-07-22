@@ -19,7 +19,7 @@ export class ChurchStaffController {
 	@Post()
 	@ApiOkResponse({ type: ChurchStaffEntity })
 	async create(@Body() createChurchMemberDto: CreateChurchStaffDto): Promise<ChurchStaffEntity> {
-		return this.churchStaffService.create(createChurchMemberDto);
+		return this.churchStaffService.createNewStaff(createChurchMemberDto);
 	}
 
 	@Get()

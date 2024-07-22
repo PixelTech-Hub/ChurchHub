@@ -79,7 +79,8 @@ export class ChurchMinistryService extends BaseService<
 			where: { churchId },
 			order: {
 				createdAt: 'DESC' // Order by creation date, newest first
-			}
+			},
+			relations: ['leader']
 		});
 
 		return ministry;

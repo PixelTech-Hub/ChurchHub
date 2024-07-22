@@ -5,6 +5,8 @@ import { NotFoundException } from "@nestjs/common";
 import { ChurchStaffEntity } from "../entities/church_staff.entity";
 import { FindChurchStaffDto } from "../dto/find-churchstaff.dto";
 import { CreateChurchStaffDto } from "../dto/create-churchstaff.dto";
+import { MinistryEntity } from "src/modules/ministries/entities/ministry.entity";
+import { ChurchEntity } from "src/modules/churches/entities/church.entity";
 
 
 export class ChurchStaffService extends BaseService<
@@ -15,6 +17,10 @@ export class ChurchStaffService extends BaseService<
 	constructor(
 		@InjectRepository(ChurchStaffEntity)
 		private readonly staffRepository: Repository<ChurchStaffEntity>,
+		@InjectRepository(MinistryEntity)
+		private readonly ministryRepository: Repository<MinistryEntity>,
+		@InjectRepository(ChurchEntity)
+		private readonly churchRepository: Repository<ChurchEntity>,
 	) {
 		super(staffRepository, ChurchStaffService.dtoToFindOptionsWhere, []);
 	}
@@ -33,6 +39,40 @@ export class ChurchStaffService extends BaseService<
 		// You might also want to handle other properties specific to your application
 
 		return Object.keys(where).length ? where : null; // Return null if no filtering criteria are provided
+	}
+	async createNewStaff(dto: CreateChurchStaffDto): Promise<ChurchStaffEntity> {
+		// First, check for the existing emails
+		const existingEmail = await this.staffRepository.findOne({
+			where: {
+				email: dto.email,
+			}
+		});
+
+		if (existingEmail) {
+			throw new NotFoundException(`Email already with id ${dto.email} exist`);
+		}
+		// First, check if a ministry with the same name already exists for the given church
+		const existingMinistry = await this.ministryRepository.findOne({
+			where: {
+				name: dto.position,
+				churchId: dto.churchId
+			}
+		});
+
+		if (!existingMinistry) {
+			throw new NotFoundException(`Church ministry  with id ${dto.position} not found`);
+		}
+
+		// Check if the church exists
+		const church = await this.churchRepository.findOne({ where: { id: dto.churchId } });
+		if (!church) {
+			throw new NotFoundException(`Church with id ${dto.churchId} not found`);
+		}
+
+
+		// Create and save the new ministry
+		// If both checks pass, create a new staff
+		return this.create(dto);
 	}
 	async findAllChurchBranch(dto: FindChurchStaffDto): Promise<ChurchStaffEntity[]> {
 		return this.staffRepository.find({ relations: ['church'] });

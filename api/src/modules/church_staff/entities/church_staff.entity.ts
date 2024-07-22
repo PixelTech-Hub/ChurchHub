@@ -103,6 +103,14 @@ export class ChurchStaffEntity extends BaseEntity {
 	// transactions: Partial<TransactionEntity>[]
 
 	@ApiProperty()
+	@ManyToOne(() => MinistryEntity, {
+		onUpdate: 'CASCADE',
+		onDelete: 'CASCADE',
+	})
+	@JoinColumn({ name: 'position' })
+	ministryId: Partial<MinistryEntity>;
+
+	@ApiProperty()
 	@ManyToOne(() => ChurchEntity, {
 		onUpdate: 'CASCADE',
 		onDelete: 'CASCADE',
