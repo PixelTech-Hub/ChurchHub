@@ -21,11 +21,6 @@ export class MinistryEntity extends BaseEntity {
 	@Column({ nullable: true })
 	name: String
 
-	@ApiProperty()
-	@IsString()
-	@Column({ nullable: true })
-	leader: String
-
 
 	@ApiProperty()
 	@IsString()
@@ -35,17 +30,11 @@ export class MinistryEntity extends BaseEntity {
 	@ManyToOne((type) => ChurchMemberEntity, (member) => member.ministries)
 	church_members: ChurchMemberEntity[]
 
-	// @OneToMany(() => InsightEntity, (insight) => insight.ministries)
-	// insights: Partial<InsightEntity>[]
+
+	@ManyToOne((type) => ChurchStaffEntity, (staff) => staff.position)
+	leader: ChurchStaffEntity[]
 
 
-	@ApiProperty()
-	@ManyToOne(() => ChurchStaffEntity, {
-		onUpdate: 'CASCADE',
-		onDelete: 'CASCADE',
-	})
-	@JoinColumn({ name: 'leader' })
-	staff: Partial<ChurchStaffEntity>;
 
 	@ApiProperty()
 	@ManyToOne(() => ChurchEntity, {

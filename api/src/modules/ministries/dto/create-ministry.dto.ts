@@ -5,15 +5,11 @@ export class CreateMinistryDto {
 
 	@IsNotEmpty()
 	@ApiProperty()
-	readonly name: string;
-
-	@IsNotEmpty()
-	@ApiProperty()
-	readonly leader: string;
-
-	@IsNotEmpty()
-	@ApiProperty()
 	readonly churchId: string;
+
+	@IsNotEmpty()
+	@ApiProperty()
+	readonly name: string;
 
 	@IsNotEmpty()
 	@ApiProperty()

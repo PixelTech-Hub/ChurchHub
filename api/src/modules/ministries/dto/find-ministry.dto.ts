@@ -3,10 +3,6 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { FindDto } from 'src/common/dto/find.dto';
 
 export class FindMinistryDto extends FindDto {
-	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	leader?: string;
 
 	@IsString()
 	@IsOptional()

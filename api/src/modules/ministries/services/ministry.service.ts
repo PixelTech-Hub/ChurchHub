@@ -30,7 +30,6 @@ export class ChurchMinistryService extends BaseService<
 	): FindOptionsWhere<MinistryEntity> {
 		const where: FindOptionsWhere<MinistryEntity> = {};
 		if (dto.name) where.name = dto.name;
-		if (dto.leader) where.leader = dto.leader;
 		// Ensure that 'limit', 'skip', and other pagination properties are not included in the query options
 		delete dto.limit;
 
@@ -58,13 +57,6 @@ export class ChurchMinistryService extends BaseService<
 			throw new NotFoundException(`Church with id ${dto.churchId} not found`);
 		}
 
-		// Check if the leader (staff member) exists
-		const existingLeader = await this.staffRepository.findOne({
-			where: { id: dto.leader }
-		});
-		if (!existingLeader) {
-			throw new NotFoundException(`Church Staff with id ${dto.leader} not found`);
-		}
 
 		// Create and save the new ministry
 		// If both checks pass, create the saving group
