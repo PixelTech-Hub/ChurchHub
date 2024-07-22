@@ -80,7 +80,6 @@ export class ChurchMinistryService extends BaseService<
 			order: {
 				createdAt: 'DESC' // Order by creation date, newest first
 			},
-			relations: ['leader']
 		});
 
 		return ministry;

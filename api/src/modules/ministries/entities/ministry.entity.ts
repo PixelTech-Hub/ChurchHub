@@ -31,8 +31,6 @@ export class MinistryEntity extends BaseEntity {
 	church_members: ChurchMemberEntity[]
 
 
-	@ManyToOne((type) => ChurchStaffEntity, (staff) => staff.position)
-	leader: ChurchStaffEntity[]
 
 
 

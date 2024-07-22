@@ -90,6 +90,7 @@ export class ChurchMemberEntity extends BaseEntity {
 
 	@OneToMany((type) => MinistryEntity, ministry => ministry.church_members)
 	ministries: MinistryEntity[];
+	
 
 
 	@ApiProperty()

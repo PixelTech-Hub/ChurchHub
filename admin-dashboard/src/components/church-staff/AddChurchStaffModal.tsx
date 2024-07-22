@@ -7,6 +7,7 @@ import 'react-phone-input-2/lib/style.css';
 import { ChurchStaff } from '../../types/ChurchStaff';
 import { toast } from 'react-toastify';
 import { AuthData } from '../../types/AuthData';
+import { ChurchMinistries } from '../../types/ChurchMinistries';
 
 
 
@@ -14,7 +15,7 @@ import { AuthData } from '../../types/AuthData';
 
 
 const AddChurchStaffModal: React.FC = () => {
-	const [isOpen, setOpen] = useState<boolean>(false);
+    const [isOpen, setOpen] = useState<boolean>(false);
     const [step, setStep] = useState<number>(1);
 
     // Individual state for each form field
@@ -28,10 +29,13 @@ const AddChurchStaffModal: React.FC = () => {
     const [residence, setResidence] = useState("");
     const [position, setPosition] = useState("");
     const [maritalStatus, setMaritalStatus] = useState("");
-	const [baptised, setBaptised] = useState<boolean | undefined>(undefined);
+    const [baptised, setBaptised] = useState<boolean | undefined>(undefined);
     const [accountName, setAccountName] = useState("");
     const [accountNo, setAccountNo] = useState("");
     const [career, setCareer] = useState("");
+
+    const [ministry, setMinistry] = useState<ChurchMinistries[]>([]);;
+    const [selectedMinistries, setSelectedMinistries] = useState<string[]>([]);
 
     const [errors, setErrors] = useState<Partial<Record<keyof ChurchStaff, string>>>({});
     const [loading, setLoading] = useState(false);
@@ -137,6 +141,33 @@ const AddChurchStaffModal: React.FC = () => {
         }
     };
 
+    const handleMinistryChange = (position: string) => {
+        setSelectedMinistries(prev => {
+            if (prev.includes(position)) {
+                return prev.filter(id => id !== position);
+            } else {
+                return [...prev, position];
+            }
+        });
+    };
+    useEffect(() => {
+        fetchChurchMinistries();
+    }, [ministry]);
+
+    const fetchChurchMinistries = async () => {
+        try {
+            const response = await fetch("http://localhost:8000/church_ministries");
+            if (response.ok) {
+                const data = await response.json();
+                setMinistry(data.data); // Assuming data.data contains the array of church staffs
+            } else {
+                console.error("Failed to fetch church staffs");
+            }
+        } catch (error) {
+            console.error("Error fetching church staffs:", error);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (validateStep()) {
@@ -193,14 +224,14 @@ const AddChurchStaffModal: React.FC = () => {
     };
 
 
-	const renderStep = () => {
-		switch (step) {
-			case 1:
-				return (
-					<>
-						<h3 className="mb-4 text-lg font-medium">Personal Information</h3>
-						<div className="grid grid-cols-2 gap-4">
-						<div>
+    const renderStep = () => {
+        switch (step) {
+            case 1:
+                return (
+                    <>
+                        <h3 className="mb-4 text-lg font-medium">Personal Information</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
                                 <Label htmlFor="first_name">First Name</Label>
                                 <TextInput
                                     id="first_name"
@@ -212,19 +243,19 @@ const AddChurchStaffModal: React.FC = () => {
                                     required
                                 />
                             </div>
-							<div>
-								<Label htmlFor="last_name">Last Name</Label>
-								<TextInput
-									id="last_name"
-									name="last_name"
-									value={lastName}
+                            <div>
+                                <Label htmlFor="last_name">Last Name</Label>
+                                <TextInput
+                                    id="last_name"
+                                    name="last_name"
+                                    value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
-									color={errors.last_name ? 'failure' : undefined}
-									helperText={errors.last_name}
-									required
-								/>
-							</div>
-							<div>
+                                    color={errors.last_name ? 'failure' : undefined}
+                                    helperText={errors.last_name}
+                                    required
+                                />
+                            </div>
+                            <div>
                                 <Label htmlFor="gender">Gender</Label>
                                 <Select
                                     id="gender"
@@ -239,7 +270,7 @@ const AddChurchStaffModal: React.FC = () => {
                                     <option value="rather not say">Other</option>
                                 </Select>
                             </div>
-							<div>
+                            <div>
                                 <Label htmlFor="dob">Date of Birth</Label>
                                 <TextInput
                                     id="dob"
@@ -250,7 +281,7 @@ const AddChurchStaffModal: React.FC = () => {
                                     className="mt-1"
                                 />
                             </div>
-							<div className="col-span-2">
+                            <div className="col-span-2">
                                 <Label htmlFor="disability">Disability</Label>
                                 <div className="flex items-center mt-2">
                                     <input
@@ -264,17 +295,17 @@ const AddChurchStaffModal: React.FC = () => {
                                     <Label htmlFor="disability">Has Disability</Label>
                                 </div>
                             </div>
-						</div>
-					</>
-				);
-			case 2:
-				return (
-					<>
-						<h3 className="mb-4 text-lg font-medium">Contact Details</h3>
-						<div className="grid grid-cols-2 gap-4">
-							<div className="col-span-2 sm:col-span-1">
-								<Label htmlFor="phoneNumber">Phone Number</Label>
-								<div className="phone-input-container">
+                        </div>
+                    </>
+                );
+            case 2:
+                return (
+                    <>
+                        <h3 className="mb-4 text-lg font-medium">Contact Details</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="col-span-2 sm:col-span-1">
+                                <Label htmlFor="phoneNumber">Phone Number</Label>
+                                <div className="phone-input-container">
                                     <PhoneInput
                                         country={'ug'}
                                         value={phoneNumber}
@@ -288,9 +319,9 @@ const AddChurchStaffModal: React.FC = () => {
                                         buttonClass="absolute top-0 left-0 h-full"
                                     />
                                 </div>
-								{errors.phone_number && <p className="mt-1 text-sm text-red-500">{errors.phone_number}</p>}
-							</div>
-							<div className="col-span-2 sm:col-span-1">
+                                {errors.phone_number && <p className="mt-1 text-sm text-red-500">{errors.phone_number}</p>}
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
                                 <Label htmlFor="email">Email Address</Label>
                                 <TextInput
                                     id="email"
@@ -303,7 +334,7 @@ const AddChurchStaffModal: React.FC = () => {
                                     required
                                 />
                             </div>
-							<div className="col-span-2">
+                            <div className="col-span-2">
                                 <Label htmlFor="residence">Residence</Label>
                                 <TextInput
                                     id="residence"
@@ -315,27 +346,34 @@ const AddChurchStaffModal: React.FC = () => {
                                     required
                                 />
                             </div>
-						</div>
-					</>
-				);
-			case 3:
-				return (
-					<>
-						<h3 className="mb-4 text-lg font-medium">Other Details</h3>
-						<div className="grid grid-cols-2 gap-4">
-						<div className="col-span-2">
+                        </div>
+                    </>
+                );
+            case 3:
+                return (
+                    <>
+                        <h3 className="mb-4 text-lg font-medium">Other Details</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="col-span-2">
                                 <Label htmlFor="position">Position</Label>
-                                <TextInput
+                                <Select
                                     id="position"
                                     name="position"
                                     value={position}
                                     onChange={(e) => setPosition(e.target.value)}
                                     color={errors.position ? 'failure' : undefined}
-                                    helperText={errors.position}
                                     required
-                                />
+                                >
+                                    <option value="">Select Position</option>
+                                    {ministry.map((min) => (
+                                        <option key={min.id} value={min.name}>
+                                            {min.name}
+                                        </option>
+                                    ))}
+                                </Select>
+                                {errors.position && <p className="mt-1 text-sm text-red-500">{errors.position}</p>}
                             </div>
-							<div className="">
+                            <div className="">
                                 <Label>Marital Status</Label>
                                 <div className="flex gap-4 mt-2">
                                     {['Single', 'Married', 'Divorced', 'Widowed'].map((status) => (
@@ -355,7 +393,7 @@ const AddChurchStaffModal: React.FC = () => {
                                 </div>
                                 {errors.marital_status && <p className="mt-1 text-sm text-red-500">{errors.marital_status}</p>}
                             </div>
-							<div className="col-span-2">
+                            <div className="col-span-2">
                                 <Label>Baptised</Label>
                                 <div className="flex gap-4 mt-2">
                                     {['Yes', 'No'].map((option) => (
@@ -374,93 +412,93 @@ const AddChurchStaffModal: React.FC = () => {
                                 </div>
                                 {errors.baptised && <p className="mt-1 text-sm text-red-500">{errors.baptised}</p>}
                             </div>
-						</div>
-					</>
-				);
-			// Add cases for steps 3 and 4
-			case 4:
-				return (
-					<>
-						<h3 className="mb-4 text-lg font-medium">Account Details</h3>
-						<div className="grid grid-cols-2 gap-4">
-							<div className="col-span-2">
-								<Label htmlFor="account_name">Account Name</Label>
-								<TextInput
-									id="account_name"
-									name="account_name"
-									value={accountName}
-									onChange={(e) => setAccountName(e.target.value)}
-									color={errors.account_name ? 'failure' : undefined}
-									helperText={errors.account_name}
-									required
-								/>
-							</div>
-							<div className="col-span-2">
-								<Label htmlFor="account_no">Account Number</Label>
-								<TextInput
-									id="account_no"
-									name="account_no"
-									value={accountNo}
-									onChange={(e) => setAccountNo(e.target.value)}
-									color={errors.account_no ? 'failure' : undefined}
-									helperText={errors.account_no}
-									required
-								/>
-							</div>
-							<div className="col-span-2">
-								<Label htmlFor="career">Career</Label>
-								<TextInput
-									id="career"
-									name="career"
-									value={career}
-									onChange={(e) => setCareer(e.target.value)}
-									color={errors.career ? 'failure' : undefined}
-									helperText={errors.career}
-									required
-								/>
-							</div>
-						</div>
-					</>
-				);
-			default:
-				return null;
-		}
-	};
+                        </div>
+                    </>
+                );
+            // Add cases for steps 3 and 4
+            case 4:
+                return (
+                    <>
+                        <h3 className="mb-4 text-lg font-medium">Account Details</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="col-span-2">
+                                <Label htmlFor="account_name">Account Name</Label>
+                                <TextInput
+                                    id="account_name"
+                                    name="account_name"
+                                    value={accountName}
+                                    onChange={(e) => setAccountName(e.target.value)}
+                                    color={errors.account_name ? 'failure' : undefined}
+                                    helperText={errors.account_name}
+                                    required
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <Label htmlFor="account_no">Account Number</Label>
+                                <TextInput
+                                    id="account_no"
+                                    name="account_no"
+                                    value={accountNo}
+                                    onChange={(e) => setAccountNo(e.target.value)}
+                                    color={errors.account_no ? 'failure' : undefined}
+                                    helperText={errors.account_no}
+                                    required
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <Label htmlFor="career">Career</Label>
+                                <TextInput
+                                    id="career"
+                                    name="career"
+                                    value={career}
+                                    onChange={(e) => setCareer(e.target.value)}
+                                    color={errors.career ? 'failure' : undefined}
+                                    helperText={errors.career}
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </>
+                );
+            default:
+                return null;
+        }
+    };
 
-	return (
-		<>
-			<Button color="primary" onClick={() => setOpen(true)}>
-				<FaPlus className="mr-3 text-sm" />
-				Add Church Staff
-			</Button>
-			<Modal show={isOpen} onClose={() => setOpen(false)} size="xl">
-				<Modal.Header>Add Church Staff</Modal.Header>
-				<Modal.Body>
-					<form onSubmit={handleSubmit}>
-						{renderStep()}
-					</form>
-				</Modal.Body>
-				<Modal.Footer>
-					<div className="flex justify-between w-full">
-						{step > 1 && (
-							<Button color="light" onClick={handlePrevStep}>
-								Previous
-							</Button>
-						)}
-						{step < 4 ? (
-							<Button color="primary" onClick={handleNextStep}>
-								Next
-							</Button>
-						) : (
-							<Button color="success" onClick={handleSubmit}>
-								{!loading ? 'Submit' : 'Processing...'}
-							</Button>
-						)}
-					</div>
-				</Modal.Footer>
-			</Modal>
-		</>
-	);
+    return (
+        <>
+            <Button color="primary" onClick={() => setOpen(true)}>
+                <FaPlus className="mr-3 text-sm" />
+                Add Church Staff
+            </Button>
+            <Modal show={isOpen} onClose={() => setOpen(false)} size="xl">
+                <Modal.Header>Add Church Staff</Modal.Header>
+                <Modal.Body>
+                    <form onSubmit={handleSubmit}>
+                        {renderStep()}
+                    </form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <div className="flex justify-between w-full">
+                        {step > 1 && (
+                            <Button color="light" onClick={handlePrevStep}>
+                                Previous
+                            </Button>
+                        )}
+                        {step < 4 ? (
+                            <Button color="primary" onClick={handleNextStep}>
+                                Next
+                            </Button>
+                        ) : (
+                            <Button color="success" onClick={handleSubmit}>
+                                {!loading ? 'Submit' : 'Processing...'}
+                            </Button>
+                        )}
+                    </div>
+                </Modal.Footer>
+            </Modal>
+        </>
+    );
 };
 
 export default AddChurchStaffModal;

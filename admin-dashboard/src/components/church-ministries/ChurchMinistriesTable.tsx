@@ -102,7 +102,7 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 							</Table.Cell>
 
 							<Table.Cell className="whitespace-nowrap p-4 lg:text-base text-sm font-medium text-gray-900 dark:text-white capitalize truncate">
-								{truncateText(ministry.description, 100)}
+								{truncateText(ministry.description, 40)}
 							</Table.Cell>
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">

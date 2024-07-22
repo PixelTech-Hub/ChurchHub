@@ -23,7 +23,7 @@ export class MinistryController {
 	@ApiOperation({ summary: 'Create a new church ministry' })
 	@ApiOkResponse({ type: MinistryEntity })
 	create(@Body() dto: CreateMinistryDto): Promise<MinistryEntity> {
-		return this.ministryService.create(dto);
+		return this.ministryService.createMinistry(dto);
 	}
 
 
