@@ -1,110 +1,32 @@
 import { Button, Pagination, Table } from "flowbite-react";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Link } from "react-router-dom";
-import { HiArrowRight, HiDownload } from "react-icons/hi";
+import { HiArrowRight } from "react-icons/hi";
 import DeleteChurchMemberModal from "./DeleteChurchMemberModal";
-import { ChurchMembers } from "../../types/ChurchMember";
-import { AuthData } from "../../types/AuthData";
-import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { ChurchMembers } from "../../types/ChurchMember";
 
 
 interface ChurchMemberTableProps {
-	searchTerm: string;
+	paginatedMembers: ChurchMembers[];
+	filteredMembers: ChurchMembers[];
+	loading: boolean;
+	totalPages: number;
+	currentPage: number;
+	setCurrentPage: (page: number) => void;
 }
 
-const ITEMS_PER_PAGE = 10;
 
-const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) {
 
-	const [members, setMembers] = useState<ChurchMembers[]>([]);
-	const [loading, setLoading] = useState(false);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [authData, setAuthData] = useState<AuthData | null>(null);
+const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({
+	paginatedMembers,
+	filteredMembers,
+	loading,
+	totalPages,
+	currentPage,
+	setCurrentPage
+}) {
 
-	const [isDownloading, setIsDownloading] = useState(false);
-
-	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchChurchMembers();
-	}, [authData]);
-
-	useEffect(() => {
-		// Reset to first page when search term changes
-		setCurrentPage(1);
-	}, [searchTerm, members]);
-
-	const filteredMembers = members.filter((member) =>
-		member.full_name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
-
-	const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
-
-	const paginatedMembers = filteredMembers.slice(
-		(currentPage - 1) * ITEMS_PER_PAGE,
-		currentPage * ITEMS_PER_PAGE
-	);
-
-	const fetchChurchMembers = async () => {
-		try {
-			const response = await fetch(`http://localhost:8000/church-members/church/${authData?.data.churchId}`);
-			// console.log('response', response)
-			if (response.ok) {
-				const data = await response.json();
-				setMembers(data); // Assuming data.data contains the array of church staffs
-				setLoading(false)
-			} else {
-				console.error("Failed to fetch church staffs");
-				setLoading(false)
-			}
-		} catch (error) {
-			console.error("Error fetching church staffs:", error);
-			setLoading(false)
-		}
-	};
-
-	const handleDownloadPDF = async () => {
-		setIsDownloading(true);
-		try {
-			const doc = new jsPDF();
-
-			doc.text('Church Members', 14, 15);
-
-			const tableData = filteredMembers.map(member => [
-				member.full_name,
-				member.email,
-				member.phone_number,
-				member.gender,
-				member.job,
-				member.residence
-			]);
-
-			(doc as any).autoTable({
-				head: [['Full Name', 'Email', 'Phone', 'Gender', 'Career', 'Residence']],
-				body: tableData,
-				startY: 20,
-			});
-
-			doc.save('church_members.pdf');
-		} catch (error) {
-			console.error('Error generating PDF:', error);
-		} finally {
-			setIsDownloading(false);
-		}
-	};
-
-	// console.log("members", members);
 
 	if (loading) {
 		<p>Loading....</p>
@@ -119,23 +41,6 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 
 	return (
 		<>
-			<div className="flex justify-end mb-4">
-				<Button
-					color="light"
-					onClick={handleDownloadPDF}
-					disabled={isDownloading}
-					className={`transition-transform duration-300 ${isDownloading ? '' : 'hover:scale-110'
-						}`}
-				>
-					<HiDownload className={`mr-2 h-5 w-5 ${isDownloading ? 'opacity-0' : ''}`} />
-					<span className={isDownloading ? 'opacity-0' : ''}>Download PDF</span>
-					{isDownloading && (
-						<div className="absolute inset-0 flex items-center justify-center">
-							<div className="h-5 w-5 border-t-2 border-b-2 border-gray-300 rounded-full animate-spin"></div>
-						</div>
-					)}
-				</Button>
-			</div>
 			<Table className="min-w-full  divide-y divide-gray-200 dark:divide-gray-600">
 				<Table.Head className="bg-gray-100 dark:bg-gray-700">
 					<Table.HeadCell>Full Name</Table.HeadCell>
@@ -154,9 +59,6 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({ searchTerm }) 
 								<div className="text-base font-semibold text-gray-900 dark:text-white">
 									{member.full_name}
 								</div>
-								{/* <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
-							ck.okello@gmail.com
-						</div> */}
 							</Table.Cell>
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
 								{member.email}
