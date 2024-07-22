@@ -6,6 +6,7 @@ import { FindMinistryDto } from "../dto/find-ministry.dto";
 import { NotFoundException } from "@nestjs/common";
 import { MinistryEntity } from "../entities/ministry.entity";
 import { ChurchEntity } from "src/modules/churches/entities/church.entity";
+import { ChurchStaffEntity } from "src/modules/church_staff/entities/church_staff.entity";
 
 
 export class ChurchMinistryService extends BaseService<
@@ -18,6 +19,8 @@ export class ChurchMinistryService extends BaseService<
 		private readonly ministryRepository: Repository<MinistryEntity>,
 		@InjectRepository(ChurchEntity)
 		private readonly churchRepository: Repository<ChurchEntity>,
+		@InjectRepository(ChurchStaffEntity)
+		private readonly staffRepository: Repository<ChurchStaffEntity>,
 	) {
 		super(ministryRepository, ChurchMinistryService.dtoToFindOptionsWhere, []);
 	}
@@ -35,6 +38,39 @@ export class ChurchMinistryService extends BaseService<
 
 		return Object.keys(where).length ? where : null; // Return null if no filtering criteria are provided
 	}
+
+	async createMinistry(dto: CreateMinistryDto): Promise<MinistryEntity> {
+		// First, check if a ministry with the same name already exists for the given church
+		const existingMinistry = await this.ministryRepository.findOne({
+			where: {
+				name: dto.name,
+				churchId: dto.churchId
+			}
+		});
+
+		if (existingMinistry) {
+			throw new NotFoundException(`Church ministry  with id ${dto.name} already exist`);
+		}
+
+		// Check if the church exists
+		const church = await this.churchRepository.findOne({ where: { id: dto.churchId } });
+		if (!church) {
+			throw new NotFoundException(`Church with id ${dto.churchId} not found`);
+		}
+
+		// Check if the leader (staff member) exists
+		const existingLeader = await this.staffRepository.findOne({
+			where: { id: dto.leader }
+		});
+		if (!existingLeader) {
+			throw new NotFoundException(`Church Staff with id ${dto.leader} not found`);
+		}
+
+		// Create and save the new ministry
+		// If both checks pass, create the saving group
+		return this.create(dto);
+	}
+
 	async findAllChurchMinistries(dto: FindMinistryDto): Promise<MinistryEntity[]> {
 		return this.ministryRepository.find({ relations: ['church'] });
 	}

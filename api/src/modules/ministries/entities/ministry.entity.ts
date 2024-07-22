@@ -3,6 +3,7 @@ import { IsDefined, IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validato
 import { BaseEntity } from "src/common/entities/base.entity";
 import { InsightEntity } from "src/modules/blogs/entities/insights.entity";
 import { ChurchMemberEntity } from "src/modules/church_members/entities/church_members.entity";
+import { ChurchStaffEntity } from "src/modules/church_staff/entities/church_staff.entity";
 import { ChurchEntity } from "src/modules/churches/entities/church.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
@@ -37,6 +38,14 @@ export class MinistryEntity extends BaseEntity {
 	// @OneToMany(() => InsightEntity, (insight) => insight.ministries)
 	// insights: Partial<InsightEntity>[]
 
+
+	@ApiProperty()
+	@ManyToOne(() => ChurchStaffEntity, {
+		onUpdate: 'CASCADE',
+		onDelete: 'CASCADE',
+	})
+	@JoinColumn({ name: 'leader' })
+	staff: Partial<ChurchStaffEntity>;
 
 	@ApiProperty()
 	@ManyToOne(() => ChurchEntity, {
