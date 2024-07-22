@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../app/api';
 import { Breadcrumb } from "flowbite-react";
-import { HiHome, HiUsers, HiClock, HiDocumentText } from "react-icons/hi";
+import { HiHome, HiClock, HiDocumentText } from "react-icons/hi";
 import NavbarSidebarLayout from '../layouts/navbar-sidebar';
 import { MdEdit } from 'react-icons/md';
 
@@ -70,8 +70,6 @@ const SingleChurchMinistry = () => {
 							<div className="absolute top-0 right-0 m-4">
 							</div>
 							<h1 className="lg:text-4xl md:text-3xl text-2xl font-bold mb-2">{ministry.name}</h1>
-
-							<p className="lg:text-xl text-sm opacity-80 font-bold">{ministry.leader}</p>
 						</div>
 
 						<div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -81,14 +79,6 @@ const SingleChurchMinistry = () => {
 									label="Name"
 									value={ministry.name}
 									field="name"
-									onUpdate={updateMinistryField}
-									inputType="text"
-								/>
-								<InfoItem
-									icon={<HiUsers />}
-									label="Leader"
-									value={ministry.leader}
-									field="leader"
 									onUpdate={updateMinistryField}
 									inputType="text"
 								/>
