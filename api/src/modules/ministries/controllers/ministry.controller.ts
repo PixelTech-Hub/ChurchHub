@@ -47,13 +47,17 @@ export class MinistryController {
 
 	@Get('church/:churchId')
 	@ApiOperation({ summary: 'Get all ministries of a specific church' })
-	@ApiParam({ name: 'churchId', required: true, description: 'ID of the church' })
+	@ApiParam({ 
+		name: 'churchId', 
+		required: true, 
+		description: 'ID of the church' 
+	})
 	@ApiResponse({
 		status: 200,
 		description: 'Returns all members of the specified church',
 		type: [MinistryEntity]
 	})
-	@ApiResponse({ status: 404, description: 'Church not found' })
+	@ApiResponse({ status: 404, description: 'Church Service not found' })
 	async getMinistriesByChurchId(@Param('churchId') churchId: string): Promise<MinistryEntity[]> {
 		try {
 			const members = await this.ministryService.findAllChurchMinistriesByChurchId(churchId);

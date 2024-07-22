@@ -5,6 +5,7 @@ import { BranchEntity } from "../entities/branch.entity";
 import { CreateBranchDto } from "../dto/create-branch.dto";
 import { FindBranchDto } from "../dto/find-branch.dto";
 import { NotFoundException } from "@nestjs/common";
+import { ChurchEntity } from "src/modules/churches/entities/church.entity";
 
 
 export class BranchService extends BaseService<
@@ -15,6 +16,8 @@ export class BranchService extends BaseService<
 	constructor(
 		@InjectRepository(BranchEntity)
 		private readonly branchRepository: Repository<BranchEntity>,
+		@InjectRepository(ChurchEntity)
+		private readonly churchRepository: Repository<ChurchEntity>,
 	) {
 		super(branchRepository, BranchService.dtoToFindOptionsWhere, []);
 	}
@@ -34,6 +37,24 @@ export class BranchService extends BaseService<
 	}
 	async findAllChurchBranch(dto: FindBranchDto): Promise<BranchEntity[]> {
 		return this.branchRepository.find({ relations: ['main_church'] });
+	}
+
+	async findAllBranchesByChurchId(mainChurchId: string): Promise<BranchEntity[]> {
+		// First, check if the church exists
+		const church = await this.churchRepository.findOne({ where: { id: mainChurchId } });
+		if (!church) {
+			throw new NotFoundException(`Church with id ${mainChurchId} not found`);
+		}
+
+		// Fetch all church branches for this church
+		const branches = await this.branchRepository.find({
+			where: { mainChurchId },
+			order: {
+				createdAt: 'DESC' // Order by creation date, newest first
+			}
+		});
+
+		return branches;
 	}
 
 	async findOneChurchBranch(id: string): Promise<BranchEntity> {

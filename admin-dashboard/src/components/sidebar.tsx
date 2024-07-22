@@ -94,9 +94,9 @@ const ExampleSidebar: FC = function () {
                   open={isEcommerceOpen}
                 >
                   <Sidebar.Item
-                    href="/e-commerce/products"
+                    href="/church-branches"
                     className={
-                      "/e-commerce/products" === currentPage
+                      "/church-services" === currentPage
                         ? "bg-gray-100 dark:bg-gray-700"
                         : ""
                     }
@@ -104,9 +104,9 @@ const ExampleSidebar: FC = function () {
                     Church Branches
                   </Sidebar.Item>
                   <Sidebar.Item
-                    href="/e-commerce/billing"
+                    href="/church-services"
                     className={
-                      "/e-commerce/billing" === currentPage
+                      "/church-services" === currentPage
                         ? "bg-gray-100 dark:bg-gray-700"
                         : ""
                     }
