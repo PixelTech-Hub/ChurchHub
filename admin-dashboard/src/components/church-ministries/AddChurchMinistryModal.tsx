@@ -12,7 +12,6 @@ const AddChurchMinistryModal = () => {
 
 	// Individual state for each form field
 	const [name, setName] = useState("");
-	const [leader, setLeader] = useState("");
 	const [description, setDescription] = useState("");
 
 	const [errors, setErrors] = useState<Partial<Record<keyof ChurchMinistries, string>>>({});
@@ -37,7 +36,6 @@ const AddChurchMinistryModal = () => {
 			case 'name':
 				if (!value) error = 'Ministry name is required';
 				break;
-			case 'leader':
 				if (!value) error = 'Ministry Leader name is required';
 				break;
 			case 'description':
@@ -80,7 +78,6 @@ const AddChurchMinistryModal = () => {
 	const getValue = (field: keyof ChurchMinistries) => {
 		switch (field) {
 			case 'name': return name;
-			case 'leader': return leader;
 			case 'description': return description;
 			default: return '';
 		}
@@ -90,7 +87,7 @@ const AddChurchMinistryModal = () => {
 
 	const getStepFields = (stepNumber: number): (keyof ChurchMinistries)[] => {
 		switch (stepNumber) {
-			case 1: return ['name', 'leader'];
+			case 1: return ['name'];
 			case 2: return ['description'];
 			default: return [];
 		}
@@ -108,7 +105,6 @@ const AddChurchMinistryModal = () => {
 			const formDataToSubmit: Partial<ChurchMinistries> = {
 				churchId: authData?.data.churchId || '',
 				name,
-				leader,
 				description
 			};
 
@@ -129,7 +125,6 @@ const AddChurchMinistryModal = () => {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
 				setName("")
-				setLeader("")
 				setDescription("")
 				toast.success('Church ministry added successfully');
 				setOpen(false);
@@ -170,7 +165,7 @@ const AddChurchMinistryModal = () => {
 								/>
 								{errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
 							</div>
-							<div className='col-span-2'>
+							{/* <div className='col-span-2'>
 								<Label htmlFor="leader">Leader Name:</Label>
 								<TextInput
 									id="leader"
@@ -182,22 +177,22 @@ const AddChurchMinistryModal = () => {
 									required
 								/>
 								{errors.leader && <p className="mt-1 text-sm text-red-500">{errors.leader}</p>}
-							</div>
+							</div> */}
 						</div>
 					</>
 				);
 			case 2:
 				return (
 					<div className='flex flex-col '>
-						<Label htmlFor="description">Leader Name:</Label>
+						<Label htmlFor="description">Description:</Label>
 						<textarea
 							name="description"
 							id="description"
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
-							color={errors.leader ? 'failure' : undefined}
+							color={errors.description ? 'failure' : undefined}
 							required
-							className="rounded-md dark:bg-gray-600 outline-none dark:outline-white h-[15rem] dark:text-white"
+							className="rounded-md dark:bg-gray-600 outline-none dark:outline-white h-[15rem] dark:text-white mt-4"
 						>
 
 						</textarea>
