@@ -67,6 +67,10 @@ const UserDropdown: FC = function () {
 
 	console.log('user data', user)
 
+	if(!authData){
+		return null; // Return null if authData is not available yet (i.e., user is not logged in)
+	}
+
 
 	return (
 		<Dropdown
@@ -92,9 +96,7 @@ const UserDropdown: FC = function () {
 					{user.email}
 				</span>
 			</Dropdown.Header>
-			<Dropdown.Item>Dashboard</Dropdown.Item>
-			<Dropdown.Item>Settings</Dropdown.Item>
-			<Dropdown.Item>Earnings</Dropdown.Item>
+			<Dropdown.Item href="users/settings">Settings</Dropdown.Item>
 			<Dropdown.Divider />
 			<Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
 		</Dropdown>

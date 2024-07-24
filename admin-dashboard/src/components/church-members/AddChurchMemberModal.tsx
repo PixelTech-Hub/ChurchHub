@@ -33,7 +33,7 @@ const AddChurchMemberModal = () => {
 	const [authData, setAuthData] = useState<AuthData | null>(null);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -173,7 +173,7 @@ const AddChurchMemberModal = () => {
 			setLoading(true);
 			console.log("processing...");
 			const formDataToSubmit: Partial<ChurchMembers> = {
-				churchId: authData?.data.churchId || '',
+				churchId: authData?.churchId || '',
 				full_name: fullName,
 				gender: gender,
 				phone_number: phoneNumber,

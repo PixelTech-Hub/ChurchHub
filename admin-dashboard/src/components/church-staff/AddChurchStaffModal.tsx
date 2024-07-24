@@ -38,10 +38,10 @@ const AddChurchStaffModal: React.FC = () => {
 
     const [errors, setErrors] = useState<Partial<Record<keyof ChurchStaff, string>>>({});
     const [loading, setLoading] = useState(false);
-    const [authData, setAuthData] = useState<AuthData | null>(null);
+    const [authData, setAuthData] = useState<AuthData>();
 
     useEffect(() => {
-        const storedData = localStorage.getItem('auth');
+        const storedData = localStorage.getItem('userData');
         if (storedData) {
             try {
                 const parsedData: AuthData = JSON.parse(storedData);
@@ -164,7 +164,7 @@ const AddChurchStaffModal: React.FC = () => {
             setLoading(true);
 
             const formDataToSubmit: Partial<ChurchStaff> = {
-                churchId: authData?.data.churchId || '',
+                churchId: authData?.churchId,
                 first_name: firstName,
                 last_name: lastName,
                 gender,

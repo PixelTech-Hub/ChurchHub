@@ -21,7 +21,7 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 	const [authData, setAuthData] = useState<AuthData | null>(null);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -54,7 +54,7 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 
 	const fetchChurchMinistries = async () => {
 		try {
-			const response = await fetch(`http://localhost:8000/church_ministries/church/${authData?.data.churchId}`);
+			const response = await fetch(`http://localhost:8000/church_ministries/church/${authData?.churchId}`);
 			// console.log('response', response)
 			if (response.ok) {
 				const data = await response.json();
@@ -70,7 +70,7 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 		}
 	};
 
-	// console.log("members", members);
+	console.log("members", ministries);
 
 	if (loading) {
 		<p>Loading....</p>

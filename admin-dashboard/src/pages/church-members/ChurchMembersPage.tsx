@@ -32,7 +32,7 @@ const ChurchMembersPage: FC = function () {
 
 	const fetchChurchMembers = async () => {
 		try {
-			const response = await fetch(`http://localhost:8000/church-members/church/${authData?.data.churchId}`);
+			const response = await fetch(`http://localhost:8000/church-members/church/${authData?.churchId}`);
 			// console.log('response', response)
 			if (response.ok) {
 				const data = await response.json();
@@ -49,7 +49,7 @@ const ChurchMembersPage: FC = function () {
 	};
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
