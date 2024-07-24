@@ -99,13 +99,13 @@ const ExampleNavbar: FC = function () {
   //   }
   // }, [authData]);
 
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  // if (!authData) {
-  //   return <div>Please log in to view church data.</div>;
-  // }
+  if (!authData) {
+    return <div>Please log in to view church data.</div>;
+  }
 
   // console.log("authData")
 
