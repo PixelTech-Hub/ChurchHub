@@ -182,3 +182,11 @@
 .fc .fc-daygrid-day-frame {
   @apply hover:bg-gray-50 cursor-pointer !important;
 }
+.phone-input-container {
+  position: relative;
+}
+
+.phone-input-container .react-tel-input .form-control {
+  width: 100% !important;
+  height: 43px;
+}

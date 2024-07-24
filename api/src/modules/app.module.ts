@@ -36,6 +36,9 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { TransactionEntity } from './transactions/entities/transactions.entity';
 import { ActivityModule } from './activities/activities.module';
 import { ActivityEntity } from './activities/entities/activity.entity';
+import { SystemAdminModule } from './system-admins/system_admin.module';
+import { SystemAdminEntity } from './system-admins/entities/system_admin.entity';
+import { SystemAuthModule } from './system-admins/features/auth/system_admin.auth.module';
 
 
 @Global()
@@ -55,6 +58,7 @@ import { ActivityEntity } from './activities/entities/activity.entity';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         entities: [
+          SystemAdminEntity,
           AdminEntity,
           ChurchEntity,
           BranchEntity,
@@ -104,6 +108,8 @@ import { ActivityEntity } from './activities/entities/activity.entity';
     ChurchModule,
     AccountModule,
     AdminModule,
+    SystemAuthModule,
+    SystemAdminModule,
     AuthModule
   ],
   controllers: [],

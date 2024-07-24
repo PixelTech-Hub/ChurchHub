@@ -1,45 +1,73 @@
-import type { FC } from "react";
-import { Routes, Route } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { FC } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import DashboardPage from "./pages";
 import ForgotPasswordPage from "./pages/authentication/forgot-password";
 import ProfileLockPage from "./pages/authentication/profile-lock";
 import ResetPasswordPage from "./pages/authentication/reset-password";
 import SignInPage from "./pages/authentication/sign-in";
 import SignUpPage from "./pages/authentication/sign-up";
-import EcommerceBillingPage from "./pages/e-commerce/billing";
-import EcommerceInvoicePage from "./pages/e-commerce/invoice";
-import EcommerceProductsPage from "./pages/e-commerce/products";
-import KanbanPage from "./pages/kanban";
-import MailingComposePage from "./pages/mailing/compose";
-import MailingInboxPage from "./pages/mailing/inbox";
-import MailingReadPage from "./pages/mailing/read";
-import MailingReplyPage from "./pages/mailing/reply";
 import NotFoundPage from "./pages/pages/404";
 import ServerErrorPage from "./pages/pages/500";
 import MaintenancePage from "./pages/pages/maintenance";
 import PricingPage from "./pages/pages/pricing";
-import UserFeedPage from "./pages/users/feed";
-import UserListPage from "./pages/users/list";
+import AppWrapper from "./components/app-wrapper";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
+import ChurchStaffPage from "./pages/church-staff";
+import ChurchMembersPage from "./pages/church-members/ChurchMembersPage";
 import UserProfilePage from "./pages/users/profile";
 import UserSettingsPage from "./pages/users/settings";
-import AppWrapper from "./components/app-wrapper";
+import UserListPage from "./pages/users/list";
+import UserFeedPage from "./pages/users/feed";
+import EcommerceProductsPage from "./pages/e-commerce/products";
+import EcommerceInvoicePage from "./pages/e-commerce/invoice";
+import EcommerceBillingPage from "./pages/e-commerce/billing";
+import KanbanPage from "./pages/kanban";
+import MailingReplyPage from "./pages/mailing/reply";
+import MailingReadPage from "./pages/mailing/read";
+import MailingInboxPage from "./pages/mailing/inbox";
+import MailingComposePage from "./pages/mailing/compose";
+import SingleChurchStaff from "./pages/church-staff/SingleChurchStaff";
+import SingleChurchMember from "./pages/church-members/SingleChurchMember";
+import ChurchMinistryPage from "./pages/church-staff/church-ministries/ChurchMinistryPage";
+import SingleChurchMinistry from "./pages/SingleChurchMinistry";
+import { ChurchBranches, ChurchService } from "./pages/main";
+
+// Protected route component
+const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
+  // const auth = useAppSelector((state) => state.auth);
+
+ 
+  const location = useLocation();
+
+  const auth = localStorage.getItem('token');
+
+  
+
+  // if (auth) {
+  //   // You might want to show a loading spinner here
+  //   return <div>Loading...</div>;
+  // }
+
+  if (!auth) {
+    // Redirect to the sign-in page, but save the current location
+    return <Navigate to="/authentication/sign-in" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+};
 
 const App: FC = function () {
   return (
-    <BrowserRouter>
+    <>
+      <ToastContainer
+        theme="colored"
+        position="top-right"
+        className="toast-container absolute top-0 right-44 mt-10"
+      ></ToastContainer>
       <Routes>
         <Route element={<AppWrapper />}>
-          <Route path="/" element={<DashboardPage />} index />
-          <Route path="/mailing/compose" element={<MailingComposePage />} />
-          <Route path="/mailing/inbox" element={<MailingInboxPage />} />
-          <Route path="/mailing/read" element={<MailingReadPage />} />
-          <Route path="/mailing/reply" element={<MailingReplyPage />} />
-          <Route path="/kanban" element={<KanbanPage />} />
-          <Route path="/pages/pricing" element={<PricingPage />} />
-          <Route path="/pages/maintenance" element={<MaintenancePage />} />
-          <Route path="/pages/404" element={<NotFoundPage />} />
-          <Route path="/pages/500" element={<ServerErrorPage />} />
+          {/* Public routes */}
           <Route path="/authentication/sign-in" element={<SignInPage />} />
           <Route path="/authentication/sign-up" element={<SignUpPage />} />
           <Route
@@ -54,25 +82,193 @@ const App: FC = function () {
             path="/authentication/profile-lock"
             element={<ProfileLockPage />}
           />
+          <Route path="/pages/pricing" element={<PricingPage />} />
+          <Route path="/pages/maintenance" element={<MaintenancePage />} />
+          <Route path="/pages/404" element={<NotFoundPage />} />
+          <Route path="/pages/500" element={<ServerErrorPage />} />
+
+          {/* Protected routes */}
+
+
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-branches"
+            element={
+              <ProtectedRoute>
+                <ChurchBranches />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-services"
+            element={
+              <ProtectedRoute>
+                <ChurchService />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-ministries"
+            element={
+              <ProtectedRoute>
+                <ChurchMinistryPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-ministries/:id"
+            element={
+              <ProtectedRoute>
+                <SingleChurchMinistry />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/users/church-staffs"
+            element={
+              <ProtectedRoute>
+                <ChurchStaffPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/users/church-staffs/:id"
+            element={
+              <ProtectedRoute>
+                <SingleChurchStaff />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/users/church-members"
+            element={
+              <ProtectedRoute>
+                <ChurchMembersPage />
+               </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/users/church-members/:id"
+            element={
+              <ProtectedRoute>
+                <SingleChurchMember />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/mailing/compose"
+            element={
+              <ProtectedRoute>
+                <MailingComposePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mailing/inbox"
+            element={
+              <ProtectedRoute>
+                <MailingInboxPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mailing/read"
+            element={
+              <ProtectedRoute>
+                <MailingReadPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mailing/reply"
+            element={
+              <ProtectedRoute>
+                <MailingReplyPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/kanban"
+            element={
+              
+                <KanbanPage />
+            }
+          />
           <Route
             path="/e-commerce/billing"
-            element={<EcommerceBillingPage />}
+            element={
+              // <ProtectedRoute>
+                <EcommerceBillingPage />
+              // </ProtectedRoute>
+            }
           />
           <Route
             path="/e-commerce/invoice"
-            element={<EcommerceInvoicePage />}
+            element={
+              <ProtectedRoute>
+                <EcommerceInvoicePage />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/e-commerce/products"
-            element={<EcommerceProductsPage />}
+            element={
+              // <ProtectedRoute>
+                <EcommerceProductsPage />
+              // </ProtectedRoute>
+            }
           />
-          <Route path="/users/feed" element={<UserFeedPage />} />
-          <Route path="/users/list" element={<UserListPage />} />
-          <Route path="/users/profile" element={<UserProfilePage />} />
-          <Route path="/users/settings" element={<UserSettingsPage />} />
+          <Route
+            path="/users/feed"
+            element={
+              <ProtectedRoute>
+                <UserFeedPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/list"
+            element={
+              <ProtectedRoute>
+                <UserListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/settings"
+            element={
+              <ProtectedRoute>
+                <UserSettingsPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 

@@ -1,25 +1,26 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminEntity } from './entities/admin.entity';
-import { AdminService } from './services/admin.service';
-import { AdminController } from './controllers/admin.controller';
-import { AccountController } from './controllers/account.controller';
+import { SystemAdminEntity } from './entities/system_admin.entity';
+import { SystemAdminService } from './services/system_admin.service';
+import { SystemAdminController } from './controllers/system_admin.controller';
+import { AccountController } from '../admins/controllers/account.controller';
+import { SystemAccountController } from './controllers/system-account.controller';
 
 @Global()
 @Module({
-	imports: [TypeOrmModule.forFeature([AdminEntity])],
+	imports: [TypeOrmModule.forFeature([SystemAdminEntity])],
 	controllers: [
-		AdminController,
-		AccountController
+		SystemAdminController,
+		SystemAccountController
 	],
 	providers: [
-		AdminService,
+		SystemAdminService,
 		ConfigService,
 	],
 	exports: [
 		TypeOrmModule,
-		AdminService
+		SystemAdminService
 	],
 })
-export class AdminModule { }
+export class SystemAdminModule { }
