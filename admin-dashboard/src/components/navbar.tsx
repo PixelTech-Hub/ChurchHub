@@ -42,46 +42,72 @@ const ExampleNavbar: FC = function () {
 
   // console.log('church data', church)
   useEffect(() => {
-    const storedData = localStorage.getItem('auth');
+    const storedData = localStorage.getItem('userData');
+    console.log('********strapped data', storedData)
     if (storedData) {
       try {
         const parsedData: AuthData = JSON.parse(storedData);
         setAuthData(parsedData);
+        
+        // Fetch church data immediately after setting authData
+        if (parsedData.churchId) {
+          fetchChurchData(parsedData.churchId, parsedData.accessToken);
+        }
       } catch (error) {
         console.error('Error parsing auth data:', error);
       }
     }
   }, []);
 
+  const fetchChurchData = (churchId: string, accessToken: string) => {
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/churches/${churchId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      .then((response) => {
+        setChurch(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching church data:', error);
+        setLoading(false);
+      });
+  };
+
   // console.log('********------*****stored data:', data)
 
-  useEffect(() => {
-    if (authData && authData.data.churchId) {
-      setLoading(true);
-      axios
-        .get(`${API_BASE_URL}/churches/${authData.data.churchId}`, {
-          headers: {
-            Authorization: `Bearer ${authData.accessToken}`
-          }
-        })
-        .then((response) => {
-          setChurch(response.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching church data:', error);
-          setLoading(false);
-        });
-    }
-  }, [authData]);
+  // useEffect(() => {
+  //   if (authData && authData.data.churchId) {
+  //     setLoading(true);
+  //     axios
+  //       .get(`${API_BASE_URL}/churches/${authData.data.churchId}`, {
+  //         headers: {
+  //           Authorization: `Bearer ${authData.accessToken}`
+  //         }
+  //       })
+  //       .then((response) => {
+  //         setChurch(response.data);
+  //         setLoading(false);
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error fetching church data:', error);
+  //         setLoading(false);
+  //       });
+  //   }
+  // }, [authData]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
-  if (!authData) {
-    return <div>Please log in to view church data.</div>;
-  }
+  // if (!authData) {
+  //   return <div>Please log in to view church data.</div>;
+  // }
+
+  // console.log("authData")
 
 
   // console.log('......chrc________________________________________________________________', church)
