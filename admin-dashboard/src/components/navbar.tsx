@@ -29,18 +29,6 @@ const ExampleNavbar: FC = function () {
     const [church, setChurch] = useState<Churches>({} as Churches);
     const [authData, setAuthData] = useState<AuthData | null>(null);
 
-
-  // const { data } = useAppSelector((state) => state.auth);
-  // const data = localStorage.getItem('auth');
-
-  // console.log(data?.churchId);
-  // console.log(accessToken);
-
-  // console.log('********------*****:', data)
-
-
-
-  // console.log('church data', church)
   useEffect(() => {
     const storedData = localStorage.getItem('userData');
     console.log('********strapped data', storedData)
@@ -77,28 +65,6 @@ const ExampleNavbar: FC = function () {
       });
   };
 
-  // console.log('********------*****stored data:', data)
-
-  // useEffect(() => {
-  //   if (authData && authData.data.churchId) {
-  //     setLoading(true);
-  //     axios
-  //       .get(`${API_BASE_URL}/churches/${authData.data.churchId}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${authData.accessToken}`
-  //         }
-  //       })
-  //       .then((response) => {
-  //         setChurch(response.data);
-  //         setLoading(false);
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error fetching church data:', error);
-  //         setLoading(false);
-  //       });
-  //   }
-  // }, [authData]);
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -107,10 +73,6 @@ const ExampleNavbar: FC = function () {
     return <div>Please log in to view church data.</div>;
   }
 
-  // console.log("authData")
-
-
-  // console.log('......chrc________________________________________________________________', church)
 
   return (
     <Navbar fluid>
@@ -131,29 +93,8 @@ const ExampleNavbar: FC = function () {
               </button>
             )}
             <Navbar.Brand href="/">
-              <img
-                alt="logo"
-                src=""
-                className="mr-3 h-6 sm:h-8"
-              />
-              <span className="self-center whitespace-nowrap lg:text-2xl text-lg font-semibold dark:text-white">
-                Church Hub
-              </span>
+              <p className="font-extrabold">CHURCH HUB</p>
             </Navbar.Brand>
-            {/* <form className="ml-16 hidden md:block">
-              <Label htmlFor="search" className="sr-only">
-                Search
-              </Label>
-              <TextInput
-                icon={HiSearch}
-                id="search"
-                name="search"
-                placeholder="Search"
-                required
-                size={32}
-                type="search"
-              />
-            </form> */}
             <div className="hidden lg:flex lg:text-xl  ml-16 font-bold">
               <p className="dark:text-white">{church.name}</p>
             </div>

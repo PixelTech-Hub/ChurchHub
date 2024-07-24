@@ -4,6 +4,7 @@ import { logout } from "../../features/auth/authSlice";
 import { FC } from "react";
 import { Dropdown } from "flowbite-react";
 import { HiArchive, HiCog, HiCurrencyDollar, HiInbox, HiLogout, HiOutlineTicket, HiShoppingBag, HiUserCircle, HiUsers, HiViewGrid } from "react-icons/hi";
+import { toast } from "react-toastify";
 
 const AppDrawerDropdown: FC = function () {
 	const dispatch = useAppDispatch();
@@ -12,6 +13,7 @@ const AppDrawerDropdown: FC = function () {
 	const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
 	  e.preventDefault();
 	  dispatch(logout());
+	  toast.success("Logged out")
 	  navigate('/authentication/sign-in'); // Redirect to login page after logout
 	};
 	return (
