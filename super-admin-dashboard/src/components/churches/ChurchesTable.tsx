@@ -96,21 +96,7 @@ const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurch
 												} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
 										/>
 									</Switch>
-									{/* <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-										{church.isEnabled ? (
-											<HiLightningBolt className="text-yellow-400 h-5 w-5" />
-										) : (
-											<HiMoon className="text-indigo-400 h-5 w-5" />
-										)}
-									</span> */}
-									{/* <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-										{church.isEnabled ? 'Active' : 'Inactive'}
-									</span> */}
-									{/* <DeleteChurchModal
-										churchId={church.id ?? ''}
-										churchName={church.name ?? ''}
-									/> */}
-									<Link to={`${CHURCH_API_URL}/${church.id}`} className="">
+									<Link to={`/churches/${church.id}`} className="">
 										<Button color="success">
 											<HiArrowRight className="mr-2 text-lg" />
 										</Button>

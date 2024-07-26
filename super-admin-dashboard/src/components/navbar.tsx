@@ -31,7 +31,7 @@ const ExampleNavbar: FC = function () {
 
   useEffect(() => {
     const storedData = localStorage.getItem('userData');
-    console.log('********strapped data', storedData)
+    // console.log('********strapped data', storedData)
     if (storedData) {
       try {
         const parsedData: AuthData = JSON.parse(storedData);

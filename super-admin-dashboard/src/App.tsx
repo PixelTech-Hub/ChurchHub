@@ -33,6 +33,7 @@ import ChurchMinistryPage from "./pages/church-staff/church-ministries/ChurchMin
 import SingleChurchMinistry from "./pages/SingleChurchMinistry";
 import { ChurchService } from "./pages/main";
 import ChurchPage from "./pages/churches";
+import SingleChurchPage from "./pages/churches/SingleChurchPage";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -43,12 +44,6 @@ const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const auth = localStorage.getItem('token');
 
-  
-
-  // if (auth) {
-  //   // You might want to show a loading spinner here
-  //   return <div>Loading...</div>;
-  // }
 
   if (!auth) {
     // Redirect to the sign-in page, but save the current location
@@ -105,6 +100,15 @@ const App: FC = function () {
             element={
               <ProtectedRoute>
                 <ChurchPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/churches/:churchId"
+            element={
+              <ProtectedRoute>
+                <SingleChurchPage />
               </ProtectedRoute>
             }
 
