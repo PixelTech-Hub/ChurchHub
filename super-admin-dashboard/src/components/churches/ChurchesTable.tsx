@@ -3,8 +3,8 @@ import { Button, Pagination, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiArrowRight } from "react-icons/hi"
 import { Churches } from "../../types/Churches";
-import DeleteChurchModal from "./DeleteChurchModal";
 import { CHURCH_API_URL } from "../../app/api";
+import { Switch } from '@headlessui/react';
 
 interface ChurchTableProps {
 	paginatedChurches: Churches[];
@@ -13,9 +13,10 @@ interface ChurchTableProps {
 	totalPages: number;
 	currentPage: number;
 	setCurrentPage: (page: number) => void;
+	fetchChurches: () => void;
 }
 
-const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurches, loading, currentPage, setCurrentPage, totalPages }) => {
+const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurches, loading, currentPage, setCurrentPage, totalPages, fetchChurches }) => {
 
 	if (loading) {
 		<p>Loading....</p>
@@ -27,6 +28,30 @@ const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurch
 			</div>
 		);
 	}
+	const toggleChurchStatus = async (churchId: string, currentStatus: boolean) => {
+		try {
+			const response = await fetch(`${CHURCH_API_URL}/${churchId}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ isEnabled: !currentStatus }),
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to update church status');
+			}
+
+			// Refresh the churches data after successful update
+			// You might need to lift this state up to the parent component
+			// and pass it down as a prop if fetchChurches is not accessible here
+			fetchChurches();
+		} catch (error) {
+			console.error('Error updating church status:', error);
+			// You might want to show an error message to the user here
+		}
+	};
+
 	return (
 		<>
 			<Table className="min-w-full  divide-y divide-gray-200 dark:divide-gray-600">
@@ -59,11 +84,32 @@ const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurch
 
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
-
-									<DeleteChurchModal
+									<Switch
+										checked={church.isEnabled}
+										onChange={() => toggleChurchStatus(church.id ?? '', church.isEnabled ?? false)}
+										className={`${church.isEnabled ? 'bg-green-600' : 'bg-red-500'
+											} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+									>
+										<span className="sr-only">Enable church</span>
+										<span
+											className={`${church.isEnabled ? 'translate-x-6' : 'translate-x-1'
+												} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+										/>
+									</Switch>
+									{/* <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+										{church.isEnabled ? (
+											<HiLightningBolt className="text-yellow-400 h-5 w-5" />
+										) : (
+											<HiMoon className="text-indigo-400 h-5 w-5" />
+										)}
+									</span> */}
+									{/* <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+										{church.isEnabled ? 'Active' : 'Inactive'}
+									</span> */}
+									{/* <DeleteChurchModal
 										churchId={church.id ?? ''}
 										churchName={church.name ?? ''}
-									/>
+									/> */}
 									<Link to={`${CHURCH_API_URL}/${church.id}`} className="">
 										<Button color="success">
 											<HiArrowRight className="mr-2 text-lg" />
