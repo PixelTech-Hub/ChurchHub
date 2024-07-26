@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
 import { Churches } from "../../types/Churches";
+import { CHURCH_API_URL } from "../../app/api";
 
 const AddChurchModal = () => {
     const [isOpen, setOpen] = useState(false);
@@ -32,7 +33,7 @@ const AddChurchModal = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/churches', {
+            const response = await fetch(CHURCH_API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
