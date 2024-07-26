@@ -73,7 +73,7 @@ const SignInPage: FC = function () {
         className="w-full md:max-w-[1024px] md:[&>*]:w-full md:[&>*]:p-16 [&>img]:hidden md:[&>img]:w-96 md:[&>img]:p-0 lg:[&>img]:block "
       >
         <h1 className="mb-3 text-2xl font-bold dark:text-white md:text-3xl">
-          Sign in
+          Sign in 
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4 flex flex-col gap-y-3">

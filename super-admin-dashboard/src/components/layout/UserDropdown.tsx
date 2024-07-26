@@ -65,7 +65,7 @@ const UserDropdown: FC = function () {
 		navigate('/authentication/sign-in'); // Redirect to login page after logout
 	};
 
-	console.log('user data', user)
+	// console.log('user data', user)
 
 	if(!authData){
 		return null; // Return null if authData is not available yet (i.e., user is not logged in)

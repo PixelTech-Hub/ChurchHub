@@ -42,7 +42,7 @@ const AddChurchBranchModal = () => {
 			setLoading(true);
 			console.log("processing...");
 			const formDataToSubmit: Partial<ChurchBranch> = {
-				mainChurchId: authData?.data.churchId || '',
+				mainChurchId: authData?.churchId || '',
 				name,
 				church_number: contact,
 				dob,

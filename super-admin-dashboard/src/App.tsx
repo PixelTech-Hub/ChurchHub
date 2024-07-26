@@ -31,7 +31,8 @@ import SingleChurchStaff from "./pages/church-staff/SingleChurchStaff";
 import SingleChurchMember from "./pages/church-members/SingleChurchMember";
 import ChurchMinistryPage from "./pages/church-staff/church-ministries/ChurchMinistryPage";
 import SingleChurchMinistry from "./pages/SingleChurchMinistry";
-import { ChurchBranches, ChurchService } from "./pages/main";
+import { ChurchService } from "./pages/main";
+import ChurchPage from "./pages/churches";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -100,10 +101,10 @@ const App: FC = function () {
 
           />
           <Route
-            path="/church-branches"
+            path="/churches"
             element={
               <ProtectedRoute>
-                <ChurchBranches />
+                <ChurchPage />
               </ProtectedRoute>
             }
 
