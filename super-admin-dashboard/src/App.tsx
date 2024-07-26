@@ -105,7 +105,7 @@ const App: FC = function () {
 
           />
           <Route
-            path="/churches/:churchId"
+            path="/churches/:id"
             element={
               <ProtectedRoute>
                 <SingleChurchPage />

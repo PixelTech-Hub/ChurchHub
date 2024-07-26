@@ -16,6 +16,17 @@ interface ChurchTableProps {
 	fetchChurches: () => void;
 }
 
+interface ExtendedChurches extends Churches {
+	denomination?: string;
+	foundingDate?: string;
+	memberCount?: number;
+	weeklyAttendance?: number;
+	pastorName?: string;
+	annualBudget?: number;
+	serviceSchedule?: { day: string; time: string }[];
+	ministries?: string[];
+  }
+
 const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurches, loading, currentPage, setCurrentPage, totalPages, fetchChurches }) => {
 
 	if (loading) {

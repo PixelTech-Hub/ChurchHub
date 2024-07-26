@@ -7,5 +7,6 @@ export interface Churches {
 	vision?: string,
 	mission?: string,
 	core_values?: string,
-	isEnabled?: boolean
+	isEnabled?: boolean,
+	churchLogo?: string,
 }
