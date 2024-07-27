@@ -66,15 +66,22 @@ const ExampleSidebar: FC = function () {
                   Dashboard
                 </Sidebar.Item>
                 <Sidebar.Item
+                  href="/hub-admin"
+                  icon={HiViewGrid}
+                >
+                  System Management
+                </Sidebar.Item>
+                <Sidebar.Item
                   href="/churches"
                   icon={HiViewGrid}
-                  className={
-                    "/churches" === currentPage
-                      ? "bg-gray-100 dark:bg-gray-700"
-                      : ""
-                  }
                 >
                   Church Management
+                </Sidebar.Item>
+                <Sidebar.Item
+                  href="/church-admin"
+                  icon={HiUsers}
+                >
+                Admin Management
                 </Sidebar.Item>
                 {/* <Sidebar.Item
                   href="/kanban"

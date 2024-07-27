@@ -9,6 +9,7 @@ import { HiDownload, HiHome, HiRefresh } from "react-icons/hi";
 import SearchItem from "../../helpers/SearchItem";
 import ChurchServiceTable from "../../components/church-service/ChurchServiceTable";
 import AddChurchServiceModal from "../../components/church-service/AddChurchServiceModal";
+import { ALL_CHURCH_SERVICE_API_URL } from "../../app/api";
 
 
 const ITEMS_PER_PAGE = 10;
@@ -25,7 +26,7 @@ const ChurchService: FC = () => {
 
 	const fetchChurchServices = async () => {
 		try {
-			const response = await fetch(`http://localhost:8000/church_services/church/${authData?.data.churchId}`);
+			const response = await fetch(`${ALL_CHURCH_SERVICE_API_URL}/${authData?.churchId}`);
 			// console.log('response', response)
 			if (response.ok) {
 				const data = await response.json();
@@ -42,7 +43,7 @@ const ChurchService: FC = () => {
 	};
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -80,11 +81,10 @@ const ChurchService: FC = () => {
 
 	const handleReload = () => {
 		setIsReloading(true);
-		// Simulating a reload delay
-		setTimeout(() => {
-			window.location.reload();
-		}, 1000);
-	};
+		fetchChurchServices().finally(() => {
+		  setIsReloading(false);
+		});
+	  };
 
 	const handleDownloadPDF = async () => {
 		setIsDownloading(true);
@@ -171,7 +171,7 @@ const ChurchService: FC = () => {
 							>
 								<HiDownload className={`mr-2 h-5 w-5 ${isDownloading ? 'opacity-0' : ''}`} />
 								<span className={isDownloading && loading ? 'opacity-0' : ''}>{isDownloading && loading ?
-									'Downloading...' : 'Download PDF'
+									'Downloading...' : 'Download'
 								}</span>
 								{isDownloading && loading && (
 									<div className="absolute inset-0 flex items-center justify-center">

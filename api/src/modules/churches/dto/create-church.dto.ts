@@ -20,17 +20,17 @@ export class CreateChurchDto {
 	@ApiProperty()
 	readonly office_no: string;
 
-	@IsNotEmpty()
+	@IsOptional()
 	@ApiProperty()
-	readonly vision: string;
+	readonly vision?: string;
 
-	@IsNotEmpty()
+	@IsOptional()
 	@ApiProperty()
-	readonly mission: string;
+	readonly mission?: string;
 
-	@IsNotEmpty()
+	@IsOptional()
 	@ApiProperty()
-	readonly core_values: string;
+	readonly core_values?: string;
 
 	@IsNotEmpty()
 	@ApiProperty({ default: true })

@@ -16,13 +16,12 @@ const AddChurchBranchModal = () => {
 
 	const [loading, setLoading] = useState(false);
 
-	const [errors, setErrors] = useState<Partial<Record<keyof ChurchBranch, string>>>({});
 
 
 	const [authData, setAuthData] = useState<AuthData | null>(null);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -36,51 +35,51 @@ const AddChurchBranchModal = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-			
 
-			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
-			setLoading(true);
-			console.log("processing...");
-			const formDataToSubmit: Partial<ChurchBranch> = {
-				mainChurchId: authData?.data.churchId || '',
-				name,
-				church_number: contact,
-				dob,
-				email,
-				location
-				
-			};
 
-			try {
-				const response = await fetch('http://localhost:8000/church_branches', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formDataToSubmit),
-				});
+		// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
+		setLoading(true);
+		console.log("processing...");
+		const formDataToSubmit: Partial<ChurchBranch> = {
+			mainChurchId: authData?.churchId || '',
+			name,
+			church_number: contact,
+			dob,
+			email,
+			location
 
-				if (!response.ok) {
-					const errorData = await response.json();
-					console.error('Server error response:', errorData);
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				// Reset form fields here
-				setOpen(false);
-				setName("")
-				setContact("")
-				setDob("")
-				setEmail("")
-				setLocation("")
-				setLoading(false);
-				toast.success('Church branch added successfully');
-			} catch (error) {
-				console.error('Submission failed:', error);
-				toast.error('Failed to add church branch');
-				setLoading(false);
-			} finally {
-				setLoading(false);
+		};
+
+		try {
+			const response = await fetch('http://localhost:8000/church_branches', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formDataToSubmit),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.error('Server error response:', errorData);
+				throw new Error(`HTTP error! status: ${response.status}`);
 			}
+			// Reset form fields here
+			setOpen(false);
+			setName("")
+			setContact("")
+			setDob("")
+			setEmail("")
+			setLocation("")
+			setLoading(false);
+			toast.success('Church branch added successfully');
+		} catch (error) {
+			console.error('Submission failed:', error);
+			toast.error('Failed to add church branch');
+			setLoading(false);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 
@@ -91,11 +90,12 @@ const AddChurchBranchModal = () => {
 				Add Church Branch
 			</Button>
 			<Modal onClose={() => setOpen(false)} show={isOpen}>
-				<Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
-					<strong>Add New Church Branch</strong>
-				</Modal.Header>
-				<Modal.Body>
-					<form onSubmit={handleSubmit}>
+				<form onSubmit={handleSubmit}>
+					<Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
+						<strong>Add New Church Branch</strong>
+					</Modal.Header>
+					<Modal.Body>
+
 						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 							<div className='col-span-2'>
 								<Label htmlFor="branchName">Church Branch Name</Label>
@@ -104,8 +104,6 @@ const AddChurchBranchModal = () => {
 									name="name"
 									value={name}
 									onChange={(e) => setName(e.target.value)}
-									color={errors.name ? 'failure' : undefined}
-									helperText={errors.name}
 									required
 								/>
 							</div>
@@ -134,7 +132,7 @@ const AddChurchBranchModal = () => {
 							<div className='col-span-2'>
 								<Label htmlFor="contact">Contact</Label>
 								<TextInput
-								
+
 									id="contact"
 									name="contact"
 									type="tel"
@@ -146,7 +144,7 @@ const AddChurchBranchModal = () => {
 							<div className='col-span-2'>
 								<Label htmlFor="dob">Date Opened</Label>
 								<TextInput
-								
+
 									id="dob"
 									name="dob"
 									type="date"
@@ -159,19 +157,20 @@ const AddChurchBranchModal = () => {
 
 
 						</div>
-					</form>
-				</Modal.Body>
-				<Modal.Footer>
-					<div className='flex flex-1 w-full justify-between'>
-						<Button color="primary">
-						{!loading ? 'Submit' : 'Processing...'}
-						</Button>
-						<Button color="failure" onClick={() => setOpen(false)} >
-							Cancel
-						</Button>
-					</div>
-				</Modal.Footer>
-			</Modal>
+
+					</Modal.Body>
+					<Modal.Footer>
+						<div className='flex flex-1 w-full justify-between'>
+                            <Button color="primary" type="submit" disabled={loading}>
+                                {loading ? 'Submitting...' : 'Submit'}
+                            </Button>
+                            <Button color="failure" onClick={() => setOpen(false)} type="button">
+                                Cancel
+                            </Button>
+                        </div>
+					</Modal.Footer>
+				</form>
+			</Modal >
 		</>
 	)
 }

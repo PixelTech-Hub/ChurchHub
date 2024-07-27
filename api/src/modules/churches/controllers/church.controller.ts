@@ -65,7 +65,7 @@ export class ChurchController {
 	}
 
 	@Patch(':id')
-	@UseGuards(ChurchAdminAuthGuard)
+	// @UseGuards(ChurchAdminAuthGuard)
 	@ApiOkResponse({ type: ChurchEntity })
 	update(
 		@Param('id') id: string,
@@ -75,7 +75,7 @@ export class ChurchController {
 	}
 
 	@Delete(':id')
-	@UseGuards(ChurchAdminAuthGuard)
+	// @UseGuards(ChurchAdminAuthGuard)
 	@ApiOkResponse({ type: ChurchEntity })
 	remove(@Param('id') id: string): Promise<ChurchEntity> {
 		return this.churchService.remove(id);

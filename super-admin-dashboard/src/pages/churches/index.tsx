@@ -4,7 +4,8 @@ import { HiDownload, HiHome, HiRefresh } from "react-icons/hi"
 import SearchItem from "../../helpers/SearchItem"
 import { useEffect, useState } from "react"
 import { Churches } from "../../types/Churches"
-import jsPDF from "jspdf"
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import ChurchesTable from "../../components/churches/ChurchesTable"
 import AddChurchModal from "../../components/churches/AddChurchModal"
 import { CHURCH_API_URL } from "../../app/api"

@@ -25,7 +25,7 @@ const AddChurchMemberModal = () => {
 	const [maritalStatus, setMaritalStatus] = useState("");
 	const [NoOfchildren, setNoOfChildren] = useState("");
 	const [education, setEducation] = useState("");
-	const [ministry, setMinistry] = useState<ChurchMinistries[]>([]);;
+	const [ministry, setMinistry] = useState<ChurchMinistries[]>([]);
 	const [selectedMinistries, setSelectedMinistries] = useState<string[]>([]);
 
 	const [errors, setErrors] = useState<Partial<Record<keyof ChurchMembers, string>>>({});

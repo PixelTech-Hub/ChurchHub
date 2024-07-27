@@ -20,7 +20,7 @@ const UserDropdown: FC = function () {
 
 	useEffect(() => {
 		const storedData = localStorage.getItem('userData');
-		console.log('********strapped data', storedData)
+		// console.log('********strapped data', storedData)
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -65,7 +65,7 @@ const UserDropdown: FC = function () {
 		navigate('/authentication/sign-in'); // Redirect to login page after logout
 	};
 
-	console.log('user data', user)
+	// console.log('user data', user)
 
 	if(!authData){
 		return null; // Return null if authData is not available yet (i.e., user is not logged in)

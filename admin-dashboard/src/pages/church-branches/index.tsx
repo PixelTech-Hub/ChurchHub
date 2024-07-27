@@ -9,6 +9,7 @@ import { HiDownload, HiHome, HiRefresh } from 'react-icons/hi';
 import SearchItem from '../../helpers/SearchItem';
 import AddChurchBranchModal from '../../components/church-branch/AddChurchBranchModal';
 import ChurchBranchTable from '../../components/church-branch/ChurchBranchTable';
+import { ALL_CHURCH_BRANCH_API_URL } from '../../app/api';
 
 
 const ITEMS_PER_PAGE = 10;
@@ -24,7 +25,7 @@ const ChurchBranches = () => {
 
 	const fetchChurchBranches = async () => {
 		try {
-			const response = await fetch(`http://localhost:8000/church_branches/church/${authData?.data.churchId}`);
+			const response = await fetch(`${ALL_CHURCH_BRANCH_API_URL}/${authData?.churchId}`);
 			// console.log('response', response)
 			if (response.ok) {
 				const data = await response.json();
@@ -41,7 +42,7 @@ const ChurchBranches = () => {
 	};
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -79,10 +80,9 @@ const ChurchBranches = () => {
 
 	const handleReload = () => {
 		setIsReloading(true);
-		// Simulating a reload delay
-		setTimeout(() => {
-			window.location.reload();
-		}, 1000);
+		fetchChurchBranches().finally(() => {
+			setIsReloading(false);
+		});
 	};
 
 	const handleDownloadPDF = async () => {
@@ -199,7 +199,7 @@ const ChurchBranches = () => {
 				</div>
 			</div>
 		</NavbarSidebarLayout>
-  )
+	)
 }
 
 export default ChurchBranches

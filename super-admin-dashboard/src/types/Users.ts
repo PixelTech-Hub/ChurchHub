@@ -1,3 +1,5 @@
+import { Churches } from "./Churches";
+
 export interface Users {
 	id?: string;
 	updatedAt?: string;
@@ -5,10 +7,11 @@ export interface Users {
 	lastSeen?: string;
 	isEnabled?: boolean;
 	churchId?: string;
-	name?: string;
+	name: string;
 	title?: string;
 	email?: string;
 	password?: string;
-	isEmailVerified?: string;
+	isEmailVerified?: boolean;
 	role?: string;
+	church?: Churches[]
   }

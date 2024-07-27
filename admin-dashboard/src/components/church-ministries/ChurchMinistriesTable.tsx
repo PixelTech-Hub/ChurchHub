@@ -1,76 +1,25 @@
-import { FC, useEffect, useState } from 'react'
-import { AuthData } from '../../types/AuthData';
+import { FC } from 'react'
 import { ChurchMinistries } from '../../types/ChurchMinistries';
 import { Button, Pagination, Table } from 'flowbite-react';
 import DeleteChurchMinistryModal from './DeleteChurchMinistryModal';
 import { Link } from 'react-router-dom';
 import { HiArrowRight } from 'react-icons/hi';
 import { truncateText } from '../../helpers/truncateText';
+// import { truncateText } from '../../helpers/truncateText';
 
 
 interface ChurchMinistryTableProps {
-	searchTerm: string;
+	paginatedMinistries: ChurchMinistries[];
+	filteredMinistries: ChurchMinistries[];
+	loading: boolean;
+	totalPages: number;
+	currentPage: number;
+	setCurrentPage: (page: number) => void;
 }
 
-const ITEMS_PER_PAGE = 10;
 
-const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => {
-	const [ministries, setMinistries] = useState<ChurchMinistries[]>([]);
-	const [loading, setLoading] = useState(false);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [authData, setAuthData] = useState<AuthData | null>(null);
-
-	useEffect(() => {
-		const storedData = localStorage.getItem('userData');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchChurchMinistries();
-	}, [authData, ministries]);
-
-	useEffect(() => {
-		// Reset to first page when search term changes
-		setCurrentPage(1);
-	}, [searchTerm]);
-
-	const filteredMinistries = ministries.filter((ministry) =>
-		ministry.name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
-
-	const totalPages = Math.ceil(filteredMinistries.length / ITEMS_PER_PAGE);
-
-	const paginatedMinistries = filteredMinistries.slice(
-		(currentPage - 1) * ITEMS_PER_PAGE,
-		currentPage * ITEMS_PER_PAGE
-	);
-
-	const fetchChurchMinistries = async () => {
-		try {
-			const response = await fetch(`http://localhost:8000/church_ministries/church/${authData?.churchId}`);
-			// console.log('response', response)
-			if (response.ok) {
-				const data = await response.json();
-				setMinistries(data); // Assuming data.data contains the array of church staffs
-				setLoading(false)
-			} else {
-				console.error("Failed to fetch church staffs");
-				setLoading(false)
-			}
-		} catch (error) {
-			console.error("Error fetching church staffs:", error);
-			setLoading(false)
-		}
-	};
-
-	console.log("members", ministries);
+const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ currentPage, filteredMinistries, loading, paginatedMinistries, setCurrentPage, totalPages }) => {
+	
 
 	if (loading) {
 		<p>Loading....</p>
@@ -82,6 +31,8 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ searchTerm }) => 
 			</div>
 		);
 	}
+
+	// console.log('filteredMinistries', filteredMinistries)
 
 	return (
 		<>

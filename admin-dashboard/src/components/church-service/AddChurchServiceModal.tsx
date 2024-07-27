@@ -4,6 +4,7 @@ import { AuthData } from "../../types/AuthData";
 import { toast } from "react-toastify";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
+import { CHURCH_SERVICE_API_URL } from "../../app/api";
 
 
 const AddChurchServiceModal: FC = ({ }) => {
@@ -22,7 +23,7 @@ const AddChurchServiceModal: FC = ({ }) => {
 	const [authData, setAuthData] = useState<AuthData | null>(null);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -109,7 +110,7 @@ const AddChurchServiceModal: FC = ({ }) => {
 			setLoading(true);
 			console.log("processing...");
 			const formDataToSubmit: Partial<ChurchServices> = {
-				churchId: authData?.data.churchId || '',
+				churchId: authData?.churchId || '',
 				name,
 				start_time: start,
 				end_time: end,
@@ -119,7 +120,7 @@ const AddChurchServiceModal: FC = ({ }) => {
 			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
 
 			try {
-				const response = await fetch('http://localhost:8000/church_services', {
+				const response = await fetch(CHURCH_SERVICE_API_URL, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',

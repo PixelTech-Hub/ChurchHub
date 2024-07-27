@@ -4,6 +4,7 @@ import { AuthData } from "../../types/AuthData";
 import { toast } from "react-toastify";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
+import { CHURCH_MINISTRIES_API_URL } from "../../app/api";
 
 
 const AddChurchMinistryModal = () => {
@@ -19,7 +20,7 @@ const AddChurchMinistryModal = () => {
 	const [authData, setAuthData] = useState<AuthData | null>(null);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
+		const storedData = localStorage.getItem('userData');
 		if (storedData) {
 			try {
 				const parsedData: AuthData = JSON.parse(storedData);
@@ -97,13 +98,13 @@ const AddChurchMinistryModal = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-		console.log('hello', authData?.data.churchId)
+		console.log('hello', authData?.churchId)
 		if (validateStep()) {
 			setLoading(true);
 			console.log("processing...");
 			
 			const formDataToSubmit: Partial<ChurchMinistries> = {
-				churchId: authData?.data.churchId || '',
+				churchId: authData?.churchId || '',
 				name,
 				description
 			};
@@ -111,7 +112,7 @@ const AddChurchMinistryModal = () => {
 			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
 
 			try {
-				const response = await fetch('http://localhost:8000/church_ministries', {
+				const response = await fetch(CHURCH_MINISTRIES_API_URL, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',

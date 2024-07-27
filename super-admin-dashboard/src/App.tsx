@@ -34,6 +34,8 @@ import SingleChurchMinistry from "./pages/SingleChurchMinistry";
 import { ChurchService } from "./pages/main";
 import ChurchPage from "./pages/churches";
 import SingleChurchPage from "./pages/churches/SingleChurchPage";
+import ChurchAdminPage from "./pages/church-admin";
+import SystemAdminPage from "./pages/system-admin";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -96,6 +98,15 @@ const App: FC = function () {
 
           />
           <Route
+            path="/hub-admin"
+            element={
+              <ProtectedRoute>
+                <SystemAdminPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
             path="/churches"
             element={
               <ProtectedRoute>
@@ -106,6 +117,24 @@ const App: FC = function () {
           />
           <Route
             path="/churches/:id"
+            element={
+              <ProtectedRoute>
+                <SingleChurchPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-admin"
+            element={
+              <ProtectedRoute>
+                <ChurchAdminPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/church-admin/:id"
             element={
               <ProtectedRoute>
                 <SingleChurchPage />

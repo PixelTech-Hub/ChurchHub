@@ -41,7 +41,7 @@ export class SystemAdminController {
 	}
 
 	@Delete(':id')
-	@UseGuards(ChurchAdminAuthGuard)
+	// @UseGuards(ChurchAdminAuthGuard)
 	@ApiOkResponse({ type: SystemAdminEntity })
 	removeForOrganizationAdmins(
 		@Param('id') id: string,

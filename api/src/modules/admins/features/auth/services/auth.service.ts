@@ -69,135 +69,31 @@ export class AuthService {
 		};
 	}
 
-	// async verifyEmailOtp(
-	// 	dto: VerifyEmailOtpDto,
-	// ): Promise<OrganizationAdminConnection> {
-	// 	// -- On account creation
-	// 	let admin = await this.organizationAdminsService.findOneByField(
-	// 		dto.email,
-	// 		'email',
-	// 	);
-	// 	if (!admin) throw new NotFoundException(ExceptionEnum.adminNotFound);
+	async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+		// Find the user by ID
+		const user = await this.usersService.findOneByField(userId, 'id');
+		if (!user) {
+		  throw new NotFoundException(ExceptionEnum.userNotFound);
+		}
+	  
+		// Verify the current password
+		const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+		if (!isPasswordValid) {
+		  throw new NotAcceptableException(ExceptionEnum.wrongPassword);
+		}
+	  
+		// Hash the new password
+		const hashedNewPassword = await bcrypt.hash(
+		  newPassword,
+		  CONFIG_PASSWORD_HASH_SALT,
+		);
+	  
+		// Update the user's password
+		user.password = hashedNewPassword;
+		await this.usersService.save(user);
+	  }
 
-	// 	// -- Verify Otp
-	// 	this.otp.verify(admin, dto.otp);
-
-	// 	// -- Set verification to true & Update otp
-	// 	admin = {
-	// 		...admin,
-	// 		isEmailVerified: true,
-	// 		otp: null,
-	// 		otpExpiresAt: null,
-	// 	};
-	// 	await this.organizationAdminsService.save(admin);
-
-	// 	// --
-	// 	return this.getConnection(admin);
-	// }
-
-	// async sendOtpToEmailForPasswordRecovery(
-	// 	dto: SendOtpToEmailDto,
-	// ): Promise<Email> {
-	// 	let admin = await this.organizationAdminsService.findOneByField(
-	// 		dto.email,
-	// 		'email',
-	// 	);
-	// 	if (!admin) throw new NotAcceptableException(ExceptionEnum.accountNotFound);
-
-	// 	// -- Generate Otp
-	// 	const otpData = this.otp.generate();
-
-	// 	// -- Save otp
-	// 	admin = {
-	// 		...admin,
-	// 		...otpData,
-	// 		emailUpdateCandidate: null,
-	// 	};
-	// 	await this.organizationAdminsService.save(admin);
-
-	// 	// -- Send otp
-	// 	await this.otp.sendToEmail(otpData.otp, admin);
-
-	// 	// --
-	// 	return { email: admin.email };
-	// }
-
-	// async verifyEmailOtpForPasswordRecovery(
-	// 	dto: VerifyEmailOtpDto,
-	// ): Promise<PasswordRecoveryToken> {
-	// 	// On account creation
-	// 	let admin = await this.organizationAdminsService.findOneByField(
-	// 		dto.email,
-	// 		'email',
-	// 	);
-	// 	if (!admin) throw new NotFoundException(ExceptionEnum.adminNotFound);
-
-	// 	// -- Verify Otp
-	// 	this.otp.verify(admin, dto.otp);
-
-	// 	// -- Since it's correct. We generate a password update token. That also expires in 30 minutes
-	// 	// -- Generate Otp
-	// 	const otpData = this.otp.generate();
-
-	// 	// -- Set verification to true & Update otp
-	// 	admin = {
-	// 		...admin,
-	// 		...otpData,
-	// 		isEmailVerified: true,
-	// 		emailUpdateCandidate: null,
-	// 	};
-	// 	await this.organizationAdminsService.save(admin);
-
-	// 	// --
-	// 	return {
-	// 		email: admin.email,
-	// 		passwordUpdateToken: CryptoJS.AES.encrypt(
-	// 			otpData.otp.toString(),
-	// 			this.configService.get('CRYPTO_GENERAL_SECRET'),
-	// 		).toString(),
-	// 	};
-	// }
-
-	// async updatePasswordForPasswordRecovery(
-	// 	dto: UpdatePasswordWithTokenDto,
-	// ): Promise<UserConnection> {
-	// 	// On account creation
-	// 	let admin = await this.usersService.findOneByField(
-	// 		dto.email,
-	// 		'email',
-	// 	);
-	// 	if (!admin) throw new NotFoundException(ExceptionEnum.adminNotFound);
-
-	// 	// -- Verify Otp
-	// 	let otpFromToken;
-	// 	try {
-	// 		const bytes = Crypto.AES.decrypt(
-	// 			dto.passwordUpdateToken,
-	// 			this.configService.get('CRYPTO_GENERAL_SECRET'),
-	// 		);
-	// 		otpFromToken = parseInt(bytes.toString(CryptoJS.enc.Utf8));
-	// 	} catch (e) { }
-	// 	if (!otpFromToken)
-	// 		throw new NotAcceptableException(ExceptionEnum.passwordTokenInvalid);
-	// 	this.otp.verify(admin, otpFromToken);
-
-	// 	// -- Set verification to true & Update otp
-	// 	const hashedPassword = await bcrypt.hash(
-	// 		dto.password,
-	// 		CONFIG_PASSWORD_HASH_SALT,
-	// 	);
-	// 	admin = {
-	// 		...admin,
-	// 		otp: null,
-	// 		otpExpiresAt: null,
-	// 		password: hashedPassword,
-	// 		temporaryPassword: null,
-	// 	};
-	// 	await this.organizationAdminsService.save(admin);
-
-	// 	// --
-	// 	return this.getConnection(admin);
-	// }
+	
 
 	async getConnection(
 		admin: AdminEntity,

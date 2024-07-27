@@ -39,7 +39,7 @@ const UserDropdown: FC = function () {
 	const fetchUserData = (id: string, accessToken: string) => {
 		setLoading(true);
 		axios
-			.get(`${API_BASE_URL}/users/${id}`, {
+			.get(`${API_BASE_URL}/system_admin/${id}`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`
 				}
@@ -96,7 +96,7 @@ const UserDropdown: FC = function () {
 					{user.email}
 				</span>
 			</Dropdown.Header>
-			<Dropdown.Item href="users/settings">Settings</Dropdown.Item>
+			<Dropdown.Item href="/users/settings">Settings</Dropdown.Item>
 			<Dropdown.Divider />
 			<Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
 		</Dropdown>

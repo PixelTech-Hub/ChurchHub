@@ -41,11 +41,4 @@ export class SystemAdminEntity extends BaseEntity {
 	@IsEnum(EntitySystemAdminRoleEnum, { message: 'Invalid system admin role' })
 	role: EntitySystemAdminRoleEnum;
 
-	@ApiProperty()
-	@ManyToOne(() => ChurchEntity, {
-		onUpdate: 'CASCADE',
-		onDelete: 'CASCADE',
-	})
-	@JoinColumn({ name: 'churchId' })
-	church: Partial<ChurchEntity>;
 }
