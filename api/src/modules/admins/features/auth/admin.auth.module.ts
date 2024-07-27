@@ -7,6 +7,9 @@ import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
 import { AdminModule } from '../../admin.module';
 import { ChurchAdminsJwtStrategy } from './admin.jwt.strategy';
+import { OtpService } from 'src/modules/shared/services/otp.service';
+import { BulkSmsService } from 'src/modules/shared/services/bulk-sms.service';
+import { MailerService } from 'src/modules/shared/services/mailer.service';
 
 @Module({
 	imports: [
@@ -22,6 +25,9 @@ import { ChurchAdminsJwtStrategy } from './admin.jwt.strategy';
 		AuthService,
 		ChurchAdminsJwtStrategy,
 		ConfigService,
+		OtpService,
+		BulkSmsService,
+		MailerService
 	],
 	exports: [
 		JwtModule,

@@ -21,6 +21,7 @@ import { LoginDto } from 'src/common/dto/login.dto';
 import { CreateChurchAdminDto } from 'src/modules/admins/dto/create-churchadmin.dto';
 import { UpdatePasswordDto } from 'src/common/models/update-password.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { VerifyEmailOtpDto } from 'src/common/models/verify-email-otp.dto';
 
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -57,16 +58,13 @@ export class AuthController {
         );
         return { message: 'Password updated successfully' };
     }
+	@Post('verify-email')
+  @ApiOkResponse({ type: UserConnection })
+  @ApiNotAcceptableResponse()
+  async verifyEmailOtp(@Body() dto: VerifyEmailOtpDto): Promise<UserConnection> {
+    return this.authService.verifyEmailOtp(dto);
+  }
 }
-
-// 	@Post('verify-email')
-//   @ApiOkResponse({ type: OrganizationAdminConnection })
-//   @ApiNotAcceptableResponse()
-//   async verifyEmailOtp(
-//     @Body() dto: VerifyEmailOtpDto,
-//   ): Promise<OrganizationAdminConnection> {
-//     return this.adminsAuthService.verifyEmailOtp(dto);
-//   }
 
 //   @Post('password-recovery/initiate')
 //   @ApiOkResponse({ type: Email })

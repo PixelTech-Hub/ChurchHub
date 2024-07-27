@@ -16,14 +16,18 @@ import { CreateChurchAdminDto } from 'src/modules/admins/dto/create-churchadmin.
 import { Email } from 'src/common/models/email.model';
 import { AdminEntity } from 'src/modules/admins/entities/admin.entity';
 import { EntityChurchAdminRoleEnum } from 'src/modules/admins/enums/admin.enum';
-import { UpdatePasswordWithTokenDto } from 'src/common/models/update-password-with-token.dto';
+import { VerifyEmailOtpDto } from 'src/common/models/verify-email-otp.dto';
+import { OtpService } from 'src/modules/shared/services/otp.service';
 
 @Injectable()
 export class AuthService {
+	otp: any;
+	organizationAdminsService: any;
 	constructor(
 		private jwtService: JwtService,
 		private usersService: AdminService,
 		private configService: ConfigService,
+		private otpService: OtpService
 	) { }
 
 	async signUp(dto: CreateChurchAdminDto): Promise<Email> {
@@ -47,46 +51,86 @@ export class AuthService {
 	}
 
 	async login(dto: LoginDto): Promise<UserConnection> {
-        const admin = await this.usersService.findOneByField(dto.email, 'email');
-        if (!admin)
-            throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
+		const admin = await this.usersService.findOneByField(dto.email, 'email');
+		if (!admin)
+			throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
 
-        if (!(await bcrypt.compare(dto.password, admin.password)))
-            throw new NotAcceptableException(ExceptionEnum.wrongPassword);
+		if (!(await bcrypt.compare(dto.password, admin.password)))
+			throw new NotAcceptableException(ExceptionEnum.wrongPassword);
 
-        return this.getConnection(admin);
-    }
+		return this.getConnection(admin);
+	}
 
-    async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
-        const user = await this.usersService.findOneByField(userId, 'id');
-        if (!user) {
-            throw new NotFoundException(ExceptionEnum.userNotFound);
-        }
+	async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+		const user = await this.usersService.findOneByField(userId, 'id');
+		if (!user) {
+			throw new NotFoundException(ExceptionEnum.userNotFound);
+		}
 
-        const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-        if (!isPasswordValid) {
-            throw new NotAcceptableException(ExceptionEnum.wrongPassword);
-        }
+		const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+		if (!isPasswordValid) {
+			throw new NotAcceptableException(ExceptionEnum.wrongPassword);
+		}
 
-        const hashedNewPassword = await bcrypt.hash(
-            newPassword,
-            CONFIG_PASSWORD_HASH_SALT,
-        );
+		const hashedNewPassword = await bcrypt.hash(
+			newPassword,
+			CONFIG_PASSWORD_HASH_SALT,
+		);
 
-        user.password = hashedNewPassword;
-        await this.usersService.save(user);
-    }
+		user.password = hashedNewPassword;
+		await this.usersService.save(user);
+	}
 
-    async getConnection(admin: AdminEntity): Promise<UserConnection> {
-        const accessToken: string = this.getAccessToken(admin);
-        return { accessToken, data: admin };
-    }
+	async verifyEmailOtp(dto: VerifyEmailOtpDto): Promise<UserConnection> {
+		let admin = await this.usersService.findOneByField(dto.email, 'email');
+		if (!admin) throw new NotFoundException(ExceptionEnum.adminNotFound);
+		// Verify Otp
+		// this.otpService.verify(admin, dto.otp);
 
-    getAccessToken(admin: AdminEntity): string {
-        const payload: JwtTokenPayloadModel = {
-            sub: admin.id,
-            entityName: EntityChurchAdminRoleEnum.superadmin,
-        };
-        return this.jwtService.sign(payload);
-    }
+		// Set verification to true & Update otp
+		admin = {
+			...admin,
+			isEmailVerified: 'true',
+			otp: null,
+			otpExpiresAt: null,
+		};
+		await this.organizationAdminsService.save(admin);
+
+		return this.getConnection(admin);
+	}
+
+
+	// async verifyEmailOtp(dto: VerifyEmailOtpDto): Promise<UserConnection> {
+	// 	// -- On account creation
+	// 	let admin = await this.usersService.findOneByField(dto.email, 'email');
+	// 	if (!admin) throw new NotFoundException(ExceptionEnum.adminNotFound);
+
+	// 	// -- Verify Otp
+	// 	this.otpService.verify(admin, dto.otp);
+
+	// 	// -- Set verification to true & Update otp
+	// 	admin = {
+	// 		...admin,
+	// 		isEmailVerified: true,
+	// 		otp: null,
+	// 		otpExpiresAt: null,
+	// 	};
+	// 	await this.usersService.save(admin);
+
+	// 	// --
+	// 	return this.getConnection(admin);
+	// }
+
+	async getConnection(admin: AdminEntity): Promise<UserConnection> {
+		const accessToken: string = this.getAccessToken(admin);
+		return { accessToken, data: admin };
+	}
+
+	getAccessToken(admin: AdminEntity): string {
+		const payload: JwtTokenPayloadModel = {
+			sub: admin.id,
+			entityName: EntityChurchAdminRoleEnum.superadmin,
+		};
+		return this.jwtService.sign(payload);
+	}
 }

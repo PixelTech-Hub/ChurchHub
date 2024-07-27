@@ -4,6 +4,7 @@ import { BaseEntity } from "src/common/entities/base.entity";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { EntityChurchAdminRoleEnum } from "../enums/admin.enum";
 import { ChurchEntity } from "src/modules/churches/entities/church.entity";
+import { Exclude } from "class-transformer";
 
 @Entity('users')
 export class AdminEntity extends BaseEntity {
@@ -51,6 +52,14 @@ export class AdminEntity extends BaseEntity {
 	@Column({ nullable: true })
 	@IsEnum(EntityChurchAdminRoleEnum, { message: 'Invalid church admin role' })
 	role: EntityChurchAdminRoleEnum;
+
+	@Exclude()
+	@Column({ type: 'int', nullable: true })
+	otp: number;
+
+	@Exclude()
+	@Column({ nullable: true })
+	otpExpiresAt: Date;
 
 	@ApiProperty()
 	@ManyToOne(() => ChurchEntity, {
