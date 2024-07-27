@@ -5,6 +5,9 @@ export class UserConnection {
   @ApiProperty({ type: AdminEntity })
   data: AdminEntity;
 
-  @ApiProperty()
-  accessToken: string;
+  @ApiProperty({ required: false })
+  accessToken?: string;
+
+  @ApiProperty({ required: false })
+  requiresOtp?: boolean;
 }

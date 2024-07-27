@@ -24,28 +24,28 @@ export class AdminEntity extends BaseEntity {
 	@ApiProperty()
 	@IsString()
 	@Column({ type: 'varchar' })
-	name: String
+	name: string
 
 	@ApiProperty()
 	@IsString()
 	@Column({ type: 'varchar' })
-	title: String
+	title: string
 
 
 
 	@ApiProperty()
 	@IsEmail()
 	@Column({ type: 'varchar' })
-	email: String
+	email: string
 
 	@ApiProperty()
 	@IsString()
 	@Column({ type: 'varchar' })
-	password: String
+	password: string
 
 	@ApiProperty()
 	@Column({ type: 'varchar', default: true })
-	isEmailVerified: String
+	isEmailVerified: Boolean
 
 	@IsDefined()
 	@IsNotEmpty()

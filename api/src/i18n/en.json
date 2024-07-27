@@ -1,0 +1,13 @@
+{
+	"mails": {
+	  "otp": {
+		"appOtp": "Your Application OTP",
+		"dearX": "Dear {name},",
+		"yourOtpIsX": "Your OTP is: {otp}",
+		"bestRegards": "Best regards,",
+		"contactUsText": "If you have any issues, please contact us at support@churchhub.com.",
+		"hiThere": "Hi there,"
+	  }
+	}
+  }
+  

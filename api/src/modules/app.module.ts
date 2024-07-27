@@ -39,6 +39,9 @@ import { ActivityEntity } from './activities/entities/activity.entity';
 import { SystemAdminModule } from './system-admins/system_admin.module';
 import { SystemAdminEntity } from './system-admins/entities/system_admin.entity';
 import { SystemAuthModule } from './system-admins/features/auth/system_admin.auth.module';
+import { OtpService } from './shared/services/otp.service';
+import { BulkSmsService } from './shared/services/bulk-sms.service';
+import { MailerService } from './shared/services/mailer.service';
 
 
 @Global()
@@ -113,6 +116,6 @@ import { SystemAuthModule } from './system-admins/features/auth/system_admin.aut
     AuthModule
   ],
   controllers: [],
-  providers: [],
+  providers: [OtpService, BulkSmsService, MailerService]
 })
 export class AppModule { }
