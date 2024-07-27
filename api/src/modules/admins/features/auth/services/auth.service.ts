@@ -47,66 +47,46 @@ export class AuthService {
 	}
 
 	async login(dto: LoginDto): Promise<UserConnection> {
-		// --
-		let admin = await this.usersService.findOneByField(
-			dto.email,
-			'email',
-		);
-		if (!admin)
-			throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
+        const admin = await this.usersService.findOneByField(dto.email, 'email');
+        if (!admin)
+            throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
 
+        if (!(await bcrypt.compare(dto.password, admin.password)))
+            throw new NotAcceptableException(ExceptionEnum.wrongPassword);
 
+        return this.getConnection(admin);
+    }
 
-		// -- Check password
-		if (!(await bcrypt.compare(dto.password, admin.password)))
-			throw new NotAcceptableException(ExceptionEnum.wrongPassword);
+    async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+        const user = await this.usersService.findOneByField(userId, 'id');
+        if (!user) {
+            throw new NotFoundException(ExceptionEnum.userNotFound);
+        }
 
+        const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isPasswordValid) {
+            throw new NotAcceptableException(ExceptionEnum.wrongPassword);
+        }
 
-		// -- Return the main-dashboard and the access token
-		return {
-			accessToken: this.getAccessToken(admin),
-			data: admin,
-		};
-	}
+        const hashedNewPassword = await bcrypt.hash(
+            newPassword,
+            CONFIG_PASSWORD_HASH_SALT,
+        );
 
-	async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
-		// Find the user by ID
-		const user = await this.usersService.findOneByField(userId, 'id');
-		if (!user) {
-		  throw new NotFoundException(ExceptionEnum.userNotFound);
-		}
-	  
-		// Verify the current password
-		const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-		if (!isPasswordValid) {
-		  throw new NotAcceptableException(ExceptionEnum.wrongPassword);
-		}
-	  
-		// Hash the new password
-		const hashedNewPassword = await bcrypt.hash(
-		  newPassword,
-		  CONFIG_PASSWORD_HASH_SALT,
-		);
-	  
-		// Update the user's password
-		user.password = hashedNewPassword;
-		await this.usersService.save(user);
-	  }
+        user.password = hashedNewPassword;
+        await this.usersService.save(user);
+    }
 
-	
+    async getConnection(admin: AdminEntity): Promise<UserConnection> {
+        const accessToken: string = this.getAccessToken(admin);
+        return { accessToken, data: admin };
+    }
 
-	async getConnection(
-		admin: AdminEntity,
-	): Promise<UserConnection> {
-		const accessToken: string = this.getAccessToken(admin);
-		return { accessToken, data: admin };
-	}
-
-	getAccessToken(admin: AdminEntity): string {
-		const payload = <JwtTokenPayloadModel>(<unknown>{
-			sub: admin.id,
-			entityName: EntityChurchAdminRoleEnum.superadmin,
-		});
-		return this.jwtService.sign(payload);
-	}
+    getAccessToken(admin: AdminEntity): string {
+        const payload: JwtTokenPayloadModel = {
+            sub: admin.id,
+            entityName: EntityChurchAdminRoleEnum.superadmin,
+        };
+        return this.jwtService.sign(payload);
+    }
 }

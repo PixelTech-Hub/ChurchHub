@@ -1,16 +1,18 @@
 import {
-	Body,
-	ClassSerializerInterceptor,
-	Controller,
-	Patch,
-	Post,
-	Request,
-	UseInterceptors,
+    Body,
+    ClassSerializerInterceptor,
+    Controller,
+    Patch,
+    Post,
+    Request,
+    UseInterceptors,
+    UseGuards,
 } from '@nestjs/common';
 import {
-	ApiNotAcceptableResponse,
-	ApiOkResponse,
-	ApiTags,
+    ApiNotAcceptableResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import { UserConnection } from '../models/user-connection.model';
@@ -18,40 +20,43 @@ import { Email } from 'src/common/models/email.model';
 import { LoginDto } from 'src/common/dto/login.dto';
 import { CreateChurchAdminDto } from 'src/modules/admins/dto/create-churchadmin.dto';
 import { UpdatePasswordDto } from 'src/common/models/update-password.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('users/auth')
 @Controller('users/auth')
 export class AuthController {
-	constructor(private authService: AuthService) { }
+    constructor(private authService: AuthService) {}
 
-	@Post('signup')
-	@ApiOkResponse({ type: UserConnection })
-	async signup(@Body() dto: CreateChurchAdminDto): Promise<Email> {
-		return this.authService.signUp(dto);
-	}
+    @Post('signup')
+    @ApiOkResponse({ type: Email })
+    async signup(@Body() dto: CreateChurchAdminDto): Promise<Email> {
+        return this.authService.signUp(dto);
+    }
 
-	@Post('login')
-	@ApiOkResponse({ type: UserConnection })
-	@ApiNotAcceptableResponse()
-	async login(@Body() dto: LoginDto): Promise<UserConnection> {
-		return this.authService.login(dto);
-	}
+    @Post('login')
+    @ApiOkResponse({ type: UserConnection })
+    @ApiNotAcceptableResponse()
+    async login(@Body() dto: LoginDto): Promise<UserConnection> {
+        return this.authService.login(dto);
+    }
 
-	@Patch('update-password')
-	// @UseGuards(JwtAuthGuard)
-	async updatePassword(
-		@Request() req,
-		@Body() updatePasswordDto: UpdatePasswordDto,
-	) {
-		await this.authService.updatePassword(
-			req.user.id,
-			updatePasswordDto.currentPassword,
-			updatePasswordDto.newPassword,
-		);
-		return { message: 'Password updated successfully' };
-	}
-
+    @Patch('update-password')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse({ description: 'Password updated successfully' })
+    async updatePassword(
+        @Request() req,
+        @Body() updatePasswordDto: UpdatePasswordDto,
+    ) {
+        await this.authService.updatePassword(
+            req.user.sub, // Using sub from JWT payload as user ID
+            updatePasswordDto.currentPassword,
+            updatePasswordDto.newPassword,
+        );
+        return { message: 'Password updated successfully' };
+    }
 }
 
 // 	@Post('verify-email')
