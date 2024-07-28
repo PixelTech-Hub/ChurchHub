@@ -28,14 +28,14 @@ export const login = createAsyncThunk(
 
 			// The response already contains the data we need, no need to check for 'success'
 			if (response && response.accessToken) {
-				console.log('Login successful, returning data:', response)
+				// console.log('Login successful, returning data:', response)
 				return response;  // Return the whole response, not just response.data
 			} else {
-				console.log('Login failed, no accessToken in response')
+				// console.log('Login failed, no accessToken in response')
 				return rejectWithValue('Login failed: No access token received');
 			}
 		} catch (error) {
-			console.error("Login error:", error)
+			// console.error("Login error:", error)
 			if (error instanceof Error) {
 				return rejectWithValue(error.message || 'An unexpected error occurred');
 			}
@@ -56,10 +56,10 @@ export const authSlice = createSlice({
 			localStorage.clear();
 		},
 		initializeFromLocalStorage: (state) => {
-        const userData = localStorage.getItem('userData');
-        const token = localStorage.getItem('token');
-        if (userData && token) {
-            state.data = JSON.parse(userData);
+        // const userData = localStorage.getItem('userData');
+        const token = localStorage.getItem('accessToken');
+        if ( token) {
+            // state.data = JSON.parse(userData);
             state.accessToken = token;
             state.isAuthenticated = true;
         }
@@ -78,8 +78,8 @@ export const authSlice = createSlice({
 				state.data = action.payload.data;
 				state.accessToken = action.payload.accessToken;
 				state.isAuthenticated = true;
-				localStorage.setItem('token', action.payload.accessToken); // Store token in localStorage
-				localStorage.setItem('userData', JSON.stringify(action.payload.data));
+				// localStorage.setItem('token', action.payload.accessToken); // Store token in localStorage
+				// localStorage.setItem('userData', JSON.stringify(action.payload.data));
 			})
 			.addCase(login.rejected, (state, action) => {
 				state.isLoading = false;

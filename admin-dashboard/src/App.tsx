@@ -40,7 +40,7 @@ const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
  
   const location = useLocation();
 
-  const auth = localStorage.getItem('token');
+  const auth = localStorage.getItem('accessToken');
 
   
 

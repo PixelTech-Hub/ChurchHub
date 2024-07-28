@@ -14,7 +14,8 @@ const loginUser = async (userData: Users) => {
 		});
 
 		if (response.status === 201) {
-			console.log('Received response:', response.data);
+			// console.log('Received response:', response.data);
+			localStorage.setItem('accessToken', response.data.accessToken);
 			return response.data;
 		}
 	} catch (error) {
