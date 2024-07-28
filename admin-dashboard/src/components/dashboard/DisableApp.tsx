@@ -5,10 +5,11 @@ interface DisableAppProp {
 	setModalIsOpen: any
 	closeModal: () => void
 	modalIsOpen: boolean;
+	userChurch: any
 }
 
 
-const DisableApp:FC<DisableAppProp> = ({modalIsOpen, setModalIsOpen, closeModal}) => {
+const DisableApp:FC<DisableAppProp> = ({modalIsOpen, setModalIsOpen, closeModal, userChurch}) => {
 	return (
 		<Modal
 			onClose={() => setModalIsOpen(false)}
@@ -26,7 +27,7 @@ const DisableApp:FC<DisableAppProp> = ({modalIsOpen, setModalIsOpen, closeModal}
 			</Modal.Header>
 			<Modal.Body className="px-6 py-4">
 				<p className="mb-4 text-gray-700">
-					We regret to inform you that this church account is currently disabled. This may be due to one of the following reasons:
+					We regret to inform you that <span className='text-red-500'>{userChurch.name}</span> account is currently disabled. This may be due to one of the following reasons:
 				</p>
 				<ul className="list-disc list-inside mb-4 text-gray-600">
 					<li>Administrative review</li>

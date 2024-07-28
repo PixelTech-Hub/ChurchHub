@@ -1,0 +1,62 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { ChurchBranch } from "../../types/ChurchBranches";
+import ChurchBranchService from "./branchService";
+
+export interface ChurchBranchState {
+    allChurchBranches: ChurchBranch[] | null;
+    churchBranch: ChurchBranch | null;
+    loading: boolean;
+    error: string | null;
+}
+
+const initialState: ChurchBranchState = {
+    allChurchBranches: [],
+    churchBranch: null,
+    loading: false,
+    error: null
+}
+
+export const getAllChurchBranches = createAsyncThunk("churches_branch/get-all", 
+	async (churchId: string, { rejectWithValue }) => {
+        try {
+            return await ChurchBranchService.getAllChurchBranches(churchId);
+        } catch (error) {
+            return rejectWithValue((error as Error).message);
+        }
+    }
+);
+
+// export const getUserChurch = createAsyncThunk(
+//     "churches/get-user-church",
+//     async (churchId: string, { rejectWithValue }) => {
+//         try {
+//             return await churchService.getChurchById(churchId);
+//         } catch (error) {
+//             return rejectWithValue((error as Error).message);
+//         }
+//     }
+// );
+
+export const churchBranchSlice = createSlice({
+    name: "churches_branches",
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getAllChurchBranches.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAllChurchBranches.fulfilled, (state, action) => {
+                state.loading = false;
+                state.allChurchBranches = action.payload;
+            })
+            .addCase(getAllChurchBranches.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch church branches";
+            })
+            
+    },
+});
+
+export default churchBranchSlice.reducer;

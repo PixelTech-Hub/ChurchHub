@@ -7,6 +7,7 @@ import { BranchService } from '../services/branch.service';
 import { BranchEntity } from '../entities/branch.entity';
 import { FindBranchDto } from '../dto/find-branch.dto';
 import { CreateBranchDto } from '../dto/create-branch.dto';
+import { JwtAuthGuard } from 'src/modules/admins/features/auth/guards/jwt-auth.guard';
 
 
 
@@ -14,7 +15,8 @@ import { CreateBranchDto } from '../dto/create-branch.dto';
 
 
 @Controller('church_branches')
-// @ApiBearerAuth()
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard) 
 @ApiTags('church_branches')
 export class BranchController {
 	constructor(private readonly branchService: BranchService) { }
