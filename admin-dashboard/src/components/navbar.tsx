@@ -11,47 +11,33 @@ import {
 } from "react-icons/hi";
 import { useSidebarContext } from "../context/SidebarContext";
 import isSmallScreen from "../helpers/is-small-screen";
-import axios from "axios";
-import { API_BASE_URL } from "../app/api";
-import { Churches } from "../types/Churches";
 import NotificationBellDropdown from "./layout/NotificationBellDropdown";
 import AppDrawerDropdown from "./layout/AppDrawerDropdown";
 import UserDropdown from "./layout/UserDropdown";
-import { AuthData } from "../types/AuthData";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { getUserChurch } from "../features/churches/churchSlice";
 
 
 
 
 const ExampleNavbar: FC = function () {
-  const { isOpenOnSmallScreens, isPageWithSidebar, setOpenOnSmallScreens } =
-    useSidebarContext();
-    const [loading, setLoading] = useState(false);
-    const [church, setChurch] = useState<Churches>({} as Churches);
-    
+  const { isOpenOnSmallScreens, isPageWithSidebar, setOpenOnSmallScreens } = useSidebarContext();
+  const dispatch = useAppDispatch();
+  const userData = useAppSelector((state) => state.auth.data);
+  const userChurch = useAppSelector((state) => state.church.userChurch);
 
-  const fetchChurchData = (churchId: string, accessToken: string) => {
-    setLoading(true);
-    axios
-      .get(`${API_BASE_URL}/churches/${churchId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      })
-      .then((response) => {
-        setChurch(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching church data:', error);
-        setLoading(false);
-      });
-  };
+  // console.log('userData:', userData);
+  // console.log('userChurch:', userChurch);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    // console.log('useEffect triggered');
+    if (userData && userData.churchId) {
+      // console.log('Dispatching getUserChurch with churchId:', userData.churchId);
+      dispatch(getUserChurch(userData.churchId));
+    }
+  }, [userData, dispatch]);
 
- 
+  
 
 
   return (
@@ -76,7 +62,7 @@ const ExampleNavbar: FC = function () {
               <p className="font-extrabold">CHURCH HUB</p>
             </Navbar.Brand>
             <div className="hidden lg:flex lg:text-xl  ml-16 font-bold">
-              <p className="dark:text-white">{church.name}</p>
+              <p className="dark:text-white">{userChurch?.name}</p>
             </div>
           </div>
           <div className="flex items-center lg:gap-3">

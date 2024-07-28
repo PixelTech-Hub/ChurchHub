@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import DashboardPage from "./pages";
 import ForgotPasswordPage from "./pages/authentication/forgot-password";
@@ -32,6 +32,8 @@ import SingleChurchMember from "./pages/church-members/SingleChurchMember";
 import ChurchMinistryPage from "./pages/church-staff/church-ministries/ChurchMinistryPage";
 import SingleChurchMinistry from "./pages/SingleChurchMinistry";
 import { ChurchBranches, ChurchService } from "./pages/main";
+import { useDispatch } from "react-redux";
+import { initializeFromLocalStorage } from "./features/auth/authSlice";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -40,7 +42,13 @@ const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
  
   const location = useLocation();
 
+  const dispatch = useDispatch();
+
   const auth = localStorage.getItem('accessToken');
+
+    useEffect(() => {
+        dispatch(initializeFromLocalStorage());
+    }, [dispatch]);
 
   
 

@@ -1,7 +1,16 @@
 export const API_BASE_URL = 'http://localhost:8000';
 export const ITEMS_PER_PAGE = 10
 
+
+
+//USER API
+export const USER_AUTH_LOGIN_API = `${API_BASE_URL}/users/auth/login`;
+export const USER_DETAIL_API = `${API_BASE_URL}/users/auth/me`;
+
+
+//CHURCH API
 export const CHURCH_API_URL = `${API_BASE_URL}/churches`;
+
 
 //CHURCH BRANCH_API
 export const ALL_CHURCH_BRANCH_API_URL = `${API_BASE_URL}/church_branches/church`;

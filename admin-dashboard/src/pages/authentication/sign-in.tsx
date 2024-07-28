@@ -47,12 +47,12 @@ const SignInPage: FC = function () {
       return;
     }
     if (validateForm()) {
-      console.log("Hello Valid Form")
+      // console.log("Hello Valid Form")
       const result = await dispatch(login({ email, password }));
       if (login.fulfilled.match(result)) {
         toast.success('Logged in successfully');
         navigate("/")
-        console.log('result: ', result);
+        // console.log('result: ', result);
       } else if (login.rejected.match(result)) {
         toast.error(result.payload as string || 'Login failed');
       }

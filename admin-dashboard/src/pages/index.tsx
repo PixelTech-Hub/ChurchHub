@@ -24,45 +24,45 @@ const DashboardPage: FC = function () {
   const [authData, setAuthData] = useState<AuthData | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  useEffect(() => {
-    const storedData = localStorage.getItem('userData');
-    if (storedData) {
-      try {
-        const parsedData: AuthData = JSON.parse(storedData);
-        setAuthData(parsedData);
-      } catch (error) {
-        console.error('Error parsing auth data:', error);
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedData = localStorage.getItem('userData');
+  //   if (storedData) {
+  //     try {
+  //       const parsedData: AuthData = JSON.parse(storedData);
+  //       setAuthData(parsedData);
+  //     } catch (error) {
+  //       console.error('Error parsing auth data:', error);
+  //     }
+  // //   }
+  // }, []);
 
-  const fetchChurchId = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${CHURCH_API_URL}/${authData?.churchId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setChurch(data);
+  // const fetchChurchId = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch(`${CHURCH_API_URL}/${authData?.churchId}`);
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setChurch(data);
 
-        // Check if the church is disabled and open the modal if it is
-        if (data && data.isEnabled === false) {
-          setModalIsOpen(true);
-        }
-      } else {
-        console.error("Failed to fetch church services");
-      }
-    } catch (error) {
-      console.error("Error fetching church services:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //       // Check if the church is disabled and open the modal if it is
+  //       if (data && data.isEnabled === false) {
+  //         setModalIsOpen(true);
+  //       }
+  //     } else {
+  //       console.error("Failed to fetch church services");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching church services:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (authData) {
-      fetchChurchId();
-    }
-  }, [authData]);
+  // useEffect(() => {
+  //   if (authData) {
+  //     fetchChurchId();
+  //   }
+  // }, [authData]);
 
   useEffect(() => {
     if (church && church.isEnabled === false) {
