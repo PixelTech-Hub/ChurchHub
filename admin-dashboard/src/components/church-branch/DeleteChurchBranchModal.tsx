@@ -1,64 +1,49 @@
-import axios from "axios";
-import { FC, FormEvent, useState } from "react"
-import { API_BASE_URL } from "../../app/api";
+import { FC, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
+import { useAppDispatch, useAppSelector } from "../../app/hooks"; 
+import { deleteChurchBranch } from "../../features/church-branches/branchSlice"; 
 import DeleteItem from "../modals/DeleteItem";
 
 type DeleteBranchProp = {
-	branchId: string;
-	branchName: string;
-}
+    branchId: string;
+    branchName: string;
+};
 
+const DeleteChurchBranchModal: FC<DeleteBranchProp> = ({ branchId, branchName }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dispatch = useAppDispatch();
+    const { deleting } = useAppSelector((state) => state.branch);
 
-const DeleteChurchBranchModal:FC<DeleteBranchProp> = ({branchId, branchName}) => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-
-	// console.log("handleDeleteChurchStaff", memberId);
-	const handleDeleteChurchBranch = async (e: FormEvent<HTMLElement>) => {
+    const handleDeleteChurchBranch = async (e: FormEvent<HTMLElement>) => {
 		e.preventDefault();
-		// console.log("processing branch id", branchName);
-	
 		try {
-			setIsLoading(true);
-			console.log('Processing deletion for branchId:', branchName);
-			
-			const response = await axios.delete(`${API_BASE_URL}/church_branches/${branchId}`);
-			
-			console.log("Delete Church branch Response:", response);
+			await dispatch(deleteChurchBranch(branchId)).unwrap();
 			toast.success('Church branch deleted successfully');
 			setIsOpen(false);
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
-				console.error("Delete Church branch Axios Error:", error.response?.data);
-				toast.error(`Failed to delete church branch: ${error.response?.data?.message || error.message}`);
+			if (error instanceof Error) {
+				// Handle the case where `error` is an `Error` object
+				toast.error(`Failed to delete church branch: ${error.message}`);
 			} else {
-				console.error("Delete Church branch Error:", error);
+				// Handle other types of errors
 				toast.error('Failed to delete church branch');
 			}
 		} finally {
-			setIsLoading(false);
 		}
 	};
+	
 
+    return (
+        <>
+            <DeleteItem
+                title={branchName}
+                handleSubmit={handleDeleteChurchBranch}
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                isLoading={deleting}
+            />
+        </>
+    );
+};
 
-
-	// console.log("staffId:++++++++",staffId)
-	return (
-		<>
-			<DeleteItem
-				title={branchName}
-				handleSubmit={handleDeleteChurchBranch}
-				isOpen={isOpen}
-				setIsOpen={setIsOpen}
-				isLoading={isLoading}
-				setIsLoading={setIsLoading}
-			>
-
-
-			</DeleteItem>
-		</>
-  )
-}
-
-export default DeleteChurchBranchModal
+export default DeleteChurchBranchModal;

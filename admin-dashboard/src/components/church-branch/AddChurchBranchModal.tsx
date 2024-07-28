@@ -26,7 +26,7 @@ const AddChurchBranchModal = () => {
 			return;
 		}
 	
-		// Create a ChurchBranch object with required fields
+		// Create a Church Branch object with required fields
 		const formDataToSubmit: ChurchBranch = {
 			mainChurchId: church.id,
 			name,

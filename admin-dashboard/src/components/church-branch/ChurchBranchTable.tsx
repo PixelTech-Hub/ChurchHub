@@ -1,9 +1,8 @@
 import { FC } from "react"
 import { ChurchBranch } from "../../types/ChurchBranches";
-import { Button, Pagination, Table } from "flowbite-react";
-import { Link } from "react-router-dom";
-import { HiArrowRight } from "react-icons/hi"
 import DeleteChurchBranchModal from "./DeleteChurchBranchModal";
+import UpdateChurchBranchModal from "./UpdateChurchBranchModal";
+import { Pagination, Table } from "flowbite-react";
 
 interface ChurchBranchTableProps {
 	paginatedBranches: ChurchBranch[];
@@ -70,11 +69,9 @@ const ChurchBranchTable: FC<ChurchBranchTableProps> = ({
 										branchId={branch.id ?? ''}
 										branchName={branch.name}
 									/>
-									<Link to={`/church-services/${branch.id}`} className="">
-										<Button color="success">
-											<HiArrowRight className="mr-2 text-lg" />
-										</Button>
-									</Link>
+									<UpdateChurchBranchModal
+
+									/>
 								</div>
 							</Table.Cell>
 						</Table.Row>
