@@ -57,12 +57,7 @@ export class AuthController {
             updatePasswordDto.newPassword,
         );
         return { message: 'Password updated successfully' };
-    }
-	@Post('verify-email')
-  @ApiOkResponse({ type: UserConnection })
-  @ApiNotAcceptableResponse()
-  async verifyEmailOtp(@Body() dto: VerifyEmailOtpDto): Promise<UserConnection> {
-    return this.authService.verifyEmailOtp(dto);
+    
   }
 }
 
