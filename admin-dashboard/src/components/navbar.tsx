@@ -27,25 +27,7 @@ const ExampleNavbar: FC = function () {
     useSidebarContext();
     const [loading, setLoading] = useState(false);
     const [church, setChurch] = useState<Churches>({} as Churches);
-    const [authData, setAuthData] = useState<AuthData | null>(null);
-
-  useEffect(() => {
-    const storedData = localStorage.getItem('userData');
-    // console.log('********strapped data', storedData)
-    if (storedData) {
-      try {
-        const parsedData: AuthData = JSON.parse(storedData);
-        setAuthData(parsedData);
-        
-        // Fetch church data immediately after setting authData
-        if (parsedData.churchId) {
-          fetchChurchData(parsedData.churchId, parsedData.accessToken);
-        }
-      } catch (error) {
-        console.error('Error parsing auth data:', error);
-      }
-    }
-  }, []);
+    
 
   const fetchChurchData = (churchId: string, accessToken: string) => {
     setLoading(true);
@@ -69,9 +51,7 @@ const ExampleNavbar: FC = function () {
     return <div>Loading...</div>;
   }
 
-  if (!authData) {
-    return <div>Please log in to view church data.</div>;
-  }
+ 
 
 
   return (

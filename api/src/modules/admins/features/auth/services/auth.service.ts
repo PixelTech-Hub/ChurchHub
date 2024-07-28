@@ -61,6 +61,14 @@ export class AuthService {
 		return this.getConnection(admin);
 	}
 
+	async getLoggedInUserDetails(userId: string): Promise<AdminEntity> {
+        const user = await this.usersService.findOneByField(userId, 'id');
+        if (!user) {
+            throw new NotFoundException(ExceptionEnum.userNotFound);
+        }
+        return user;
+    }
+
 	async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
 		const user = await this.usersService.findOneByField(userId, 'id');
 		if (!user) {
