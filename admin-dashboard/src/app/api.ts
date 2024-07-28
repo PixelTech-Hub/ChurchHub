@@ -14,7 +14,7 @@ export const CHURCH_API_URL = `${API_BASE_URL}/churches`;
 
 //CHURCH BRANCH_API
 export const ALL_CHURCH_BRANCH_API_URL = `${API_BASE_URL}/church_branches/church`;
-export const CHURCH_BRANCH_API_URL = `${API_BASE_URL}/church_branches/`;
+export const CHURCH_BRANCH_API_URL = `${API_BASE_URL}/church_branches`;
 
 //CHURCH SERVICES API
 export const CHURCH_SERVICE_API_URL = `${API_BASE_URL}/church_services`;
