@@ -1,21 +1,52 @@
 import { Button, Label, Modal, TextInput } from 'flowbite-react';
-import { useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FaEdit } from 'react-icons/fa';
+import { useAppDispatch } from '../../app/hooks';
+import { updateChurchBranch } from '../../features/church-branches/branchSlice';
+import { ChurchBranch } from '../../types/ChurchBranches';
 
-const UpdateChurchBranchModal = () => {
+
+interface UpdateBranchProps {
+	branch: ChurchBranch;
+}
+
+const UpdateChurchBranchModal: FC<UpdateBranchProps> = ({ branch }) => {
+	const dispatch = useAppDispatch();
 	const [isOpen, setOpen] = useState(false);
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [contact, setContact] = useState("");
-	const [dob, setDob] = useState("");
-	const [location, setLocation] = useState("");
+	const [name, setName] = useState(branch.name);
+	const [email, setEmail] = useState(branch.email);
+	const [contact, setContact] = useState(branch.church_number);
+	const [dob, setDob] = useState(branch.dob);
+	const [location, setLocation] = useState(branch.location);
+
+	useEffect(() => {
+		setName(branch.name);
+		setEmail(branch.email);
+		setContact(branch.church_number);
+		setDob(branch.dob);
+		setLocation(branch.location);
+	}, [branch]);
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		const updatedBranchData = {
+			name,
+			email,
+			church_number: contact,
+			date_opened: dob,
+			location,
+		};
+		dispatch(updateChurchBranch({ branchId: branch.id!, branchData: updatedBranchData }));
+		setOpen(false);
+	};
+
 	return (
 		<>
 			<Button color="success" onClick={() => setOpen(!isOpen)}>
 				<FaEdit size={20} />
 			</Button>
 			<Modal onClose={() => setOpen(false)} show={isOpen}>
-				<form >
+				<form onSubmit={handleSubmit}>
 					<Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
 						<strong>Update Church Branch</strong>
 					</Modal.Header>

@@ -69,9 +69,7 @@ const ChurchBranchTable: FC<ChurchBranchTableProps> = ({
 										branchId={branch.id ?? ''}
 										branchName={branch.name}
 									/>
-									<UpdateChurchBranchModal
-
-									/>
+									<UpdateChurchBranchModal branch={branch} />
 								</div>
 							</Table.Cell>
 						</Table.Row>

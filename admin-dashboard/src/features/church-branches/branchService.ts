@@ -90,7 +90,7 @@ const updateChurchBranch = async (branchId: string, branchData: Partial<ChurchBr
 		}
 
 		const response = await fetch(`${CHURCH_BRANCH_API_URL}/${branchId}`, {
-			method: 'PUT',
+			method: 'PATCH',
 			headers: {
 				'Authorization': `Bearer ${accessToken}`,
 				'Accept': 'application/json',
