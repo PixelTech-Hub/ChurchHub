@@ -63,10 +63,10 @@ export const authSlice = createSlice({
             localStorage.clear();
         },
         initializeFromLocalStorage: (state) => {
-			// const userData = localStorage.getItem('userData');
+			const userData = localStorage.getItem('userData');
 			const token = localStorage.getItem('accessToken');
-			if (token) {
-				// state.data = JSON.parse(userData);
+			if (userData && token) {
+				state.data = JSON.parse(userData);
 				state.accessToken = token;
 				state.isAuthenticated = true;
 			}
@@ -86,7 +86,7 @@ export const authSlice = createSlice({
 				state.accessToken = action.payload.accessToken;
 				state.isAuthenticated = true;
 				localStorage.setItem('accessToken', action.payload.accessToken);
-				// localStorage.setItem('userData', JSON.stringify(action.payload.data));
+				localStorage.setItem('userData', JSON.stringify(action.payload.data));
 			})
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;

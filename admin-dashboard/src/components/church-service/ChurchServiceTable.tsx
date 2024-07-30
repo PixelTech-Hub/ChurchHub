@@ -4,6 +4,7 @@ import { Button, Pagination, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiArrowRight } from "react-icons/hi";
 import DeleteChurchServiceModal from "./DeleteChurchServiceModal";
+import UpdateChurchServiceModal from "./UpdateChurchServiceModal";
 
 interface ChurchServiceTableProps {
 	filteredServices: ChurchServices[];
@@ -70,11 +71,7 @@ const ChurchServiceTable: FC<ChurchServiceTableProps> = ({
 										serviceId={service.id ?? ''}
 										serviceName={service.name}
 									/>
-									<Link to={`/church-services/${service.id}`} className="">
-										<Button color="success">
-											<HiArrowRight className="mr-2 text-lg" />
-										</Button>
-									</Link>
+									<UpdateChurchServiceModal service={service} />
 								</div>
 							</Table.Cell>
 						</Table.Row>

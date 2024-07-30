@@ -1,30 +1,33 @@
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react";
+import { useAppDispatch } from "../../app/hooks";
 import { ChurchServices } from "../../types/ChurchServices";
-import { toast } from "react-toastify";
+import { updateChurchService } from "../../features/church-services/serviceSlice";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
-import { FaPlus } from "react-icons/fa";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { postNewChurchService } from "../../features/church-services/serviceSlice";
+import { FaEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
 
+interface UpdateServiceProps {
+	service: ChurchServices;
+}
 
-const AddChurchServiceModal: FC = ({ }) => {
-	const [isOpen, setOpen] = useState<boolean>(false);
+const UpdateChurchServiceModal: FC<UpdateServiceProps> = ({ service }) => {
+	const dispatch = useAppDispatch();
+	const [isOpen, setOpen] = useState(false);
+	const [name, setName] = useState(service.name);
+	const [start, setStart] = useState(service.start_time);
+	const [end, setEnd] = useState(service.end_time);
+	const [language, setLanguage] = useState(service.language);
+
 	const [step, setStep] = useState<number>(1);
-
-	// Individual state for each form field
-	const [fullName, setFullName] = useState("");
-	const [start, setStart] = useState("");
-	const [end, setEnd] = useState("");
-	const [language, setLanguage] = useState("");
-
-
 	const [errors, setErrors] = useState<Partial<Record<keyof ChurchServices, string>>>({});
 
-	const dispatch = useAppDispatch();
-    const { posting } = useAppSelector((state) => state.service); 
-	const church = useAppSelector(state => state.church.userChurch)
+	useEffect(() => {
+		setName(service.name);
+		setStart(service.start_time)
+		setEnd(service.end_time)
+		setLanguage(service.language)
 
-	
+	}, [service]);
 
 	const validateField = (name: keyof ChurchServices, value: any) => {
 		let error = '';
@@ -94,53 +97,18 @@ const AddChurchServiceModal: FC = ({ }) => {
 		}
 	};
 
-
-
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!church?.id) {
-			toast.error('Main Church ID is not available.');
-			return;
-		}
-		if (validateStep()) {
-			// console.log("processing...");
-			
-			const formDataToSubmit: Partial<ChurchServices> = {
-				churchId: church?.id,
-				name: fullName,
-				start_time: start,
-				end_time: end,
-				language
-			};
-		
-
-			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
-
-			try {
-				await dispatch(postNewChurchService(formDataToSubmit)).unwrap();
-				// Reset form fields here
-				setOpen(false);
-				setFullName("")
-				setStart("")
-				setEnd("")
-				setLanguage("")
-				toast.success('Church service added successfully');
-			} catch (error) {
-				console.error('Submission failed:', error);
-				toast.error('Failed to add church staff');
-			} finally {
-				// setLoading(false);
-			}
-		} else {
-			console.log("Form has errors");
-			toast.error('Please correct the errors in the form');
-		}
+		const updatedServiceData = {
+			name,
+			start_time: start,
+			end_time: end,
+			language,
+		};
+		dispatch(updateChurchService({ serviceId: service.id!, serviceData: updatedServiceData }));
+		toast.success('Updated successfully')
+		setOpen(false);
 	};
-
-
-
-
-
 
 	const renderStep = () => {
 		switch (step) {
@@ -154,8 +122,8 @@ const AddChurchServiceModal: FC = ({ }) => {
 								<TextInput
 									id="name"
 									name="name"
-									value={fullName}
-									onChange={(e) => setFullName(e.target.value)}
+									value={name}
+									onChange={(e) => setName(e.target.value)}
 									color={errors.name ? 'failure' : undefined}
 									helperText={errors.name}
 									required
@@ -206,12 +174,10 @@ const AddChurchServiceModal: FC = ({ }) => {
 				return null;
 		}
 	};
-
 	return (
 		<>
-			<Button color="primary" onClick={() => setOpen(true)}>
-				<FaPlus className="mr-3 text-sm" />
-				Add Church Service
+			<Button color="success" onClick={() => setOpen(!isOpen)}>
+				<FaEdit size={20} />
 			</Button>
 			<Modal show={isOpen} onClose={() => setOpen(false)} size="xl">
 				<Modal.Header>Add Church Service</Modal.Header>
@@ -233,8 +199,8 @@ const AddChurchServiceModal: FC = ({ }) => {
 							</Button>
 						) : (
 							<Button color="success" onClick={handleSubmit}>
-								{!posting ? 'Submit' : 'Processing...'}
-								
+								{/* {!posting ? 'Submit' : 'Processing...'} */}
+								Update
 							</Button>
 						)}
 					</div>
@@ -244,4 +210,4 @@ const AddChurchServiceModal: FC = ({ }) => {
 	)
 }
 
-export default AddChurchServiceModal
+export default UpdateChurchServiceModal

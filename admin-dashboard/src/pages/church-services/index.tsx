@@ -1,7 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import { ChurchServices } from "../../types/ChurchServices";
-import { AuthData } from "../../types/AuthData";
-import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Breadcrumb, Button } from "flowbite-react";
@@ -9,114 +6,84 @@ import { HiDownload, HiHome, HiRefresh } from "react-icons/hi";
 import SearchItem from "../../helpers/SearchItem";
 import ChurchServiceTable from "../../components/church-service/ChurchServiceTable";
 import AddChurchServiceModal from "../../components/church-service/AddChurchServiceModal";
-import { ALL_CHURCH_SERVICE_API_URL } from "../../app/api";
+import useSearch from "../../hooks/useSearch";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { getAllChurchServices } from "../../features/church-services/serviceSlice";
+import { filterItems } from "../../utils/filterItem";
+import generatePDF from "../../utils/generatePDF";
 
 
 const ITEMS_PER_PAGE = 10;
 
 
 const ChurchService: FC = () => {
-	const [services, setServices] = useState<ChurchServices[]>([]);
-	const [searchTerm, setSearchTerm] = useState("");
 	const [isReloading, setIsReloading] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [authData, setAuthData] = useState<AuthData | null>(null);
+	const { searchTerm, handleSearch } = useSearch();
 
-	const fetchChurchServices = async () => {
-		try {
-			const response = await fetch(`${ALL_CHURCH_SERVICE_API_URL}/${authData?.churchId}`);
-			// console.log('response', response)
-			if (response.ok) {
-				const data = await response.json();
-				setServices(data); // Assuming data.data contains the array of church staffs
-				setLoading(false)
-			} else {
-				console.error("Failed to fetch church services");
-				setLoading(false)
-			}
-		} catch (error) {
-			console.error("Error fetching church services:", error);
-			setLoading(false)
+	const dispatch = useAppDispatch();
+	const services = useAppSelector((state) => state.service.allChurchServices || []);
+	const churchId = useAppSelector((state) => state.church.userChurch);
+
+
+
+	useEffect(() => {
+		if (churchId?.id) {
+			dispatch(getAllChurchServices(churchId.id));
 		}
-	};
+	}, [dispatch, churchId]);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('userData');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchChurchServices();
-	}, [authData, services]);
-
-	useEffect(() => {
-		// Reset to first page when search term changes
 		setCurrentPage(1);
 	}, [searchTerm, services]);
 
-	const filteredServices = services.filter((service) =>
-		service.name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
 
-	const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
+	const filteredChurchServices = filterItems(services, searchTerm, 'name');
 
-	const paginatedServices = filteredServices.slice(
+	const totalPages = Math.ceil(filteredChurchServices.length / ITEMS_PER_PAGE);
+
+	const paginatedChurchServices = filteredChurchServices.slice(
 		(currentPage - 1) * ITEMS_PER_PAGE,
 		currentPage * ITEMS_PER_PAGE
 	);
 
-	const handleSearch = (term: string) => {
-		setSearchTerm(term);
-	};
-
 
 	const handleReload = () => {
 		setIsReloading(true);
-		fetchChurchServices().finally(() => {
-		  setIsReloading(false);
-		});
-	  };
-
-	const handleDownloadPDF = async () => {
-		setIsDownloading(true);
-		setLoading(true)
-		try {
-			const doc = new jsPDF();
-
-			doc.text('Church Members', 14, 15);
-
-			const tableData = filteredServices.map(service => [
-				service.name,
-				service.start_time,
-				service.end_time,
-				service.language,
-			]);
-
-			(doc as any).autoTable({
-				head: [['Service Name', 'Start At', 'Ends At', 'Language']],
-				body: tableData,
-				startY: 20,
+		if (churchId?.id) {
+			dispatch(getAllChurchServices(churchId?.id)).finally(() => {
+				setIsReloading(false);
 			});
-
-			doc.save('church_services.pdf');
-		} catch (error) {
-			console.error('Error generating PDF:', error);
-			setIsDownloading(false);
-			setLoading(false)
-		} finally {
-			setIsDownloading(false);
-			setLoading(false)
 		}
 	};
+
+
+
+	  const handleDownloadPDF = async () => {
+		setIsDownloading(true);
+		setLoading(true);
+		try {
+		  generatePDF({
+			columns: [
+			  { header: 'Service Name', accessor: 'name' },
+			  { header: 'Start At', accessor: 'start_time' },
+			  { header: 'End At', accessor: 'end_time' },
+			  { header: 'Language', accessor: 'language' },
+			],
+			data: filteredChurchServices,
+			filename: 'church_service.pdf'
+		  });
+		} catch (error) {
+		  console.error('Error generating PDF:', error);
+		} finally {
+		  setIsDownloading(false);
+		  setLoading(false);
+		}
+	  };
+
+	//   console.log('================================', services)
 
 	return (
 		<NavbarSidebarLayout isFooter={false}>
@@ -188,8 +155,8 @@ const ChurchService: FC = () => {
 					<div className="inline-block min-w-full align-middle">
 						<div className="overflow-hidden shadow">
 							<ChurchServiceTable
-								paginatedServices={paginatedServices}
-								filteredServices={filteredServices}
+								paginatedServices={paginatedChurchServices}
+								filteredServices={filteredChurchServices}
 								loading={loading}
 								totalPages={totalPages}
 								currentPage={currentPage}

@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit"
 import authReducer from "../features/auth/authSlice"
 import churchReducer from "../features/churches/churchSlice"
 import churchBranchReducer  from "../features/church-branches/branchSlice"
+import churchServiceReducer  from "../features/church-services/serviceSlice"
 
 export const store = configureStore({
 	reducer: {
 		auth: authReducer,
 		church: churchReducer,
-		branch: churchBranchReducer
+		branch: churchBranchReducer,
+		service: churchServiceReducer
 	},
 
 })
