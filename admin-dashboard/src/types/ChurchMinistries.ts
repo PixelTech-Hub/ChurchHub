@@ -3,5 +3,5 @@ export interface ChurchMinistries {
 	churchId: string;
 	name: string;
 	description: string;
-	updatedAt: string;
+	updatedAt?: string;
 }

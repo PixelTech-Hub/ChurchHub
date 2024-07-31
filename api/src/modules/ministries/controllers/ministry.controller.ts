@@ -6,6 +6,7 @@ import { MinistryEntity } from '../entities/ministry.entity';
 import { UpdateMinistryDto } from '../dto/update-ministry.dto';
 import { FindMinistryDto } from '../dto/find-ministry.dto';
 import { CreateMinistryDto } from '../dto/create-ministry.dto';
+import { JwtAuthGuard } from 'src/modules/admins/features/auth/guards/jwt-auth.guard';
 
 
 
@@ -13,7 +14,8 @@ import { CreateMinistryDto } from '../dto/create-ministry.dto';
 
 
 @Controller('church_ministries')
-// @ApiBearerAuth()
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard) 
 @ApiTags('church_ministries')
 export class MinistryController {
 	constructor(private readonly ministryService: ChurchMinistryService) { }

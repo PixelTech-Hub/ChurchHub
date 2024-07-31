@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { ChurchMinistries } from "../../types/ChurchMinistries";
-import { AuthData } from "../../types/AuthData";
 import { toast } from "react-toastify";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
-import { CHURCH_MINISTRIES_API_URL } from "../../app/api";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { postNewChurchMinistry } from "../../features/church-ministries/ministrySlice";
 
 
 const AddChurchMinistryModal = () => {
@@ -16,20 +16,11 @@ const AddChurchMinistryModal = () => {
 	const [description, setDescription] = useState("");
 
 	const [errors, setErrors] = useState<Partial<Record<keyof ChurchMinistries, string>>>({});
-	const [loading, setLoading] = useState(false);
-	const [authData, setAuthData] = useState<AuthData | null>(null);
+	const dispatch = useAppDispatch();
+	const { posting } = useAppSelector((state) => state.ministry);
+	const church = useAppSelector(state => state.church.userChurch)
 
-	useEffect(() => {
-		const storedData = localStorage.getItem('userData');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
+
 
 	const validateField = (name: keyof ChurchMinistries, value: any) => {
 		let error = '';
@@ -97,44 +88,34 @@ const AddChurchMinistryModal = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-		console.log('hello', authData?.churchId)
+		if (!church?.id) {
+			toast.error('Main Church ID is not available.');
+			return;
+		}
 		if (validateStep()) {
-			setLoading(true);
-			console.log("processing...");
+			// console.log("processing...");
 			
-			const formDataToSubmit: Partial<ChurchMinistries> = {
-				churchId: authData?.churchId || '',
+			const formDataToSubmit: ChurchMinistries = {
+				churchId: church?.id,
 				name,
 				description
 			};
+		
 
 			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
 
 			try {
-				const response = await fetch(CHURCH_MINISTRIES_API_URL, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formDataToSubmit),
-				});
-
-				if (!response.ok) {
-					const errorData = await response.json();
-					console.error('Server error response:', errorData);
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
+				await dispatch(postNewChurchMinistry(formDataToSubmit)).unwrap();
+				// Reset form fields here
+				setOpen(false);
 				setName("")
 				setDescription("")
-				toast.success('Church ministry added successfully');
-				setOpen(false);
-				// Reset form fields here
+				toast.success('Church service added successfully');
 			} catch (error) {
 				console.error('Submission failed:', error);
-				toast.error('Failed to add church ministry');
+				toast.error('Failed to add church staff');
 			} finally {
-				setLoading(false);
+				// setLoading(false);
 			}
 		} else {
 			console.log("Form has errors");
@@ -166,19 +147,6 @@ const AddChurchMinistryModal = () => {
 								/>
 								{errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
 							</div>
-							{/* <div className='col-span-2'>
-								<Label htmlFor="leader">Leader Name:</Label>
-								<TextInput
-									id="leader"
-									name="leader"
-									value={leader}
-									onChange={(e) => setLeader(e.target.value)}
-									color={errors.leader ? 'failure' : undefined}
-									helperText={errors.leader}
-									required
-								/>
-								{errors.leader && <p className="mt-1 text-sm text-red-500">{errors.leader}</p>}
-							</div> */}
 						</div>
 					</>
 				);
@@ -232,7 +200,7 @@ const AddChurchMinistryModal = () => {
 							</Button>
 						) : (
 							<Button color="success" onClick={handleSubmit}>
-								{!loading ? 'Submit' : 'Processing...'}
+								{!posting ? 'Submit' : 'Processing...'}
 							</Button>
 						)}
 					</div>
