@@ -12,64 +12,38 @@ import NavbarSidebarLayout from "../../../layouts/navbar-sidebar";
 import ChurchMinistriesTable from "../../../components/church-ministries/ChurchMinistriesTable";
 import SearchChurchMinistry from "../../../components/church-ministries/SearchChurchMinistry";
 import AddChurchMinistryModal from "../../../components/church-ministries/AddChurchMinistryModal";
-import { ChurchMinistries } from "../../../types/ChurchMinistries";
-import { AuthData } from "../../../types/AuthData";
-import { ALL_CHURCH_MINISTRIES_API_URL, ITEMS_PER_PAGE } from "../../../app/api";
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-
+import useSearch from "../../../hooks/useSearch";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { getAllChurchMinistries } from "../../../features/church-ministries/ministrySlice";
+import { filterItems } from "../../../utils/filterItem";
+import { ITEMS_PER_PAGE } from "../../../app/api";
+import generatePDF from "../../../utils/generatePDF";
 
 const ChurchMinistryPage: FC = ({ }) => {
-	const [ministries, setMinistries] = useState<ChurchMinistries[]>([]);
-	const [searchTerm, setSearchTerm] = useState("");
 	const [isReloading, setIsReloading] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [authData, setAuthData] = useState<AuthData | null>(null);
+	const { searchTerm, handleSearch } = useSearch();
 
-	const fetchChurchServices = async () => {
-		try {
-			const response = await fetch(`${ALL_CHURCH_MINISTRIES_API_URL}/${authData?.churchId}`);
-			// console.log('response', response)
-			if (response.ok) {
-				const data = await response.json();
-				setMinistries(data); // Assuming data.data contains the array of church staffs
-				setLoading(false)
-			} else {
-				console.error("Failed to fetch church ministries", response);
-				setLoading(false)
-			}
-		} catch (error) {
-			console.error("Error fetching church services:", error);
-			setLoading(false)
+	const dispatch = useAppDispatch();
+	const ministries = useAppSelector((state) => state.ministry.allChurchMinistry || []);
+	const churchId = useAppSelector((state) => state.church.userChurch);
+
+
+
+	useEffect(() => {
+		if (churchId?.id) {
+			dispatch(getAllChurchMinistries(churchId.id));
 		}
-	};
+	}, [dispatch, churchId]);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('userData');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchChurchServices();
-	}, [authData, ministries]);
-
-	useEffect(() => {
-		// Reset to first page when search term changes
 		setCurrentPage(1);
 	}, [searchTerm, ministries]);
 
-	const filteredMinistries = ministries.filter((ministry) =>
-		ministry.name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+
+	const filteredMinistries = filterItems(ministries, searchTerm, 'name');
 
 	const totalPages = Math.ceil(filteredMinistries.length / ITEMS_PER_PAGE);
 
@@ -78,47 +52,35 @@ const ChurchMinistryPage: FC = ({ }) => {
 		currentPage * ITEMS_PER_PAGE
 	);
 
-	const handleSearch = (term: string) => {
-		setSearchTerm(term);
-	};
-
 
 	const handleReload = () => {
 		setIsReloading(true);
-		fetchChurchServices().finally(() => {
-			setIsReloading(false);
-		});
+		if (churchId?.id) {
+			dispatch(getAllChurchMinistries(churchId?.id)).finally(() => {
+				setIsReloading(false);
+			});
+		}
 	};
 
 	const handleDownloadPDF = async () => {
 		setIsDownloading(true);
-		setLoading(true)
+		setLoading(true);
 		try {
-			const doc = new jsPDF();
-
-			doc.text('Church Members', 14, 15);
-
-			const tableData = filteredMinistries.map(ministry => [
-				ministry.name,
-				ministry.description,
-			]);
-
-			(doc as any).autoTable({
-				head: [['Ministry Name', 'Description']],
-				body: tableData,
-				startY: 20,
-			});
-
-			doc.save('church_ministries.pdf');
+		  generatePDF({
+			columns: [
+			  { header: 'Ministry Name', accessor: 'name' },
+			  { header: 'Description', accessor: 'description' },
+			],
+			data: filteredMinistries,
+			filename: 'church_ministry.pdf'
+		  });
 		} catch (error) {
-			console.error('Error generating PDF:', error);
-			setIsDownloading(false);
-			setLoading(false)
+		  console.error('Error generating PDF:', error);
 		} finally {
-			setIsDownloading(false);
-			setLoading(false)
+		  setIsDownloading(false);
+		  setLoading(false);
 		}
-	};
+	  };
 	return (
 		<NavbarSidebarLayout isFooter={false}>
 			<div className="block items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex ">

@@ -3,13 +3,15 @@ import authReducer from "../features/auth/authSlice"
 import churchReducer from "../features/churches/churchSlice"
 import churchBranchReducer  from "../features/church-branches/branchSlice"
 import churchServiceReducer  from "../features/church-services/serviceSlice"
+import churchMinistryReducer from "../features/church-ministries/ministrySlice"
 
 export const store = configureStore({
 	reducer: {
 		auth: authReducer,
 		church: churchReducer,
 		branch: churchBranchReducer,
-		service: churchServiceReducer
+		service: churchServiceReducer,
+		ministry: churchMinistryReducer
 	},
 
 })
