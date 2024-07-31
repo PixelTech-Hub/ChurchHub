@@ -1,47 +1,76 @@
-import { useParams } from 'react-router';
-import { ChurchMinistries } from '../types/ChurchMinistries';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { API_BASE_URL } from '../app/api';
-import { Breadcrumb } from "flowbite-react";
-import { HiHome, HiClock, HiDocumentText } from "react-icons/hi";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Breadcrumb, Button } from "flowbite-react";
+import { HiHome, HiDocumentText, HiLightBulb, HiDownload } from "react-icons/hi";;
 import NavbarSidebarLayout from '../layouts/navbar-sidebar';
-import { MdEdit } from 'react-icons/md';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { getChurchMinistryById, updateChurchMinistry } from '../features/church-ministries/ministrySlice';
+import { ChurchMinistries } from '../types/ChurchMinistries';
+import LoadingSpinner from '../utils/LoadingSpinner';
+import UpdateToast from '../utils/UpdateToast';
+import LastUpdated from '../utils/LastUpdated';
+import StatisticsCard from '../components/church-ministries/StatisticsCard';
+import InfoCard from '../components/church-ministries/InfoCard';
+import MinistryHeader from '../components/church-ministries/MinistryHeader';
+import ErrorMessage from '../utils/ErrorMessage';
+import generatePDF from '../utils/generatePDF';
 
-const SingleChurchMinistry = () => {
+const SingleChurchMinistry: React.FC = () => {
+	const [isDownloading, setIsDownloading] = useState(false);
+	const [isLoading, setLoading] = useState(false);
 	const { id } = useParams<{ id: string }>();
-	const [ministry, setMinistry] = useState<ChurchMinistries | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
+	const dispatch = useAppDispatch();
+	const { churchMinistry, loading, error } = useAppSelector((state) => state.ministry);
+
+	const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
+	const [updateError, setUpdateError] = useState<string | null>(null);
 
 	useEffect(() => {
-		fetchMinistryDetails();
-	}, [id]);
-
-	const fetchMinistryDetails = async () => {
-		try {
-			const response = await axios.get<ChurchMinistries>(`${API_BASE_URL}/church_ministries/${id}`);
-			setMinistry(response.data);
-			setIsLoading(false);
-		} catch (error) {
-			console.error('Error fetching ministry details:', error);
-			setIsLoading(false);
+		if (id) {
+			dispatch(getChurchMinistryById(id));
 		}
-	};
+	}, [dispatch, id]);
 
-	const updateMinistryField = async (field: keyof ChurchMinistries, value: string) => {
-		try {
-			const response = await axios.patch(`${API_BASE_URL}/church_ministries/${id}`, {
-				[field]: value
-			});
-			if (response.status === 200) {
-				setMinistry(prevMember => prevMember ? { ...prevMember, [field]: value } : null);
+	const handleUpdateMinistry = async (field: keyof ChurchMinistries, value: string) => {
+		if (id && churchMinistry) {
+			try {
+				await dispatch(updateChurchMinistry({ ministryId: id, ministryData: { [field]: value } })).unwrap();
+				setUpdateSuccess(true);
+				setTimeout(() => setUpdateSuccess(false), 3000);
+			} catch (err) {
+				setUpdateError("Failed to update. Please try again.");
+				setTimeout(() => setUpdateError(null), 3000);
 			}
-		} catch (error) {
-			console.error('Error updating member field:', error);
 		}
 	};
 
-	console.log('Fetch ministry details', ministry)
+	const handleDownloadPDF = () => {
+
+		if (!churchMinistry) {
+			console.error('No ministry data available');
+			return;
+		}
+
+		try {
+			setIsDownloading(true);
+			setLoading(true);
+			generatePDF({
+				columns: [
+					{ header: 'Name', accessor: 'name' },
+					{ header: 'Description', accessor: 'description' },
+				],
+				data: [churchMinistry], // Wrap churchMinistry in an array
+				filename: `${churchMinistry.name}.pdf`
+			});
+		} catch (error) {
+			console.error('Error generating PDF:', error);
+			setIsDownloading(false);
+			setLoading(false);
+			// Optionally, you can set an error state here to display to the user
+			setUpdateError("Failed to generate PDF. Please try again.");
+		}
+	};
+
 	return (
 		<NavbarSidebarLayout>
 			<div className="px-4 lg:pt-6 pt-14 dark:bg-gray-900">
@@ -60,107 +89,57 @@ const SingleChurchMinistry = () => {
 					</Breadcrumb.Item>
 				</Breadcrumb>
 
-				{isLoading ? (
-					<div className="flex justify-center items-center h-64">
-						<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-					</div>
-				) : ministry && (
-					<div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-						<div className="bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white relative">
-							<div className="absolute top-0 right-0 m-4">
-							</div>
-							<h1 className="lg:text-4xl md:text-3xl text-2xl font-bold mb-2">{ministry.name}</h1>
+				<Button
+					color="light"
+					onClick={handleDownloadPDF}
+					disabled={isDownloading}
+					className={`transition-transform duration-300 ${isDownloading ? '' : ''
+						}`}
+				>
+					<HiDownload className={`mr-2 h-5 w-5 ${isDownloading ? 'opacity-0' : ''}`} />
+					<span className={isDownloading && isLoading ? 'opacity-0' : ''}>{isDownloading && isLoading ?
+						'Downloading...' : 'Download'
+					}</span>
+					{isDownloading && isLoading && (
+						<div className="absolute inset-0 flex items-center justify-center">
+							<div className="h-5 w-5 border-t-2 border-b-2 border-gray-300 rounded-full animate-spin"></div>
 						</div>
+					)}
+				</Button>
 
-						<div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-							<div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2  gap-6">
-								<InfoItem
-									icon={<HiDocumentText />}
-									label="Name"
-									value={ministry.name}
-									field="name"
-									onUpdate={updateMinistryField}
-									inputType="text"
-								/>
-								<InfoItem
-									icon={" "}
-									label="Description"
-									value={ministry.description}
-									field="description"
-									onUpdate={updateMinistryField}
-									inputType="textarea"
-								/>
-							</div>
+				{loading && <LoadingSpinner />}
+				{error && <ErrorMessage message={error} />}
+				{!loading && !error && churchMinistry && (
+					<div className="space-y-6">
+						<MinistryHeader ministry={churchMinistry} />
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							<InfoCard
+								icon={<HiDocumentText className="text-3xl text-blue-500" />}
+								label="Name"
+								value={churchMinistry.name}
+								field="name"
+								onUpdate={handleUpdateMinistry}
+								inputType="text"
+							/>
+							<InfoCard
+								icon={<HiLightBulb className="text-3xl text-yellow-500" />}
+								label="Description"
+								value={churchMinistry.description}
+								field="description"
+								onUpdate={handleUpdateMinistry}
+								inputType="textarea"
+							/>
+							<StatisticsCard ministry={churchMinistry} />
 						</div>
-
-
-
-						<div className="bg-gray-200 dark:bg-gray-700 p-4 text-center">
-							<p className="text-sm flex items-center justify-center">
-								<HiClock className="mr-2" /> Last updated: {new Date(ministry.updatedAt).toLocaleDateString()}
-							</p>
-						</div>
+						<LastUpdated date={churchMinistry.updatedAt} />
 					</div>
 				)}
+
+				<UpdateToast success={updateSuccess} error={updateError} />
 			</div>
 		</NavbarSidebarLayout>
-	)
-}
-
-const InfoItem: React.FC<{
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-    field: keyof ChurchMinistries;
-    onUpdate: (field: keyof ChurchMinistries, value: string) => Promise<void>;
-    inputType: 'text' | 'textarea';
-}> = ({ icon, label, value, field, onUpdate, inputType }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [editValue, setEditValue] = useState(value);
-
-    const handleUpdate = async () => {
-        await onUpdate(field, editValue);
-        setIsEditing(false);
-    };
-
-    return (
-        <div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-            <div className="text-blue-500 dark:text-blue-400 lg:text-2xl text-xl">{icon}</div>
-            <div className="flex-grow">
-                <p className="lg:text-sm text-[12px] text-gray-500 dark:text-white">{label}</p>
-                {isEditing ? (
-                    inputType === 'textarea' ? (
-                        <textarea
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="w-full font-medium rounded-md lg:text-lg text-[14px] dark:text-gray-300 h-[20rem] bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
-                        />
-                    ) : (
-                        <input
-                            type="text"
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="w-full font-medium rounded-md lg:text-lg text-[14px] dark:text-gray-300 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
-                        />
-                    )
-                ) : (
-                    <p className="font-medium lg:text-lg text-[12px] dark:text-gray-300">{value}</p>
-                )}
-            </div>
-            <div>
-                {isEditing ? (
-                    <>
-                        <button onClick={handleUpdate} className="text-green-500 mr-2">Save</button>
-                        <button onClick={() => setIsEditing(false)} className="text-red-500">Cancel</button>
-                    </>
-                ) : (
-                    <button onClick={() => setIsEditing(true)} className="text-blue-500">
-                        <MdEdit color='green'/>
-                    </button>
-                )}
-            </div>
-        </div>
-    );
+	);
 };
 
-export default SingleChurchMinistry
+
+export default SingleChurchMinistry;
