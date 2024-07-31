@@ -139,7 +139,7 @@ const deleteChurchMinistry = async (ministryId: string) => {
 	}
 };
 
-const ChurchService = {
+const ChurchMinistriesService = {
 	postNewChurchMinistry,
 	getAllChurchMinistries,
 	getChurchMinistryById,
@@ -147,4 +147,4 @@ const ChurchService = {
 	deleteChurchMinistry
 };
 
-export default ChurchService;
+export default ChurchMinistriesService;
