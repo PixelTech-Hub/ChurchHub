@@ -105,7 +105,7 @@ const AddChurchServiceModal: FC = ({ }) => {
 		if (validateStep()) {
 			// console.log("processing...");
 			
-			const formDataToSubmit: Partial<ChurchServices> = {
+			const formDataToSubmit: ChurchServices = {
 				churchId: church?.id,
 				name: fullName,
 				start_time: start,
