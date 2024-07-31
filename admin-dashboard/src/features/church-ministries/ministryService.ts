@@ -1,4 +1,4 @@
-import { CHURCH_MINISTRIES_API_URL } from "../../app/api";
+import { ALL_CHURCH_MINISTRIES_API_URL, CHURCH_MINISTRIES_API_URL } from "../../app/api";
 import { ChurchMinistries } from "../../types/ChurchMinistries";
 
 
@@ -33,14 +33,14 @@ const postNewChurchMinistry = async (ministryData: ChurchMinistries) => {
 	}
 };
 
-const getAllChurchServices = async (churchId: string) => {
+const getAllChurchMinistries = async (churchId: string) => {
 	const accessToken = localStorage.getItem('accessToken');
 	try {
 		if (!accessToken) {
 			throw new Error('No access token found');
 		}
 
-		const response = await fetch(`${ALL_CHURCH_SERVICE_API_URL}/${churchId}`, {
+		const response = await fetch(`${ALL_CHURCH_MINISTRIES_API_URL}/${churchId}`, {
 			headers: {
 				'Authorization': `Bearer ${accessToken}`,
 				'Accept': 'application/json'
@@ -52,20 +52,20 @@ const getAllChurchServices = async (churchId: string) => {
 		const data = await response.json();
 		return data;
 	} catch (error) {
-		console.error("Get Church Service By ID Error:", error);
+		console.error("Get Church Ministy By ID Error:", error);
 		throw error;
 	}
 };
 
-// New function to get a single church service by ID
-const getChurchServiceById = async (serviceId: string) => {
+// New function to get a single church ministry by ID
+const getChurchMinistryById = async (ministryId: string) => {
 	const accessToken = localStorage.getItem('accessToken');
 	try {
 		if (!accessToken) {
 			throw new Error('No access token found');
 		}
 
-		const response = await fetch(`${CHURCH_SERVICE_API_URL}/${serviceId}`, {
+		const response = await fetch(`${CHURCH_MINISTRIES_API_URL}/${ministryId}`, {
 			headers: {
 				'Authorization': `Bearer ${accessToken}`,
 				'Accept': 'application/json'
@@ -77,27 +77,27 @@ const getChurchServiceById = async (serviceId: string) => {
 		const data = await response.json();
 		return data;
 	} catch (error) {
-		console.error("Get Single Church Branch Error:", error);
+		console.error("Get Single Church Ministry Error:", error);
 		throw error;
 	}
 };
 
-// New function to update a church service
-const updateChurchService = async (serviceId: string, serviceData: Partial<ChurchServices>) => {
+// New function to update a church ministry
+const updateChurchMinistry = async (ministryId: string, ministryData: Partial<ChurchMinistries>) => {
 	const accessToken = localStorage.getItem('accessToken');
 	try {
 		if (!accessToken) {
 			throw new Error('No access token found');
 		}
 
-		const response = await fetch(`${CHURCH_SERVICE_API_URL}/${serviceId}`, {
+		const response = await fetch(`${CHURCH_MINISTRIES_API_URL}/${ministryId}`, {
 			method: 'PATCH',
 			headers: {
 				'Authorization': `Bearer ${accessToken}`,
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(serviceData),
+			body: JSON.stringify(ministryData),
 		});
 
 		if (!response.ok) {
@@ -109,20 +109,20 @@ const updateChurchService = async (serviceId: string, serviceData: Partial<Churc
 		const data = await response.json();
 		return data;
 	} catch (error) {
-		console.error("Update Church Service Error:", error);
+		console.error("Update Church Ministry Error:", error);
 		throw error;
 	}
 };
 
-// New function to delete a church branch
-const deleteChurchService = async (serviceId: string) => {
+// New function to delete a church ministry
+const deleteChurchMinistry = async (ministryId: string) => {
 	const accessToken = localStorage.getItem('accessToken');
 	try {
 		if (!accessToken) {
 			throw new Error('No access token found');
 		}
 
-		const response = await fetch(`${CHURCH_SERVICE_API_URL}/${serviceId}`, {
+		const response = await fetch(`${CHURCH_MINISTRIES_API_URL}/${ministryId}`, {
 			method: 'DELETE',
 			headers: {
 				'Authorization': `Bearer ${accessToken}`,
@@ -134,13 +134,17 @@ const deleteChurchService = async (serviceId: string) => {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 	} catch (error) {
-		console.error("Delete Church Service Error:", error);
+		console.error("Delete Church Ministry Error:", error);
 		throw error;
 	}
 };
 
 const ChurchService = {
 	postNewChurchMinistry,
+	getAllChurchMinistries,
+	getChurchMinistryById,
+	updateChurchMinistry,
+	deleteChurchMinistry
 };
 
 export default ChurchService;
