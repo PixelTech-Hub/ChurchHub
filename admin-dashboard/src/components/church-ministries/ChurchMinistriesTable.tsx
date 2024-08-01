@@ -15,11 +15,12 @@ interface ChurchMinistryTableProps {
 	totalPages: number;
 	currentPage: number;
 	setCurrentPage: (page: number) => void;
+	canAccessDeletMinistryeModal: any
 }
 
 
-const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ currentPage, filteredMinistries, loading, paginatedMinistries, setCurrentPage, totalPages }) => {
-	
+const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ currentPage, filteredMinistries, loading, paginatedMinistries, setCurrentPage, totalPages, canAccessDeletMinistryeModal }) => {
+
 
 	if (loading) {
 		<p>Loading....</p>
@@ -57,11 +58,13 @@ const ChurchMinistriesTable: FC<ChurchMinistryTableProps> = ({ currentPage, filt
 							</Table.Cell>
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
+									{canAccessDeletMinistryeModal && (
+										<DeleteChurchMinistryModal
+											ministryId={ministry.id ?? ''}
+											name={ministry.name}
+										/>
+									)}
 
-									<DeleteChurchMinistryModal
-										ministryId={ministry.id ?? ''}
-										name={ministry.name}
-									/>
 									<Link to={`/church-ministries/${ministry.id}`} className="">
 										<Button color="success">
 											<HiArrowRight className="mr-2 text-lg" />

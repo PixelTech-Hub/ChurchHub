@@ -10,9 +10,10 @@ interface InfoCardProps {
     field: keyof ChurchMinistries;
     onUpdate: (field: keyof ChurchMinistries, value: string) => Promise<void>;
     inputType: 'text' | 'textarea';
+    canAccessUpdateMinistryModal: any
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value, field, onUpdate, inputType }) => {
+const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value, field, onUpdate, inputType, canAccessUpdateMinistryModal }) => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [editValue, setEditValue] = useState<string>(value);
 
@@ -30,11 +31,12 @@ const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value, field, onUpdate
                 </div>
                 {!isEditing && (
                     <button onClick={() => setIsEditing(true)} className="text-blue-500 hover:text-blue-600">
-                        <MdEdit size={20} />
+                        {canAccessUpdateMinistryModal && <MdEdit size={20} />}
+                        
                     </button>
                 )}
             </div>
-            {isEditing ? (
+            {isEditing && canAccessUpdateMinistryModal ? (
                 <div className="space-y-2">
                     {inputType === 'textarea' ? (
                         <textarea

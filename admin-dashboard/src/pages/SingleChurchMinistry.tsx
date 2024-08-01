@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Breadcrumb, Button } from "flowbite-react";
-import { HiHome, HiDocumentText, HiLightBulb, HiDownload } from "react-icons/hi";;
+import { HiHome, HiDocumentText, HiLightBulb, HiDownload, HiRefresh } from "react-icons/hi";;
 import NavbarSidebarLayout from '../layouts/navbar-sidebar';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { getChurchMinistryById, updateChurchMinistry } from '../features/church-ministries/ministrySlice';
@@ -14,22 +14,27 @@ import InfoCard from '../components/church-ministries/InfoCard';
 import MinistryHeader from '../components/church-ministries/MinistryHeader';
 import ErrorMessage from '../utils/ErrorMessage';
 import generatePDF from '../utils/generatePDF';
+import { EntityChurchAdminRoleEnum } from '../enums/admin.enum';
 
 const SingleChurchMinistry: React.FC = () => {
 	const [isDownloading, setIsDownloading] = useState(false);
 	const [isLoading, setLoading] = useState(false);
+	const [isReloading, setIsReloading] = useState(false);
 	const { id } = useParams<{ id: string }>();
 	const dispatch = useAppDispatch();
 	const { churchMinistry, loading, error } = useAppSelector((state) => state.ministry);
 
 	const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 	const [updateError, setUpdateError] = useState<string | null>(null);
+	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
 
 	useEffect(() => {
 		if (id) {
 			dispatch(getChurchMinistryById(id));
 		}
-	}, [dispatch, id]);
+	}, [dispatch, id ]);
+
+
 
 	const handleUpdateMinistry = async (field: keyof ChurchMinistries, value: string) => {
 		if (id && churchMinistry) {
@@ -41,6 +46,15 @@ const SingleChurchMinistry: React.FC = () => {
 				setUpdateError("Failed to update. Please try again.");
 				setTimeout(() => setUpdateError(null), 3000);
 			}
+		}
+	};
+
+	const handleReload = () => {
+		setIsReloading(true);
+		if (id) {
+			dispatch(getChurchMinistryById(id)).finally(() => {
+				setIsReloading(false);
+			});
 		}
 	};
 
@@ -73,6 +87,12 @@ const SingleChurchMinistry: React.FC = () => {
 		}
 	};
 
+	const canAccessUpdateMinistryModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
 	return (
 		<NavbarSidebarLayout>
 			<div className="px-4 lg:pt-6 pt-14 dark:bg-gray-900">
@@ -91,7 +111,21 @@ const SingleChurchMinistry: React.FC = () => {
 					</Breadcrumb.Item>
 				</Breadcrumb>
 
-				<div className="flex items-center justify-end mb-4">
+				<div className="flex items-center justify-end mb-4 gap-4">
+					<Button
+						color="light"
+						onClick={handleReload}
+						className={` transition-transform duration-300 ${isReloading ? '' : 'hover:bg-gray-800 '
+							}`}
+					>
+						<HiRefresh className={`mr-2 h-5 w-5 ${isReloading ? 'opacity-0' : ''}`} />
+						<span className={isReloading ? 'opacity-0' : ''}>Reload</span>
+						{isReloading && (
+							<div className="absolute inset-0 flex items-center justify-center">
+								<div className="h-5 w-5 border-t-2 border-b-2 border-gray-300 rounded-full "></div>
+							</div>
+						)}
+					</Button>
 					<Button
 						color="light"
 						onClick={handleDownloadPDF}
@@ -124,6 +158,7 @@ const SingleChurchMinistry: React.FC = () => {
 								field="name"
 								onUpdate={handleUpdateMinistry}
 								inputType="text"
+								canAccessUpdateMinistryModal={canAccessUpdateMinistryModal}
 							/>
 							<InfoCard
 								icon={<HiLightBulb className="text-3xl text-yellow-500" />}
@@ -132,6 +167,7 @@ const SingleChurchMinistry: React.FC = () => {
 								field="description"
 								onUpdate={handleUpdateMinistry}
 								inputType="textarea"
+								canAccessUpdateMinistryModal={canAccessUpdateMinistryModal}
 							/>
 							<StatisticsCard ministry={churchMinistry} />
 						</div>

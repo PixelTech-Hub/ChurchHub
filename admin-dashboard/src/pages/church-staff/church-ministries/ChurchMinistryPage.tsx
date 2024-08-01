@@ -18,6 +18,7 @@ import { getAllChurchMinistries } from "../../../features/church-ministries/mini
 import { filterItems } from "../../../utils/filterItem";
 import { ITEMS_PER_PAGE } from "../../../app/api";
 import generatePDF from "../../../utils/generatePDF";
+import { EntityChurchAdminRoleEnum } from "../../../enums/admin.enum";
 
 const ChurchMinistryPage: FC = ({ }) => {
 	const [isReloading, setIsReloading] = useState(false);
@@ -29,7 +30,7 @@ const ChurchMinistryPage: FC = ({ }) => {
 	const dispatch = useAppDispatch();
 	const ministries = useAppSelector((state) => state.ministry.allChurchMinistry || []);
 	const churchId = useAppSelector((state) => state.church.userChurch);
-
+	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
 
 
 	useEffect(() => {
@@ -66,21 +67,36 @@ const ChurchMinistryPage: FC = ({ }) => {
 		setIsDownloading(true);
 		setLoading(true);
 		try {
-		  generatePDF({
-			columns: [
-			  { header: 'Ministry Name', accessor: 'name' },
-			  { header: 'Description', accessor: 'description' },
-			],
-			data: filteredMinistries,
-			filename: 'church_ministry.pdf'
-		  });
+			generatePDF({
+				columns: [
+					{ header: 'Ministry Name', accessor: 'name' },
+					{ header: 'Description', accessor: 'description' },
+				],
+				data: filteredMinistries,
+				filename: 'church_ministry.pdf'
+			});
 		} catch (error) {
-		  console.error('Error generating PDF:', error);
+			console.error('Error generating PDF:', error);
 		} finally {
-		  setIsDownloading(false);
-		  setLoading(false);
+			setIsDownloading(false);
+			setLoading(false);
 		}
-	  };
+	};
+
+	const canAccessAddMinistryModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	const canAccessDeletMinistryeModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	
 	return (
 		<NavbarSidebarLayout isFooter={false}>
 			<div className="block items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex ">
@@ -107,7 +123,7 @@ const ChurchMinistryPage: FC = ({ }) => {
 					<div className="block items-center sm:flex">
 						<SearchChurchMinistry onSearch={handleSearch} />
 						<div className="flex lg:flex-row flex-col w-full lg:items-center sm:justify-end gap-3">
-							<AddChurchMinistryModal />
+							{canAccessAddMinistryModal && <AddChurchMinistryModal />}
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -154,6 +170,7 @@ const ChurchMinistryPage: FC = ({ }) => {
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
+								canAccessDeletMinistryeModal={canAccessDeletMinistryeModal}
 							/>
 						</div>
 					</div>
