@@ -139,8 +139,8 @@ const deleteChurchMinistry = async (ministryId: string) => {
 	}
 };
 
-const ChurchMinistriesService = {
+const ChurchMemberService = {
 	postNewChurchMember,
 };
 
-export default ChurchMinistriesService;
+export default ChurchMemberService;

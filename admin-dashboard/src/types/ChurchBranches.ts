@@ -7,4 +7,5 @@ export interface ChurchBranch {
 	church_number: string;
 	location: string;
 	updatedAt?: string;
+	createdAt?: string;
 }

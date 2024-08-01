@@ -4,6 +4,7 @@ import churchReducer from "../features/churches/churchSlice"
 import churchBranchReducer  from "../features/church-branches/branchSlice"
 import churchServiceReducer  from "../features/church-services/serviceSlice"
 import churchMinistryReducer from "../features/church-ministries/ministrySlice"
+import memberReducer from "../features/church-members/memberSlice"
 
 export const store = configureStore({
 	reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
 		church: churchReducer,
 		branch: churchBranchReducer,
 		service: churchServiceReducer,
-		ministry: churchMinistryReducer
+		ministry: churchMinistryReducer,
+		// member: memberReducer
 	},
 
 })
