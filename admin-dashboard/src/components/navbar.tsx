@@ -24,8 +24,6 @@ const ExampleNavbar: FC = function () {
   const userData = useAppSelector((state) => state.auth.currentUser);
   const userChurch = useAppSelector((state) => state.church.userChurch);
 
-  // console.log('userData:', userData);
-  // console.log('userChurch:', userChurch);
 
   useEffect(() => {
     // console.log('useEffect triggered');
@@ -57,7 +55,7 @@ const ExampleNavbar: FC = function () {
               </button>
             )}
             <Navbar.Brand href="/">
-              <p className="font-extrabold">CHURCH HUB</p>
+              <p className="font-extrabold dark:text-white">CHURCH HUB</p>
             </Navbar.Brand>
             <div className="hidden lg:flex lg:text-xl  ml-16 font-bold">
               <p className="dark:text-white">{userChurch?.name}</p>

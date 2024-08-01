@@ -1,11 +1,14 @@
 import { Footer } from "flowbite-react";
-import type { FC, PropsWithChildren } from "react";
+import { useEffect, useState, type FC, type PropsWithChildren } from "react";
 import Navbar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import { MdFacebook } from "react-icons/md";
 import { FaDribbble, FaGithub, FaInstagram, FaTwitter } from "react-icons/fa";
 import { SidebarProvider, useSidebarContext } from "../context/SidebarContext";
 import classNames from "classnames";
+import DisableApp from "../components/dashboard/DisableApp";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { getUserChurch } from "../features/churches/churchSlice";
 
 interface NavbarSidebarLayoutProps {
   isFooter?: boolean;
@@ -13,8 +16,50 @@ interface NavbarSidebarLayoutProps {
 
 const NavbarSidebarLayout: FC<PropsWithChildren<NavbarSidebarLayoutProps>> =
   function ({ children = true }) {
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+
+    const dispatch = useAppDispatch();
+    const userData = useAppSelector((state) => state.auth.currentUser);
+    const userChurch = useAppSelector((state) => state.church.userChurch);
+
+    useEffect(() => {
+      if (userChurch?.id) {
+      
+      }
+    }, [dispatch, userChurch]);
+  
+    // console.log('branches', branches)
+    // console.log('minisiiii', ministries)
+  
+   
+  
+  
+  
+    useEffect(() => {
+      if (userData && userData.churchId) {
+        dispatch(getUserChurch(userData.churchId));
+      }
+    }, [userData, dispatch]);
+  
+  
+    useEffect(() => {
+      if (userChurch && userChurch.isEnabled === false) {
+        setModalIsOpen(true);
+      }
+    }, [userChurch]);
+  
+    const closeModal = () => {
+      setModalIsOpen(false);
+    };
     return (
       <SidebarProvider>
+        <DisableApp
+        setModalIsOpen={setModalIsOpen}
+        closeModal={closeModal}
+        modalIsOpen={modalIsOpen}
+        userChurch={userChurch}
+      />
         <Navbar />
         <div className="flex items-start pt-16">
           <Sidebar />

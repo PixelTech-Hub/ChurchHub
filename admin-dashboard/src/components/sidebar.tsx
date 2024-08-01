@@ -1,21 +1,16 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import classNames from "classnames";
 import { Sidebar, TextInput } from "flowbite-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import {
   HiChartPie,
-  HiChartSquareBar,
-  HiInboxIn,
   HiSearch,
   HiShoppingBag,
   HiUsers,
-  HiViewGrid,
 } from "react-icons/hi";
 
 import { useSidebarContext } from "../context/SidebarContext";
 import isSmallScreen from "../helpers/is-small-screen";
-import BottomMenu from "./layout/BottomMenu";
 
 const ExampleSidebar: FC = function () {
   const { isOpenOnSmallScreens: isSidebarOpenOnSmallScreens } =

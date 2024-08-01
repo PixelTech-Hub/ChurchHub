@@ -25,7 +25,7 @@ const ChurchBranches = () => {
 	const branches = useAppSelector((state) => state.branch.allChurchBranches || []);
 	const churchId = useAppSelector((state) => state.church.userChurch);
 
-	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
+	const churchStaffRole = useAppSelector((state) => state.auth.currentUser?.role)
 
 
 

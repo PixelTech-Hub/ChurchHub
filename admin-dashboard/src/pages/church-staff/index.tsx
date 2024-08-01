@@ -19,6 +19,7 @@ import { filterItems } from "../../utils/filterItem";
 import { ITEMS_PER_PAGE } from "../../app/api";
 import generatePDF from "../../utils/generatePDF";
 import SearchItem from "../../helpers/SearchItem";
+import { EntityChurchAdminRoleEnum } from "../../enums/admin.enum";
 
 const ChurchStaffPage: FC = function () {
 	const [isReloading, setIsReloading] = useState(false);
@@ -38,8 +39,6 @@ const ChurchStaffPage: FC = function () {
 	const currentUserRole = useAppSelector((state) => state.auth.currentUser?.role);
 
 
-
-	 console.log(currentUserRole)
 
 
 	useEffect(() => {
@@ -94,17 +93,17 @@ const ChurchStaffPage: FC = function () {
 		}
 	};
 
-	// const canAccessAddStaffModal = [
-	// 	EntityChurchAdminRoleEnum.superadmin,
-	// 	EntityChurchAdminRoleEnum.admin,
-	// 	EntityChurchAdminRoleEnum.editor
-	// ].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+	const canAccessAddStaffModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(currentUserRole as EntityChurchAdminRoleEnum);
 
 
-	// const canAccessDeletStaffModal = [
-	// 	EntityChurchAdminRoleEnum.superadmin,
-	// 	EntityChurchAdminRoleEnum.admin,
-	// ].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+	const canAccessDeletStaffModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+	].includes(currentUserRole as EntityChurchAdminRoleEnum);
 
 
 	// console.log('can accesss', churchUsers)
@@ -137,7 +136,7 @@ const ChurchStaffPage: FC = function () {
 							value="Search for Church Staffs..."
 						/>
 						<div className="flex w-full items-center sm:justify-end gap-4">
-						{/* {canAccessAddStaffModal() && <AddChurchStaffModal />} */}
+							{canAccessAddStaffModal && <AddChurchStaffModal />}
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -185,7 +184,7 @@ const ChurchStaffPage: FC = function () {
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
-
+								canAccessDeletStaffModal={canAccessDeletStaffModal}
 							/>
 						</div>
 					</div>

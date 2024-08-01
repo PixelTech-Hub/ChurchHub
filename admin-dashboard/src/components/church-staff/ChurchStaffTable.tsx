@@ -1,8 +1,5 @@
-import { Button, Pagination, Table } from "flowbite-react";
+import { Pagination, Table } from "flowbite-react";
 import { FC } from "react";
-import DeleteChurchStaffModal from "./DeleteChurchStaffModal";
-import { Link } from "react-router-dom";
-import { HiArrowRight } from "react-icons/hi";
 import { Users } from "../../types/Users";
 
 
@@ -13,9 +10,10 @@ interface ChurchStaffTableProps {
 	totalPages: number
 	currentPage: number
 	setCurrentPage: (page: number) => void;
+	canAccessDeletStaffModal: boolean
 }
 
-const ChurchStaffTable: FC<ChurchStaffTableProps> = function ({ loading, totalPages, currentPage, setCurrentPage, filteredChurchStaffs, paginatedChurchStaffs }) {
+const ChurchStaffTable: FC<ChurchStaffTableProps> = function ({ loading, totalPages, currentPage, setCurrentPage, filteredChurchStaffs, paginatedChurchStaffs, }) {
 
 	if (loading) {
 		<p>Loading....</p>
@@ -27,6 +25,8 @@ const ChurchStaffTable: FC<ChurchStaffTableProps> = function ({ loading, totalPa
 			</div>
 		);
 	}
+
+	
 
 
 	return (

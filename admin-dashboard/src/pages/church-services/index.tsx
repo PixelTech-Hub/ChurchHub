@@ -27,7 +27,7 @@ const ChurchService: FC = () => {
 	const dispatch = useAppDispatch();
 	const services = useAppSelector((state) => state.service.allChurchServices || []);
 	const churchId = useAppSelector((state) => state.church.userChurch);
-	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
+	const churchStaffRole = useAppSelector((state) => state.auth.currentUser?.role)
 
 
 

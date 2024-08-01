@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseInterceptors } from "@nestjs/common";
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseInterceptors, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ResultsMetadata } from "src/common/models/results-metadata.model";
 import { ChurchMemberEntity } from "../entities/church_members.entity";
@@ -6,10 +6,11 @@ import { CreateChurchMemberDto } from "../dto/create-churchmember.dto";
 import { UpdateChurchMemberDto } from "../dto/update-churchmember.dto";
 import { FindChurchMemberDto } from "../dto/find-churchmember.dto";
 import { ChurchMemberService } from "../services/church_member.service";
+import { JwtAuthGuard } from 'src/modules/admins/features/auth/guards/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
-// @UseGuards(OrganizationAdminAuthGuard)
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @ApiTags('Church Members')
 @Controller('church-members')
 export class ChurchMemberController {

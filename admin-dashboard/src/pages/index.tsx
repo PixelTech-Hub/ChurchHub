@@ -1,14 +1,8 @@
 import type { FC } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "svgmap/dist/svgMap.min.css";
 import NavbarSidebarLayout from "../layouts/navbar-sidebar";
-import Transactions from "../components/dashboard/Transactions";
-import AcquisitionOverview from "../components/dashboard/AcquisitionOverview";
-import SessionsByCountry from "../components/dashboard/SessionsByCountry";
-import LatestCustomers from "../components/dashboard/LatestCustomers";
-import DisableApp from "../components/dashboard/DisableApp";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { getUserChurch } from "../features/churches/churchSlice";
 import StatisticCard from "../components/dashboard/StatisticCard";
 import { FaChurch, FaCross, FaUsers } from "react-icons/fa";
 import { getAllChurchBranches } from "../features/church-branches/branchSlice";
@@ -16,11 +10,9 @@ import { getAllChurchMinistries } from "../features/church-ministries/ministrySl
 import { getAllChurchServices } from "../features/church-services/serviceSlice";
 
 const DashboardPage: FC = function () {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
 
 
   const dispatch = useAppDispatch();
-  const userData = useAppSelector((state) => state.auth.data);
   const userChurch = useAppSelector((state) => state.church.userChurch);
 
   const branches = useAppSelector((state) => state.branch.allChurchBranches ?? [])
@@ -43,33 +35,11 @@ const DashboardPage: FC = function () {
 
 
 
-  useEffect(() => {
-    if (userData && userData.churchId) {
-      dispatch(getUserChurch(userData.churchId));
-    }
-  }, [userData, dispatch]);
-
-
-  useEffect(() => {
-    if (userChurch && userChurch.isEnabled === false) {
-      setModalIsOpen(true);
-    }
-  }, [userChurch]);
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
   
 
   return (
     <NavbarSidebarLayout>
-      <DisableApp
-        setModalIsOpen={setModalIsOpen}
-        closeModal={closeModal}
-        modalIsOpen={modalIsOpen}
-        userChurch={userChurch}
-      />
+      
       <div className="px-4 pt-6 mx-2">
         <div className="mt-4 grid w-full grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           <StatisticCard
