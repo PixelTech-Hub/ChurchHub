@@ -26,7 +26,7 @@ const SingleChurchMinistry: React.FC = () => {
 
 	const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 	const [updateError, setUpdateError] = useState<string | null>(null);
-	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
+	const churchStaffRole = useAppSelector((state) => state.auth.currentUser?.role)
 
 	useEffect(() => {
 		if (id) {
