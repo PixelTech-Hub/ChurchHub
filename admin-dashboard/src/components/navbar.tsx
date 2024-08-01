@@ -21,7 +21,7 @@ import { getUserChurch } from "../features/churches/churchSlice";
 const ExampleNavbar: FC = function () {
   const { isOpenOnSmallScreens, isPageWithSidebar, setOpenOnSmallScreens } = useSidebarContext();
   const dispatch = useAppDispatch();
-  const userData = useAppSelector((state) => state.auth.data);
+  const userData = useAppSelector((state) => state.auth.currentUser);
   const userChurch = useAppSelector((state) => state.church.userChurch);
 
   // console.log('userData:', userData);

@@ -30,7 +30,7 @@ const ChurchMinistryPage: FC = ({ }) => {
 	const dispatch = useAppDispatch();
 	const ministries = useAppSelector((state) => state.ministry.allChurchMinistry || []);
 	const churchId = useAppSelector((state) => state.church.userChurch);
-	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
+	const churchStaffRole = useAppSelector((state) => state.auth.currentUser?.role)
 
 
 	useEffect(() => {

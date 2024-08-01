@@ -29,16 +29,17 @@ const ChurchStaffPage: FC = function () {
 
 	const dispatch = useAppDispatch();
 	const churchUsers = useAppSelector((state) => {
-		if (Array.isArray(state.auth.data)) {
-			return state.auth.data;
+		if (Array.isArray(state.auth.allUsers)) {
+			return state.auth.allUsers;
 		}
 		return [];
 	});
 	const churchId = useAppSelector((state) => state.church.userChurch);
-	// const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
+	const currentUserRole = useAppSelector((state) => state.auth.currentUser?.role);
 
 
-	// console.log('church staff rl')
+
+	 console.log(currentUserRole)
 
 
 	useEffect(() => {
@@ -136,9 +137,7 @@ const ChurchStaffPage: FC = function () {
 							value="Search for Church Staffs..."
 						/>
 						<div className="flex w-full items-center sm:justify-end gap-4">
-							{/* {canAccessAddStaffModal && ( */}
-								<AddChurchStaffModal />
-							{/* )} */}
+						{/* {canAccessAddStaffModal() && <AddChurchStaffModal />} */}
 							<Button
 								color="light"
 								onClick={handleReload}

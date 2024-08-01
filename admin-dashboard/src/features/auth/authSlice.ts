@@ -3,7 +3,8 @@ import userService from "./authServices";
 import { Users } from "../../types/Users";
 
 export interface UserState {
-    data: Users | null;
+    currentUser: Users | null;
+    allUsers: Users[];
     accessToken: string | null;
     isLoading: boolean;
     isAuthenticated: boolean;
@@ -11,7 +12,8 @@ export interface UserState {
 }
 
 const initialState: UserState = {
-    data: null,
+    currentUser: null,
+    allUsers: [],
     accessToken: null,
     isLoading: false,
     isAuthenticated: false,
@@ -36,8 +38,9 @@ export const login = createAsyncThunk(
         }
     }
 );
+
 export const signup = createAsyncThunk(
-    "auth/user/singup",
+    "auth/user/signup",
     async (user: Users, { rejectWithValue }) => {
         try {
             const response = await userService.signupUser(user);
@@ -70,7 +73,8 @@ export const getLoggedInUser = createAsyncThunk(
     }
 );
 
-export const getAllChurchUsers = createAsyncThunk("auth/user/get-all", 
+export const getAllChurchUsers = createAsyncThunk(
+    "auth/user/get-all", 
     async (churchId: string, { rejectWithValue }) => {
         try {
             return await userService.getAllUsers(churchId);
@@ -85,20 +89,21 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         logout: (state) => {
-            state.data = null;
+            state.currentUser = null;
             state.accessToken = null;
             state.isAuthenticated = false;
-            localStorage.clear();
+            localStorage.removeItem('userData');
+            localStorage.removeItem('accessToken');
         },
         initializeFromLocalStorage: (state) => {
-			const userData = localStorage.getItem('userData');
-			const token = localStorage.getItem('accessToken');
-			if (userData && token) {
-				state.data = JSON.parse(userData);
-				state.accessToken = token;
-				state.isAuthenticated = true;
-			}
-		}
+            const userData = localStorage.getItem('userData');
+            const token = localStorage.getItem('accessToken');
+            if (userData && token) {
+                state.currentUser = JSON.parse(userData);
+                state.accessToken = token;
+                state.isAuthenticated = true;
+            }
+        }
     },
     extraReducers(builder) {
         builder
@@ -108,18 +113,18 @@ export const authSlice = createSlice({
                 state.isAuthenticated = false;
             })
             .addCase(login.fulfilled, (state, action) => {
-				state.isLoading = false;
-				state.error = null;
-				state.data = action.payload.data;
-				state.accessToken = action.payload.accessToken;
-				state.isAuthenticated = true;
-				localStorage.setItem('accessToken', action.payload.accessToken);
-				localStorage.setItem('userData', JSON.stringify(action.payload.data));
-			})
+                state.isLoading = false;
+                state.error = null;
+                state.currentUser = action.payload.data;
+                state.accessToken = action.payload.accessToken;
+                state.isAuthenticated = true;
+                localStorage.setItem('accessToken', action.payload.accessToken);
+                localStorage.setItem('userData', JSON.stringify(action.payload.data));
+            })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
-                state.data = null;
+                state.currentUser = null;
                 state.accessToken = null;
                 state.isAuthenticated = false;
             })
@@ -129,11 +134,11 @@ export const authSlice = createSlice({
             })
             .addCase(signup.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.data = action.payload.data;
+                state.currentUser = action.payload.data;
             })
             .addCase(signup.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.error.message || "Failed to post new church branch";
+                state.error = action.error.message || "Failed to sign up";
             })
             .addCase(getAllChurchUsers.pending, (state) => {
                 state.isLoading = true;
@@ -141,11 +146,11 @@ export const authSlice = createSlice({
             })
             .addCase(getAllChurchUsers.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.data = action.payload;
+                state.allUsers = action.payload;
             })
             .addCase(getAllChurchUsers.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.error.message || "Failed to fetch church branch";
+                state.error = action.error.message || "Failed to fetch church users";
             })
             .addCase(getLoggedInUser.pending, (state) => {
                 state.isLoading = true;
@@ -154,13 +159,14 @@ export const authSlice = createSlice({
             .addCase(getLoggedInUser.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.error = null;
-                state.data = action.payload;
+                state.currentUser = action.payload;
                 state.isAuthenticated = true;
+                localStorage.setItem('userData', JSON.stringify(action.payload));
             })
             .addCase(getLoggedInUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
-                state.data = null;
+                state.currentUser = null;
                 state.isAuthenticated = false;
             });
     },

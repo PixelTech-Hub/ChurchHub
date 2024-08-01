@@ -11,7 +11,7 @@ const UserDropdown: FC = function () {
     const navigate = useNavigate();
 
     // Get user data from the Redux store
-    const userData = useAppSelector((state) => state.auth.data);
+    const userData = useAppSelector((state) => state.auth.currentUser);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -47,10 +47,10 @@ const UserDropdown: FC = function () {
         >
             <Dropdown.Header>
                 <span className="block text-sm">
-                    {userData ? `${userData.name} ` : 'User'}
+                    {userData ? `${userData?.name} ` : 'User'}
                 </span>
                 <span className="block truncate text-sm font-medium">
-                    {userData ? userData.email : 'user@example.com'}
+                    {userData ? userData?.email : 'user@example.com'}
                 </span>
             </Dropdown.Header>
             {/* <Dropdown.Item href="users/settings">Settings</Dropdown.Item> */}
