@@ -1,7 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { API_BASE_URL } from "../../app/api";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Breadcrumb, Button } from "flowbite-react";
 import { HiAcademicCap, HiHeart, HiHome, HiMail, HiOfficeBuilding, HiPhone, HiUsers, HiClock, HiDownload } from "react-icons/hi";
@@ -14,7 +12,7 @@ import ChurchMemberInfoItem from "../../components/church-members/ChurchMemberIn
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { getChurchMemberById } from "../../features/church-members/memberSlice";
+import { getChurchMemberById, updateChurchMember } from "../../features/church-members/memberSlice";
 import { ChurchMembers } from "../../types/ChurchMember";
 import { ChurchMinistries } from "../../types/ChurchMinistries";
 
@@ -22,7 +20,7 @@ const SingleChurchMember = () => {
 	const [isDownloading, setIsDownloading] = useState(false);
 	const { id } = useParams<{ id: string }>();
 	const dispatch = useAppDispatch();
-	const { churchMember, loading, error } = useAppSelector((state) => state.member);
+	const { churchMember, loading, error, updating } = useAppSelector((state) => state.member);
 
 	useEffect(() => {
 		if (id) {
@@ -71,12 +69,17 @@ const SingleChurchMember = () => {
 					break;
 			}
 
-			const response = await axios.patch(`${API_BASE_URL}/church-members/${id}`, {
-				[field]: validatedValue
-			});
+			if (!id) {
+				throw new Error('Member ID is not available');
+			}
 
-			if (response.status === 200) {
-				dispatch(getChurchMemberById(id!)); // Refresh data after update
+			const result = await dispatch(updateChurchMember({
+				memberId: id,
+				memberData: { [field]: validatedValue }
+			})).unwrap();
+
+			if (result) {
+				dispatch(getChurchMemberById(id)); // Refresh data after update
 				toast.success(`${field.replace('_', ' ')} updated successfully!`);
 			}
 		} catch (error) {
@@ -204,13 +207,62 @@ const SingleChurchMember = () => {
 
 					<div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 						<div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-							<ChurchMemberInfoItem icon={<HiPhone />} label="Phone" value={`+${churchMember.phone_number}`} field="phone_number" onUpdate={updateMemberField} />
-							<ChurchMemberInfoItem icon={<HiMail />} label="Email" value={churchMember.email} field="email" onUpdate={updateMemberField} />
-							<ChurchMemberInfoItem icon={<HiOfficeBuilding />} label="Job" value={churchMember.job} field="job" onUpdate={updateMemberField} />
-							<ChurchMemberInfoItem icon={<HiHome />} label="Residence" value={churchMember.residence} field="residence" onUpdate={updateMemberField} />
-							<ChurchMemberInfoItem icon={<HiHeart />} label="Marital Status" value={churchMember.marital_status} field="marital_status" onUpdate={updateMemberField} />
-							<ChurchMemberInfoItem icon={<HiAcademicCap />} label="Education" value={churchMember.education_level || 'Not specified'} field="education_level" onUpdate={updateMemberField} />
-							<ChurchMemberInfoItem icon={<HiUsers />} label="Number of Children" value={churchMember.no_of_children} field="no_of_children" onUpdate={updateMemberField} />
+							<ChurchMemberInfoItem
+								icon={<HiPhone />}
+								label="Phone"
+								value={`+${churchMember.phone_number}`}
+								field="phone_number"
+								onUpdate={updateMemberField}
+								updating={updating}
+							/>
+							<ChurchMemberInfoItem
+								icon={<HiMail />} 
+								label="Email" 
+								value={churchMember.email} 
+								field="email" 
+								onUpdate={updateMemberField} 
+								updating={updating}
+								/>
+							<ChurchMemberInfoItem
+								icon={<HiOfficeBuilding />} 
+								label="Job" 
+								value={churchMember.job} 
+								field="job" 
+								onUpdate={updateMemberField} 
+								updating={updating}
+								/>
+							<ChurchMemberInfoItem
+								icon={<HiHome />} 
+								label="Residence" 
+								value={churchMember.residence} 
+								field="residence" 
+								onUpdate={updateMemberField} 
+								updating={updating}
+								/>
+							<ChurchMemberInfoItem
+								icon={<HiHeart />} 
+								label="Marital Status" 
+								value={churchMember.marital_status} 
+								field="marital_status" 
+								onUpdate={updateMemberField} 
+								updating={updating}
+								/>
+							<ChurchMemberInfoItem
+								icon={<HiAcademicCap />} 
+								label="Education" 
+								value={churchMember.education_level || 'Not specified'} 
+								field="education_level" 
+								onUpdate={updateMemberField} 
+								updating={updating}
+								/>
+							<ChurchMemberInfoItem
+								icon={<HiUsers />} 
+								label="Number of Children" 
+								value={churchMember.no_of_children} 
+								field="no_of_children" 
+								onUpdate={updateMemberField} 
+								updating={updating}
+								/>
 						</div>
 
 						<div className="bg-gradient-to-r from-blue-500 to-purple-600 dark:bg-gray-700 p-6 rounded-lg">
