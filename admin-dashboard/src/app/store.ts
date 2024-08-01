@@ -13,7 +13,7 @@ export const store = configureStore({
 		branch: churchBranchReducer,
 		service: churchServiceReducer,
 		ministry: churchMinistryReducer,
-		// member: memberReducer
+		member: memberReducer
 	},
 
 })

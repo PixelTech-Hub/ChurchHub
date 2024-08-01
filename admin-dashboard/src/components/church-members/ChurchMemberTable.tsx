@@ -8,30 +8,32 @@ import { ChurchMembers } from "../../types/ChurchMember";
 
 
 interface ChurchMemberTableProps {
-	paginatedMembers: ChurchMembers[];
-	filteredMembers: ChurchMembers[];
+	paginatedChurchMembers: ChurchMembers[];
+	filteredChurchMembers: ChurchMembers[];
 	loading: boolean;
 	totalPages: number;
 	currentPage: number;
 	setCurrentPage: (page: number) => void;
+	canAccessDeletMinistryeModal: boolean
 }
 
 
 
 const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({
-	paginatedMembers,
-	filteredMembers,
+	paginatedChurchMembers,
+	filteredChurchMembers,
 	loading,
 	totalPages,
 	currentPage,
-	setCurrentPage
+	setCurrentPage,
+	canAccessDeletMinistryeModal
 }) {
 
 
 	if (loading) {
 		<p>Loading....</p>
 	}
-	if (filteredMembers.length === 0) {
+	if (filteredChurchMembers.length === 0) {
 		return (
 			<div className="text-center py-4">
 				<p className="text-red-500 dark:text-gray-400">No Church Member Found</p>
@@ -52,7 +54,7 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({
 					<Table.HeadCell>Actions</Table.HeadCell>
 				</Table.Head>
 				<Table.Body className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-					{paginatedMembers.map(member => (
+					{paginatedChurchMembers.map(member => (
 						<Table.Row key={member.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
 
 							<Table.Cell className="whitespace-nowrap p-4 text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -77,11 +79,13 @@ const ChurchMemberTable: FC<ChurchMemberTableProps> = function ({
 							</Table.Cell>
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
+									{canAccessDeletMinistryeModal && (
+										<DeleteChurchMemberModal
+											memberId={member.id ?? ''}
+											fullName={member.full_name}
+										/>
+									)}
 
-									<DeleteChurchMemberModal
-										memberId={member.id ?? ''}
-										fullName={member.full_name}
-									/>
 									<Link to={`/users/church-members/${member.id}`} className="">
 										<Button color="success">
 											<HiArrowRight className="mr-2 text-lg" />

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import {
 	Breadcrumb,
 	Button,
@@ -9,125 +8,96 @@ import {
 	HiHome,
 	HiRefresh,
 } from "react-icons/hi";
-
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import SearchChurchMembers from "../../components/church-members/SearchChurchMembers";
 import ChurchMemberTable from "../../components/church-members/ChurchMemberTable";
 import AddChurchMemberModal from "../../components/church-members/AddChurchMemberModal";
-import { ChurchMembers } from "../../types/ChurchMember";
-import { AuthData } from "../../types/AuthData";
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import useSearch from "../../hooks/useSearch";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { getAllChurchMembers } from "../../features/church-members/memberSlice";
+import { filterItems } from "../../utils/filterItem";
+import { ITEMS_PER_PAGE } from "../../app/api";
+import generatePDF from "../../utils/generatePDF";
+import { EntityChurchAdminRoleEnum } from "../../enums/admin.enum";
 
-const ITEMS_PER_PAGE = 10;
 
 const ChurchMembersPage: FC = function () {
-	const [members, setMembers] = useState<ChurchMembers[]>([]);
-	const [searchTerm, setSearchTerm] = useState("");
 	const [isReloading, setIsReloading] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [authData, setAuthData] = useState<AuthData | null>(null);
+	const { searchTerm, handleSearch } = useSearch();
 
-	const fetchChurchMembers = async () => {
-		try {
-			const response = await fetch(`http://localhost:8000/church-members/church/${authData?.churchId}`);
-			// console.log('response', response)
-			if (response.ok) {
-				const data = await response.json();
-				setMembers(data); // Assuming data.data contains the array of church staffs
-				setLoading(false)
-			} else {
-				console.error("Failed to fetch church staffs");
-				setLoading(false)
-			}
-		} catch (error) {
-			console.error("Error fetching church staffs:", error);
-			setLoading(false)
+	const dispatch = useAppDispatch();
+	const members = useAppSelector((state) => state.member.allChurchMembers || []);
+	const churchId = useAppSelector((state) => state.church.userChurch);
+	const churchStaffRole = useAppSelector((state) => state.auth.currentUser?.role)
+
+
+	useEffect(() => {
+		if (churchId?.id) {
+			dispatch(getAllChurchMembers(churchId?.id));
 		}
-	};
+	}, [dispatch, churchId]);
 
 	useEffect(() => {
-		const storedData = localStorage.getItem('userData');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchChurchMembers();
-	}, [authData]);
-
-	useEffect(() => {
-		// Reset to first page when search term changes
 		setCurrentPage(1);
 	}, [searchTerm, members]);
 
-	const filteredMembers = members.filter((member) =>
-		member.full_name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
 
-	const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
+	const filteredChurchMembers = filterItems(members, searchTerm, "full_name");
 
-	const paginatedMembers = filteredMembers.slice(
+	const totalPages = Math.ceil(filteredChurchMembers.length / ITEMS_PER_PAGE);
+
+	const paginatedChurchMembers = filteredChurchMembers.slice(
 		(currentPage - 1) * ITEMS_PER_PAGE,
 		currentPage * ITEMS_PER_PAGE
 	);
 
-	const handleSearch = (term: string) => {
-		setSearchTerm(term);
-	};
-
-	// console.log('paginatedMembers:', paginatedMembers)
-	// console.log('filteredMembers:', filteredMembers)
 
 	const handleReload = () => {
 		setIsReloading(true);
-		// Simulating a reload delay
-		setTimeout(() => {
-			window.location.reload();
-		}, 1000);
+		if (churchId?.id) {
+			dispatch(getAllChurchMembers(churchId?.id)).finally(() => {
+				setIsReloading(false);
+			});
+		}
 	};
 
 	const handleDownloadPDF = async () => {
 		setIsDownloading(true);
-		setLoading(true)
+		setLoading(true);
 		try {
-			const doc = new jsPDF();
-
-			doc.text('Church Members', 14, 15);
-
-			const tableData = filteredMembers.map(member => [
-				member.full_name,
-				member.email,
-				member.phone_number,
-				member.gender,
-				member.job,
-				member.residence
-			]);
-
-			(doc as any).autoTable({
-				head: [['Full Name', 'Email', 'Phone', 'Gender', 'Career', 'Residence']],
-				body: tableData,
-				startY: 20,
+			generatePDF({
+				columns: [
+					{ header: 'Name', accessor: 'full_name' },
+					{ header: 'Email Address', accessor: 'email' },
+					{ header: 'Contact', accessor: 'phone_number' },
+					{ header: 'Career', accessor: 'job' },
+					{ header: 'Education', accessor: 'education_level' },
+				],
+				data: filteredChurchMembers,
+				filename: 'church_members.pdf'
 			});
-
-			doc.save('church_members.pdf');
 		} catch (error) {
 			console.error('Error generating PDF:', error);
-			setIsDownloading(false);
-			setLoading(false)
 		} finally {
 			setIsDownloading(false);
-			setLoading(false)
+			setLoading(false);
 		}
 	};
+
+	const canAccessAddMemberModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	const canAccessDeletMinistryeModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
 
 	return (
 		<NavbarSidebarLayout isFooter={false}>
@@ -153,7 +123,8 @@ const ChurchMembersPage: FC = function () {
 					<div className="block items-center sm:flex">
 						<SearchChurchMembers onSearch={handleSearch} />
 						<div className="flex w-full items-center sm:justify-end gap-4">
-							<AddChurchMemberModal />
+							{canAccessAddMemberModal && <AddChurchMemberModal />}
+							
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -194,12 +165,13 @@ const ChurchMembersPage: FC = function () {
 					<div className="inline-block min-w-full align-middle">
 						<div className="overflow-hidden shadow">
 							<ChurchMemberTable
-								paginatedMembers={paginatedMembers}
-								filteredMembers={filteredMembers}
+								paginatedChurchMembers={paginatedChurchMembers}
+								filteredChurchMembers={filteredChurchMembers}
 								loading={loading}
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
+								canAccessDeletMinistryeModal={canAccessDeletMinistryeModal}
 							/>
 						</div>
 					</div>
