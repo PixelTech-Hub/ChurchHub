@@ -95,21 +95,14 @@ const DashboardPage: FC = function () {
             color="bg-gradient-to-br from-green-400 to-cyan-500"
           />
         </div>
-        {/* <SalesThisWeek />
-        <div className="mt-4 grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <ChurchBranchTrend />
-          <NewProductsThisWeek />
-          <VisitorsThisWeek />
-          <UserSignupsThisWeek />
-        </div> */}
-        <div className="my-4 grid grid-cols-1 xl:gap-4 2xl:grid-cols-3">
+        {/* <div className="my-4 grid grid-cols-1 xl:gap-4 2xl:grid-cols-3">
           <SessionsByCountry />
           <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-1">
             <LatestCustomers />
             <AcquisitionOverview />
           </div>
-        </div>
-        <Transactions />
+        </div> */}
+        {/* <Transactions /> */}
       </div>
     </NavbarSidebarLayout>
   );

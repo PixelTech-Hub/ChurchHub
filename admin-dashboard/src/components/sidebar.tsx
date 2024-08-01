@@ -59,13 +59,11 @@ const ExampleSidebar: FC = function () {
                 <Sidebar.Item
                   href="/"
                   icon={HiChartPie}
-                  className={
-                    "/" === currentPage ? "bg-gray-100 dark:bg-gray-700" : ""
-                  }
+                  
                 >
                   Dashboard
                 </Sidebar.Item>
-                <Sidebar.Item
+                {/* <Sidebar.Item
                   href="/kanban"
                   icon={HiViewGrid}
                   className={
@@ -75,8 +73,8 @@ const ExampleSidebar: FC = function () {
                   }
                 >
                   Task Management
-                </Sidebar.Item>
-                <Sidebar.Item
+                </Sidebar.Item> */}
+                {/* <Sidebar.Item
                   href="/mailing/inbox"
                   icon={HiInboxIn}
                   label="3"
@@ -87,7 +85,7 @@ const ExampleSidebar: FC = function () {
                   }
                 >
                   Message
-                </Sidebar.Item>
+                </Sidebar.Item> */}
                 <Sidebar.Collapse
                   icon={HiShoppingBag}
                   label="Church Initiatives"
@@ -95,31 +93,19 @@ const ExampleSidebar: FC = function () {
                 >
                   <Sidebar.Item
                     href="/church-branches"
-                    className={
-                      "/church-services" === currentPage
-                        ? "bg-gray-100 dark:bg-gray-700"
-                        : ""
-                    }
+                    
                   >
                     Church Branches
                   </Sidebar.Item>
                   <Sidebar.Item
                     href="/church-services"
-                    className={
-                      "/church-services" === currentPage
-                        ? "bg-gray-100 dark:bg-gray-700"
-                        : ""
-                    }
+                    
                   >
                     Church Services
                   </Sidebar.Item>
                   <Sidebar.Item
                     href="/church-ministries"
-                    className={
-                      "/church-ministries" === currentPage
-                        ? "bg-gray-100 dark:bg-gray-700"
-                        : ""
-                    }
+                    
                   >
                     Church Ministries
                   </Sidebar.Item>
@@ -151,21 +137,13 @@ const ExampleSidebar: FC = function () {
                   </Sidebar.Item> */}
                   <Sidebar.Item
                     href="/users/church-members"
-                    className={
-                      "/users/church-members" === currentPage
-                        ? "bg-gray-100 dark:bg-gray-700"
-                        : ""
-                    }
+                    
                   >
                     Church Members
                   </Sidebar.Item>
                   <Sidebar.Item
                     href="/users/church-staffs"
-                    className={
-                      "/users/church-staffs" === currentPage
-                        ? "bg-gray-100 dark:bg-gray-700"
-                        : ""
-                    }
+                    
                   >
                     Church Staffs
                   </Sidebar.Item>
@@ -180,16 +158,16 @@ const ExampleSidebar: FC = function () {
                     Settings
                   </Sidebar.Item> */}
                 </Sidebar.Collapse>
-                <Sidebar.Collapse icon={HiChartSquareBar} label="Financial Records">
-                  <Sidebar.Item href="/pages/pricing">Transactions</Sidebar.Item>
+                {/* <Sidebar.Collapse icon={HiChartSquareBar} label="Financial Records"> */}
+                  {/* <Sidebar.Item href="/pages/pricing">Transactions</Sidebar.Item>
                   <Sidebar.Item href="/pages/maintenance">
                     Staff Payment
-                  </Sidebar.Item>
+                  </Sidebar.Item> */}
                   {/* <Sidebar.Item href="/pages/404">404 not found</Sidebar.Item>
                   <Sidebar.Item href="/pages/500">
                     500 server error
                   </Sidebar.Item> */}
-                </Sidebar.Collapse>
+                {/* </Sidebar.Collapse> */}
                 {/* <Sidebar.Collapse icon={HiLockClosed} label="Authentication">
                   <Sidebar.Item href="/authentication/sign-in">
                     Sign in
@@ -230,7 +208,7 @@ const ExampleSidebar: FC = function () {
               </Sidebar.ItemGroup> */}
             </Sidebar.Items>
           </div>
-          <BottomMenu />
+          {/* <BottomMenu /> */}
         </div>
       </Sidebar>
     </div>

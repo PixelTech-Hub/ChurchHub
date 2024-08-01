@@ -8,7 +8,7 @@ interface StatCardProps {
 
 const StatisticCard: React.FC<StatCardProps> = ({ title, value, change, icon, color }) => {
 	return (
-		<div className={`relative overflow-hidden rounded-xl shadow-lg ${color} p-6 transition-all duration-300 hover:shadow-xl hover:scale-105`}>
+		<div className={`relative overflow-hidden rounded-xl shadow-lg ${color}  p-6 transition-all duration-300 hover:shadow-xl hover:scale-105`}>
 			<div className="absolute top-0 right-0 -mt-4 -mr-4 h-16 w-16 rounded-full bg-white opacity-10"></div>
 			<div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-16 w-16 rounded-full bg-white opacity-10"></div>
 			<div className="relative z-10">
