@@ -41,10 +41,10 @@ export const signup = createAsyncThunk(
     async (user: Users, { rejectWithValue }) => {
         try {
             const response = await userService.signupUser(user);
-            if (response && response.accessToken) {
+            if (response) {
                 return response;
             } else {
-                return rejectWithValue('Login failed: No access token received');
+                return rejectWithValue('Signup failed...');
             }
         } catch (error) {
             if (error instanceof Error) {

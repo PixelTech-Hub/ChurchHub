@@ -10,7 +10,6 @@ import {
 } from "react-icons/hi";
 import NavbarSidebarLayout from "../../../layouts/navbar-sidebar";
 import ChurchMinistriesTable from "../../../components/church-ministries/ChurchMinistriesTable";
-import SearchChurchMinistry from "../../../components/church-ministries/SearchChurchMinistry";
 import AddChurchMinistryModal from "../../../components/church-ministries/AddChurchMinistryModal";
 import useSearch from "../../../hooks/useSearch";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";

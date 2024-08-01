@@ -18,7 +18,6 @@ import { getAllChurchUsers } from "../../features/auth/authSlice";
 import { filterItems } from "../../utils/filterItem";
 import { ITEMS_PER_PAGE } from "../../app/api";
 import generatePDF from "../../utils/generatePDF";
-import { EntityChurchAdminRoleEnum } from "../../enums/admin.enum";
 import SearchItem from "../../helpers/SearchItem";
 
 const ChurchStaffPage: FC = function () {
@@ -36,14 +35,17 @@ const ChurchStaffPage: FC = function () {
 		return [];
 	});
 	const churchId = useAppSelector((state) => state.church.userChurch);
-	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
+	// const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
+
+
+	// console.log('church staff rl')
 
 
 	useEffect(() => {
 		if (churchId?.id) {
 			dispatch(getAllChurchUsers(churchId.id));
 		}
-	}, [dispatch, churchId]);
+	}, [dispatch, churchId, churchUsers]);
 
 	useEffect(() => {
 		setCurrentPage(1);
@@ -75,8 +77,10 @@ const ChurchStaffPage: FC = function () {
 		try {
 			generatePDF({
 				columns: [
-					{ header: 'Ministry Name', accessor: 'name' },
-					{ header: 'Description', accessor: 'description' },
+					{ header: 'Name', accessor: 'name' },
+					{ header: 'Email', accessor: 'email' },
+					{ header: 'Position', accessor: 'title' },
+					{ header: 'Role', accessor: 'role' },
 				],
 				data: filteredChurchStaffs,
 				filename: 'church_staffs.pdf'
@@ -89,17 +93,20 @@ const ChurchStaffPage: FC = function () {
 		}
 	};
 
-	const canAccessAddStaffModal = [
-		EntityChurchAdminRoleEnum.superadmin,
-		EntityChurchAdminRoleEnum.admin,
-		EntityChurchAdminRoleEnum.editor
-	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+	// const canAccessAddStaffModal = [
+	// 	EntityChurchAdminRoleEnum.superadmin,
+	// 	EntityChurchAdminRoleEnum.admin,
+	// 	EntityChurchAdminRoleEnum.editor
+	// ].includes(churchStaffRole as EntityChurchAdminRoleEnum);
 
 
-	const canAccessDeletStaffModal = [
-		EntityChurchAdminRoleEnum.superadmin,
-		EntityChurchAdminRoleEnum.admin,
-	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+	// const canAccessDeletStaffModal = [
+	// 	EntityChurchAdminRoleEnum.superadmin,
+	// 	EntityChurchAdminRoleEnum.admin,
+	// ].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	// console.log('can accesss', churchUsers)
 
 
 	return (
@@ -129,7 +136,9 @@ const ChurchStaffPage: FC = function () {
 							value="Search for Church Staffs..."
 						/>
 						<div className="flex w-full items-center sm:justify-end gap-4">
-							{canAccessAddStaffModal && <AddChurchStaffModal />}
+							{/* {canAccessAddStaffModal && ( */}
+								<AddChurchStaffModal />
+							{/* )} */}
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -177,7 +186,6 @@ const ChurchStaffPage: FC = function () {
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
-								canAccessDeletStaffModal={canAccessDeletStaffModal}
 
 							/>
 						</div>

@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Label, Modal, TextInput, Select } from "flowbite-react";
+import React, { useState, } from 'react';
+import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
-import PhoneInput from 'react-phone-input-2';
-import 'react-day-picker/dist/style.css';
-import 'react-phone-input-2/lib/style.css';
-import { ChurchStaff } from '../../types/ChurchStaff';
 import { toast } from 'react-toastify';
-import { AuthData } from '../../types/AuthData';
-import { ChurchMinistries } from '../../types/ChurchMinistries';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { signup } from '../../features/auth/authSlice';
+import { Users } from '../../types/Users';
 
 
 
@@ -19,64 +16,37 @@ const AddChurchStaffModal: React.FC = () => {
     const [step, setStep] = useState<number>(1);
 
     // Individual state for each form field
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [gender, setGender] = useState("");
-    const [dob, setDob] = useState("");
-    const [disability, setDisability] = useState(false);
-    const [phoneNumber, setPhoneNumber] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [title, setTitle] = useState("");
     const [email, setEmail] = useState("");
-    const [residence, setResidence] = useState("");
-    const [position, setPosition] = useState("");
-    const [maritalStatus, setMaritalStatus] = useState("");
-    const [baptised, setBaptised] = useState<boolean | undefined>(undefined);
-    const [accountName, setAccountName] = useState("");
-    const [accountNo, setAccountNo] = useState("");
-    const [career, setCareer] = useState("");
-    const [ministry, setMinistry] = useState<ChurchMinistries[]>([]);
+    const [password, setPassword] = useState("");
+    const [role, setRole] = useState("");
 
 
-    const [errors, setErrors] = useState<Partial<Record<keyof ChurchStaff, string>>>({});
-    const [loading, setLoading] = useState(false);
-    const [authData, setAuthData] = useState<AuthData>();
+    const [errors, setErrors] = useState<Partial<Record<keyof Users, string>>>({});
+    const dispatch = useAppDispatch();
+    const { isLoading } = useAppSelector((state) => state.auth);
+    const church = useAppSelector(state => state.church.userChurch)
 
-    useEffect(() => {
-        const storedData = localStorage.getItem('userData');
-        if (storedData) {
-            try {
-                const parsedData: AuthData = JSON.parse(storedData);
-                setAuthData(parsedData);
-            } catch (error) {
-                console.error('Error parsing auth data:', error);
-            }
-        }
-    }, []);
 
-    const validateField = (name: keyof ChurchStaff, value: any) => {
+
+    const validateField = (name: keyof Users, value: any) => {
         let error = '';
         switch (name) {
             case 'email':
                 if (!/\S+@\S+\.\S+/.test(value)) error = 'Invalid email address';
                 break;
-            case 'phone_number':
-                if (value.length < 10) error = 'Phone number must be at least 10 digits';
+            case 'name':
+                if (!value) error = 'Name is required';
                 break;
-            case 'dob':
-                if (!value) error = 'Date of birth is required';
+            case 'title':
+                if (!value) error = 'Title is required';
                 break;
-            case 'position':
-                if (!value.trim()) error = 'Position is required';
+            case 'password':
+                if (!value.trim()) error = 'Password is required';
                 break;
-            case 'marital_status':
-                if (!value.trim()) error = 'Marital status is required';
-                break;
-            case 'baptised':
-                if (value === null) error = 'Please select an option';
-                break;
-            case 'account_name':
-            case 'account_no':
-            case 'career':
-                if (!value.trim()) error = 'This field is required';
+            case 'role':
+                if (!value.trim()) error = 'Role is required';
                 break;
             default:
                 if (typeof value === 'string' && !value.trim()) error = 'This field is required';
@@ -94,7 +64,7 @@ const AddChurchStaffModal: React.FC = () => {
 
     const validateStep = (): boolean => {
         const currentStepFields = getStepFields(step);
-        const stepErrors: Partial<Record<keyof ChurchStaff, string>> = {};
+        const stepErrors: Partial<Record<keyof Users, string>> = {};
         let isValid = true;
 
         currentStepFields.forEach(field => {
@@ -110,102 +80,64 @@ const AddChurchStaffModal: React.FC = () => {
         return isValid;
     };
 
-    const getValue = (field: keyof ChurchStaff) => {
+    const getValue = (field: keyof Users) => {
         switch (field) {
-            case 'first_name': return firstName;
-            case 'last_name': return lastName;
-            case 'gender': return gender;
-            case 'dob': return dob;
-            case 'disability': return disability;
-            case 'phone_number': return phoneNumber;
+            case 'name': return fullName;
+            case 'password': return password;
             case 'email': return email;
-            case 'residence': return residence;
-            case 'position': return position;
-            case 'marital_status': return maritalStatus;
-            case 'baptised': return baptised;
-            case 'account_name': return accountName;
-            case 'account_no': return accountNo;
-            case 'career': return career;
+            case 'title': return title;
+            case 'role': return role;
             default: return '';
         }
     };
 
-    const getStepFields = (stepNumber: number): (keyof ChurchStaff)[] => {
+    const getStepFields = (stepNumber: number): (keyof Users)[] => {
         switch (stepNumber) {
-            case 1: return ['first_name', 'last_name', 'gender', 'dob', 'disability'];
-            case 2: return ['phone_number', 'email', 'residence'];
-            case 3: return ['position', 'marital_status', 'baptised'];
-            case 4: return ['account_name', 'account_no', 'career'];
+            case 1: return ['name', 'email', 'password'];
+            case 2: return ['title', 'role'];
             default: return [];
         }
     };
 
-    useEffect(() => {
-        fetchChurchMinistries();
-    }, [ministry]);
 
-    const fetchChurchMinistries = async () => {
-        try {
-            const response = await fetch("http://localhost:8000/church_ministries");
-            if (response.ok) {
-                const data = await response.json();
-                setMinistry(data.data); // Assuming data.data contains the array of church staffs
-            } else {
-                console.error("Failed to fetch church staffs");
-            }
-        } catch (error) {
-            console.error("Error fetching church staffs:", error);
-        }
-    };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!church?.id) {
+            toast.error('Main Church ID is not available.');
+            return;
+        }
         if (validateStep()) {
-            setLoading(true);
 
-            const formDataToSubmit: Partial<ChurchStaff> = {
-                churchId: authData?.churchId,
-                first_name: firstName,
-                last_name: lastName,
-                gender,
-                dob,
-                disability,
-                phone_number: phoneNumber,
+            const formDataToSubmit: Partial<Users> = {
+                churchId: church.id,
                 email,
-                residence,
-                position,
-                marital_status: maritalStatus,
-                baptised,
-                account_name: accountName,
-                account_no: accountNo,
-                career
+                password,
+                role,
+                name: fullName,
+                title,
+                isEnabled: false,
+
             };
 
-            console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
+            // console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
 
             try {
-                const response = await fetch('http://localhost:8000/church-staffs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formDataToSubmit),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Server error response:', errorData);
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                toast.success('Church staff added successfully');
-                setOpen(false);
+                await dispatch(signup(formDataToSubmit)).unwrap();
                 // Reset form fields here
+                setOpen(false);
+                setFullName("")
+                setEmail("")
+                setPassword("")
+                setTitle("")
+                setRole("")
+                toast.success('Church Staff added successfully');
             } catch (error) {
                 console.error('Submission failed:', error);
                 toast.error('Failed to add church staff');
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         } else {
             console.log("Form has errors");
@@ -220,99 +152,20 @@ const AddChurchStaffModal: React.FC = () => {
             case 1:
                 return (
                     <>
-                        <h3 className="mb-4 text-lg font-medium dark:text-white">Personal Information</h3>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="first_name">First Name</Label>
+                            <div className='col-span-2 sm:col-span-'>
+                                <Label htmlFor="first_name">Full Name</Label>
                                 <TextInput
                                     id="first_name"
                                     name="first_name"
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                    color={errors.first_name ? 'failure' : undefined}
-                                    helperText={errors.first_name}
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    color={errors.name ? 'failure' : undefined}
+                                    helperText={errors.name}
                                     required
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="last_name">Last Name</Label>
-                                <TextInput
-                                    id="last_name"
-                                    name="last_name"
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                    color={errors.last_name ? 'failure' : undefined}
-                                    helperText={errors.last_name}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="gender">Gender</Label>
-                                <Select
-                                    id="gender"
-                                    name="gender"
-                                    value={gender}
-                                    onChange={(e) => setGender(e.target.value)}
-                                    required
-                                >
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="rather not say">Other</option>
-                                </Select>
-                            </div>
-                            <div>
-                                <Label htmlFor="dob">Date of Birth</Label>
-                                <TextInput
-                                    id="dob"
-                                    name="dob"
-                                    type="date"
-                                    value={dob}
-                                    onChange={(e) => setDob(e.target.value)}
-                                    className="mt-1"
                                 />
                             </div>
                             <div className="col-span-2">
-                                <Label htmlFor="disability">Disability</Label>
-                                <div className="flex items-center mt-2">
-                                    <input
-                                        type="checkbox"
-                                        id="disability"
-                                        name="disability"
-                                        checked={disability}
-                                        onChange={(e) => setDisability(e.target.checked)}
-                                        className="mr-2"
-                                    />
-                                    <Label htmlFor="disability">Has Disability</Label>
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                );
-            case 2:
-                return (
-                    <>
-                        <h3 className="mb-4 text-lg font-medium dark:text-white">Contact Details</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2 sm:col-span-1">
-                                <Label htmlFor="phoneNumber">Phone Number</Label>
-                                <div className="phone-input-container">
-                                    <PhoneInput
-                                        country={'ug'}
-                                        value={phoneNumber}
-                                        onChange={(phone) => setPhoneNumber(phone)}
-                                        inputProps={{
-                                            name: 'phoneNumber',
-                                            required: true,
-                                        }}
-                                        containerClass="w-full"
-                                        inputClass="w-full rounded-lg border border-gray-300 p-2.5 pl-14"
-                                        buttonClass="absolute top-0 left-0 h-full"
-                                    />
-                                </div>
-                                {errors.phone_number && <p className="mt-1 text-sm text-red-500">{errors.phone_number}</p>}
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
                                 <Label htmlFor="email">Email Address</Label>
                                 <TextInput
                                     id="email"
@@ -326,135 +179,62 @@ const AddChurchStaffModal: React.FC = () => {
                                 />
                             </div>
                             <div className="col-span-2">
-                                <Label htmlFor="residence">Residence</Label>
+                                <Label htmlFor="password">Password</Label>
                                 <TextInput
-                                    id="residence"
-                                    name="residence"
-                                    value={residence}
-                                    onChange={(e) => setResidence(e.target.value)}
-                                    color={errors.residence ? 'failure' : undefined}
-                                    helperText={errors.residence}
+                                    id="password"
+                                    name="password"
+                                    type='password'
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    color={errors.password ? 'failure' : undefined}
+                                    helperText={errors.password}
                                     required
                                 />
                             </div>
+
+
+
                         </div>
                     </>
                 );
-            case 3:
+            case 2:
                 return (
                     <>
-                        <h3 className="mb-4 text-lg font-medium dark:text-white">Other Details</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2">
-                                <Label htmlFor="position">Position</Label>
-                                <Select
-                                    id="position"
-                                    name="position"
-                                    value={position}
-                                    onChange={(e) => setPosition(e.target.value)}
-                                    color={errors.position ? 'failure' : undefined}
+                                <Label htmlFor="title">Title</Label>
+                                <TextInput
+                                    id="title"
+                                    name="title"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    color={errors.title ? 'failure' : undefined}
+                                    helperText={errors.title}
                                     required
-                                >
-                                    <option value="">Select Position</option>
-                                    {ministry?.map(item => {
-                                        console.log('item', item)
-                                        return (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        )
-                                    })}
-                                    {/* {ministry.map((min) => (
-                                        <option key={min.id} value={min.id}>
-                                            {min.name}
-                                        </option>
-                                    ))} */}
-                                </Select>
+                                />
                             </div>
-                            <div className="">
-                                <Label>Marital Status</Label>
+                            <div className="col-span-2">
+                                <Label>Role</Label>
                                 <div className="flex gap-4 mt-2">
-                                    {['Single', 'Married', 'Divorced', 'Widowed'].map((status) => (
+                                    {['super admin', 'admin', 'editor', 'viewer'].map((status) => (
                                         <div key={status} className="flex items-center">
                                             <input
                                                 type="radio"
-                                                id={`marital_status-${status}`}
-                                                name="marital_status"
+                                                id={`role-${status}`}
+                                                name="role"
                                                 value={status}
-                                                checked={maritalStatus === status}
-                                                onChange={() => setMaritalStatus(status)}
+                                                checked={role === status}
+                                                onChange={() => setRole(status)}
                                                 className="mr-2"
                                             />
-                                            <Label htmlFor={`marital_status-${status}`}>{status}</Label>
+                                            <Label htmlFor={`role-${status}`}>{status}</Label>
                                         </div>
                                     ))}
                                 </div>
-                                {errors.marital_status && <p className="mt-1 text-sm text-red-500">{errors.marital_status}</p>}
+                                {errors.role && <p className="mt-1 text-sm text-red-500">{errors.role}</p>}
                             </div>
-                            <div className="col-span-2">
-                                <Label>Baptised</Label>
-                                <div className="flex gap-4 mt-2">
-                                    {['Yes', 'No'].map((option) => (
-                                        <div key={option} className="flex items-center">
-                                            <input
-                                                type="radio"
-                                                id={`baptised-${option.toLowerCase()}`}
-                                                name="baptised"
-                                                checked={baptised === (option.toLowerCase() === 'yes')}
-                                                onChange={() => setBaptised(option.toLowerCase() === 'yes')}
-                                                className="mr-2"
-                                            />
-                                            <Label htmlFor={`baptised-${option.toLowerCase()}`}>{option}</Label>
-                                        </div>
-                                    ))}
-                                </div>
-                                {errors.baptised && <p className="mt-1 text-sm text-red-500">{errors.baptised}</p>}
-                            </div>
-                        </div>
-                    </>
-                );
-            // Add cases for steps 3 and 4
-            case 4:
-                return (
-                    <>
-                        <h3 className="mb-4 text-lg font-medium dark:text-white">Account Details</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2">
-                                <Label htmlFor="account_name">Account Name</Label>
-                                <TextInput
-                                    id="account_name"
-                                    name="account_name"
-                                    value={accountName}
-                                    onChange={(e) => setAccountName(e.target.value)}
-                                    color={errors.account_name ? 'failure' : undefined}
-                                    helperText={errors.account_name}
-                                    required
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <Label htmlFor="account_no">Account Number</Label>
-                                <TextInput
-                                    id="account_no"
-                                    name="account_no"
-                                    value={accountNo}
-                                    onChange={(e) => setAccountNo(e.target.value)}
-                                    color={errors.account_no ? 'failure' : undefined}
-                                    helperText={errors.account_no}
-                                    required
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <Label htmlFor="career">Career</Label>
-                                <TextInput
-                                    id="career"
-                                    name="career"
-                                    value={career}
-                                    onChange={(e) => setCareer(e.target.value)}
-                                    color={errors.career ? 'failure' : undefined}
-                                    helperText={errors.career}
-                                    required
-                                />
-                            </div>
+
+
                         </div>
                     </>
                 );
@@ -483,13 +263,13 @@ const AddChurchStaffModal: React.FC = () => {
                                 Previous
                             </Button>
                         )}
-                        {step < 4 ? (
+                        {step < 2 ? (
                             <Button color="primary" onClick={handleNextStep}>
                                 Next
                             </Button>
                         ) : (
                             <Button color="success" onClick={handleSubmit}>
-                                {!loading ? 'Submit' : 'Processing...'}
+                                {!isLoading ? 'Submit' : 'Processing...'}
                             </Button>
                         )}
                     </div>

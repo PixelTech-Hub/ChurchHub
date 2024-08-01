@@ -11,8 +11,6 @@ import {
 } from "react-icons/hi";
 import { useSidebarContext } from "../context/SidebarContext";
 import isSmallScreen from "../helpers/is-small-screen";
-import NotificationBellDropdown from "./layout/NotificationBellDropdown";
-import AppDrawerDropdown from "./layout/AppDrawerDropdown";
 import UserDropdown from "./layout/UserDropdown";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { getUserChurch } from "../features/churches/churchSlice";

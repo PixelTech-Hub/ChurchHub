@@ -36,7 +36,7 @@ const UserDropdown: FC = function () {
                 <span>
                     <span className="sr-only">User menu</span>
                     <Avatar
-                        alt="User settings"
+                        alt={userInitials}
                         img={FaUserCircle}
                         rounded
                         size="sm"
