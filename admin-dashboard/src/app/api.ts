@@ -23,3 +23,7 @@ export const ALL_CHURCH_SERVICE_API_URL = `${API_BASE_URL}/church_services/churc
 //CHURCH MINISTIES API
 export const CHURCH_MINISTRIES_API_URL = `${API_BASE_URL}/church_ministries`;
 export const ALL_CHURCH_MINISTRIES_API_URL = `${API_BASE_URL}/church_ministries/church`;
+
+//CHURCH MEMBERS API
+export const CHURCH_MEMBERS_API_URL = `${API_BASE_URL}/church_members`;
+export const ALL_CHURCH_MEMBERS_API_URL = `${API_BASE_URL}/church_members/church`;

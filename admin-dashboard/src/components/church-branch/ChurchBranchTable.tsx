@@ -11,6 +11,8 @@ interface ChurchBranchTableProps {
 	totalPages: number;
 	currentPage: number;
 	setCurrentPage: (page: number) => void;
+	canAccessDeleteBranchModal: any;
+	canAccessUpdateBranchModal: any;
 }
 
 
@@ -20,7 +22,9 @@ const ChurchBranchTable: FC<ChurchBranchTableProps> = ({
 	loading,
 	filteredBranches,
 	setCurrentPage,
-	totalPages
+	totalPages,
+	canAccessDeleteBranchModal,
+	canAccessUpdateBranchModal
 }) => {
 	if (loading) {
 		<p>Loading....</p>
@@ -54,22 +58,26 @@ const ChurchBranchTable: FC<ChurchBranchTableProps> = ({
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
 								{branch.email}
 							</Table.Cell>
-							
+
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white capitalize">
-							{branch.church_number}
+								{branch.church_number}
 							</Table.Cell>
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
-							{branch.location}
+								{branch.location}
 							</Table.Cell>
-							
+
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
 
-									<DeleteChurchBranchModal
-										branchId={branch.id ?? ''}
-										branchName={branch.name}
-									/>
-									<UpdateChurchBranchModal branch={branch} />
+									{canAccessDeleteBranchModal &&
+										<DeleteChurchBranchModal
+											branchId={branch.id ?? ''}
+											branchName={branch.name}
+										/>
+									}
+									{canAccessUpdateBranchModal && (
+										<UpdateChurchBranchModal branch={branch} />
+									)}
 								</div>
 							</Table.Cell>
 						</Table.Row>

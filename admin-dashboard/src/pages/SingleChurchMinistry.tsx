@@ -62,6 +62,8 @@ const SingleChurchMinistry: React.FC = () => {
 				data: [churchMinistry], // Wrap churchMinistry in an array
 				filename: `${churchMinistry.name}.pdf`
 			});
+			setLoading(false)
+			setIsDownloading(false)
 		} catch (error) {
 			console.error('Error generating PDF:', error);
 			setIsDownloading(false);
@@ -89,23 +91,25 @@ const SingleChurchMinistry: React.FC = () => {
 					</Breadcrumb.Item>
 				</Breadcrumb>
 
-				<Button
-					color="light"
-					onClick={handleDownloadPDF}
-					disabled={isDownloading}
-					className={`transition-transform duration-300 ${isDownloading ? '' : ''
-						}`}
-				>
-					<HiDownload className={`mr-2 h-5 w-5 ${isDownloading ? 'opacity-0' : ''}`} />
-					<span className={isDownloading && isLoading ? 'opacity-0' : ''}>{isDownloading && isLoading ?
-						'Downloading...' : 'Download'
-					}</span>
-					{isDownloading && isLoading && (
-						<div className="absolute inset-0 flex items-center justify-center">
-							<div className="h-5 w-5 border-t-2 border-b-2 border-gray-300 rounded-full animate-spin"></div>
-						</div>
-					)}
-				</Button>
+				<div className="flex items-center justify-end mb-4">
+					<Button
+						color="light"
+						onClick={handleDownloadPDF}
+						disabled={isDownloading}
+						className={`transition-transform duration-300 ${isDownloading ? '' : ''
+							}`}
+					>
+						<HiDownload className={`mr-2 h-5 w-5 ${isDownloading ? 'opacity-0' : ''}`} />
+						<span className={isDownloading && isLoading ? 'opacity-0' : ''}>{isDownloading && isLoading ?
+							'Downloading...' : 'Download'
+						}</span>
+						{isDownloading && isLoading && (
+							<div className="absolute inset-0 flex items-center justify-center">
+								<div className="h-5 w-5 border-t-2 border-b-2 border-gray-300 rounded-full animate-spin"></div>
+							</div>
+						)}
+					</Button>
+				</div>
 
 				{loading && <LoadingSpinner />}
 				{error && <ErrorMessage message={error} />}

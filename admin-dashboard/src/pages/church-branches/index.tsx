@@ -11,6 +11,7 @@ import useSearch from '../../hooks/useSearch';
 import { filterItems } from '../../utils/filterItem';
 import { ITEMS_PER_PAGE } from '../../app/api';
 import generatePDF from '../../utils/generatePDF';
+import { EntityChurchAdminRoleEnum } from '../../enums/admin.enum';
 
 
 const ChurchBranches = () => {
@@ -23,6 +24,8 @@ const ChurchBranches = () => {
 	const dispatch = useAppDispatch();
 	const branches = useAppSelector((state) => state.branch.allChurchBranches || []);
 	const churchId = useAppSelector((state) => state.church.userChurch);
+
+	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
 
 
 
@@ -60,23 +63,43 @@ const ChurchBranches = () => {
 		setIsDownloading(true);
 		setLoading(true);
 		try {
-		  generatePDF({
-			columns: [
-			  { header: 'Branch Name', accessor: 'name' },
-			  { header: 'Email Address', accessor: 'email' },
-			  { header: 'Telephone', accessor: 'church_number' },
-			  { header: 'Location', accessor: 'location' },
-			],
-			data: filteredBranches,
-			filename: 'church_branches.pdf'
-		  });
+			generatePDF({
+				columns: [
+					{ header: 'Branch Name', accessor: 'name' },
+					{ header: 'Email Address', accessor: 'email' },
+					{ header: 'Telephone', accessor: 'church_number' },
+					{ header: 'Location', accessor: 'location' },
+				],
+				data: filteredBranches,
+				filename: 'church_branches.pdf'
+			});
 		} catch (error) {
-		  console.error('Error generating PDF:', error);
+			console.error('Error generating PDF:', error);
 		} finally {
-		  setIsDownloading(false);
-		  setLoading(false);
+			setIsDownloading(false);
+			setLoading(false);
 		}
-	  };
+	};
+
+	const canAccessAddBranchModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	const canAccessDeleteBranchModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	const canAccessUpdateBranchModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
 
 	return (
 		<NavbarSidebarLayout isFooter={false}>
@@ -107,7 +130,7 @@ const ChurchBranches = () => {
 							value="Search for Church Branches..."
 						/>
 						<div className="flex lg:flex-row flex-col w-full lg:items-center sm:justify-end gap-3">
-							<AddChurchBranchModal />
+							{canAccessAddBranchModal && <AddChurchBranchModal />}
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -150,6 +173,8 @@ const ChurchBranches = () => {
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
+								canAccessDeleteBranchModal={canAccessDeleteBranchModal}
+								canAccessUpdateBranchModal={canAccessUpdateBranchModal}
 							/>
 						</div>
 					</div>
