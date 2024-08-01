@@ -5,7 +5,10 @@ export const ITEMS_PER_PAGE = 10
 
 //USER API
 export const USER_AUTH_LOGIN_API = `${API_BASE_URL}/users/auth/login`;
+export const USER_AUTH_SIGNUP_API = `${API_BASE_URL}/users/auth/signup`;
 export const USER_DETAIL_API = `${API_BASE_URL}/users/auth/me`;
+export const USERS_DETAIL_API = `${API_BASE_URL}/users`;
+
 
 
 //CHURCH API
@@ -24,6 +27,3 @@ export const ALL_CHURCH_SERVICE_API_URL = `${API_BASE_URL}/church_services/churc
 export const CHURCH_MINISTRIES_API_URL = `${API_BASE_URL}/church_ministries`;
 export const ALL_CHURCH_MINISTRIES_API_URL = `${API_BASE_URL}/church_ministries/church`;
 
-//CHURCH MEMBERS API
-export const CHURCH_MEMBERS_API_URL = `${API_BASE_URL}/church_members`;
-export const ALL_CHURCH_MEMBERS_API_URL = `${API_BASE_URL}/church_members/church`;

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Users } from '../../types/Users';
-import { USER_AUTH_LOGIN_API, USER_DETAIL_API } from '../../app/api';
+import { USER_AUTH_LOGIN_API, USER_AUTH_SIGNUP_API, USER_DETAIL_API } from '../../app/api';
 
 
 const loginUser = async (userData: Users) => {
@@ -27,6 +27,29 @@ const loginUser = async (userData: Users) => {
 		}
 		throw new Error('An unexpected error occurred');
 	}
+};
+
+const signupUser = async (userData: Users) => {
+    try {
+        const response = await axios.post(USER_AUTH_SIGNUP_API, userData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.status === 201) {
+            return response.data;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', error.response?.data);
+            console.error('Status code:', error.response?.status);
+            console.error('Headers:', error.response?.headers);
+            throw new Error(error.response?.data?.message || 'An error occurred during signup');
+        }
+        throw new Error('An unexpected error occurred');
+    }
 };
 
 const getLoggedInUser = async (): Promise<Users> => {
@@ -61,6 +84,7 @@ const getLoggedInUser = async (): Promise<Users> => {
 
 const userService = {
 	loginUser,
+    signupUser,
 	getLoggedInUser
 }
 export default userService;
