@@ -5,9 +5,10 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-day-picker/dist/style.css';
 import 'react-phone-input-2/lib/style.css';
 import { toast } from 'react-toastify';
-import { AuthData } from '../../types/AuthData';
 import { ChurchMembers } from '../../types/ChurchMember';
-import { ChurchMinistries } from '../../types/ChurchMinistries';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { getAllChurchMinistries } from '../../features/church-ministries/ministrySlice';
+import { postNewChurchMember } from '../../features/church-members/memberSlice';
 
 
 const AddChurchMemberModal = () => {
@@ -25,24 +26,14 @@ const AddChurchMemberModal = () => {
 	const [maritalStatus, setMaritalStatus] = useState("");
 	const [NoOfchildren, setNoOfChildren] = useState("");
 	const [education, setEducation] = useState("");
-	const [ministry, setMinistry] = useState<ChurchMinistries[]>([]);
 	const [selectedMinistries, setSelectedMinistries] = useState<string[]>([]);
 
 	const [errors, setErrors] = useState<Partial<Record<keyof ChurchMembers, string>>>({});
-	const [loading, setLoading] = useState(false);
-	const [authData, setAuthData] = useState<AuthData | null>(null);
+	const dispatch = useAppDispatch();
+	const { posting } = useAppSelector((state) => state.member);
+	const ministry = useAppSelector((state) => state.ministry.allChurchMinistry || []);
+	const church = useAppSelector(state => state.church.userChurch)
 
-	useEffect(() => {
-		const storedData = localStorage.getItem('userData');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
 
 	const validateField = (name: keyof ChurchMembers, value: any) => {
 		let error = '';
@@ -84,12 +75,12 @@ const AddChurchMemberModal = () => {
 	};
 
 	const handleNextStep = () => {
-        if (validateStep()) {
-            setStep(prevStep => prevStep + 1);
-        } else {
-            toast.error('Please fill in all required fields before proceeding.');
-        }
-    };
+		if (validateStep()) {
+			setStep(prevStep => prevStep + 1);
+		} else {
+			toast.error('Please fill in all required fields before proceeding.');
+		}
+	};
 
 	const handlePrevStep = () => setStep(prevStep => prevStep - 1);
 
@@ -150,30 +141,23 @@ const AddChurchMemberModal = () => {
 		});
 	};
 	useEffect(() => {
-		fetchChurchMinistries();
-	}, [ministry]);
-
-	const fetchChurchMinistries = async () => {
-		try {
-			const response = await fetch("http://localhost:8000/church_ministries");
-			if (response.ok) {
-				const data = await response.json();
-				setMinistry(data.data); // Assuming data.data contains the array of church staffs
-			} else {
-				console.error("Failed to fetch church staffs");
-			}
-		} catch (error) {
-			console.error("Error fetching church staffs:", error);
+		if (church?.id) {
+			dispatch(getAllChurchMinistries(church?.id))
 		}
-	};
+	}, [ministry, church?.id]);
+
+
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!church?.id) {
+			toast.error('Main Church ID is not available.');
+			return;
+		}
 		if (validateStep()) {
-			setLoading(true);
 			console.log("processing...");
-			const formDataToSubmit: Partial<ChurchMembers> = {
-				churchId: authData?.churchId || '',
+			const formDataToSubmit: ChurchMembers = {
+				churchId: church.id,
 				full_name: fullName,
 				gender: gender,
 				phone_number: phoneNumber,
@@ -187,22 +171,11 @@ const AddChurchMemberModal = () => {
 				church_ministries_ids: selectedMinistries
 			};
 
-			console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
+			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
 
 			try {
-				const response = await fetch('http://localhost:8000/church-members', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formDataToSubmit),
-				});
-
-				if (!response.ok) {
-					const errorData = await response.json();
-					console.error('Server error response:', errorData);
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
+				await dispatch(postNewChurchMember(formDataToSubmit)).unwrap();
+				// Reset form fields here
 				setFullName("")
 				setGender("")
 				setPhoneNumber("")
@@ -213,18 +186,17 @@ const AddChurchMemberModal = () => {
 				setMaritalStatus("")
 				setNoOfChildren("")
 				setEducation("")
-				setMinistry([])
 				setSelectedMinistries([])
-				
+
 				toast.success('Church staff added successfully');
 				setOpen(false);
-				// Reset form fields here
 			} catch (error) {
 				console.error('Submission failed:', error);
 				toast.error('Failed to add church staff');
 			} finally {
-				setLoading(false);
+				// setLoading(false);
 			}
+			
 		} else {
 			console.log("Form has errors");
 			toast.error('Please correct the errors in the form');
@@ -486,8 +458,8 @@ const AddChurchMemberModal = () => {
 								Next
 							</Button>
 						) : (
-							<Button color="success" onClick={handleSubmit}>
-								{!loading ? 'Submit' : 'Processing...'}
+							<Button color="success" onClick={handleSubmit} disabled={posting}>
+								{!posting ? 'Submit' : 'Processing...'}
 							</Button>
 						)}
 					</div>

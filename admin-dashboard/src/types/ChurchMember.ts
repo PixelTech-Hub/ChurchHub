@@ -14,6 +14,6 @@ export interface ChurchMembers {
 	no_of_children: string;
 	education_level: string;
 	church_ministries_ids: string[];
-	ministries: ChurchMinistries[];
-	updatedAt: string;
+	ministries?: ChurchMinistries[];
+	updatedAt?: string;
 }
