@@ -7,7 +7,7 @@ export const ITEMS_PER_PAGE = 10
 export const USER_AUTH_LOGIN_API = `${API_BASE_URL}/users/auth/login`;
 export const USER_AUTH_SIGNUP_API = `${API_BASE_URL}/users/auth/signup`;
 export const USER_DETAIL_API = `${API_BASE_URL}/users/auth/me`;
-export const USERS_DETAIL_API = `${API_BASE_URL}/users`;
+export const USERS_DETAIL_API = `${API_BASE_URL}/users/church`;
 
 
 

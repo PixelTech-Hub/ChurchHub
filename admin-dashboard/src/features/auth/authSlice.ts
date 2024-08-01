@@ -36,6 +36,24 @@ export const login = createAsyncThunk(
         }
     }
 );
+export const signup = createAsyncThunk(
+    "auth/user/singup",
+    async (user: Users, { rejectWithValue }) => {
+        try {
+            const response = await userService.signupUser(user);
+            if (response && response.accessToken) {
+                return response;
+            } else {
+                return rejectWithValue('Login failed: No access token received');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'An unexpected error occurred');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
 
 export const getLoggedInUser = createAsyncThunk(
     "auth/user/getLoggedInUser",
@@ -48,6 +66,16 @@ export const getLoggedInUser = createAsyncThunk(
                 return rejectWithValue(error.message || 'Failed to fetch user data');
             }
             return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const getAllChurchUsers = createAsyncThunk("auth/user/get-all", 
+    async (churchId: string, { rejectWithValue }) => {
+        try {
+            return await userService.getAllUsers(churchId);
+        } catch (error) {
+            return rejectWithValue((error as Error).message);
         }
     }
 );
@@ -94,6 +122,30 @@ export const authSlice = createSlice({
                 state.data = null;
                 state.accessToken = null;
                 state.isAuthenticated = false;
+            })
+            .addCase(signup.pending, (state) => {
+                state.isLoading = true; 
+                state.error = null;
+            })
+            .addCase(signup.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.data = action.payload.data;
+            })
+            .addCase(signup.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || "Failed to post new church branch";
+            })
+            .addCase(getAllChurchUsers.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(getAllChurchUsers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.data = action.payload;
+            })
+            .addCase(getAllChurchUsers.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || "Failed to fetch church branch";
             })
             .addCase(getLoggedInUser.pending, (state) => {
                 state.isLoading = true;

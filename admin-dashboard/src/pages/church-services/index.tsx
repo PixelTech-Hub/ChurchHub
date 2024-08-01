@@ -130,7 +130,7 @@ const ChurchService: FC = () => {
 					<div className="block items-center sm:flex">
 						<SearchItem
 							onSearch={handleSearch}
-							value="Serarch for Church Services..."
+							value="Search for Church Services..."
 						/>
 						<div className="flex lg:flex-row flex-col w-full lg:items-center sm:justify-end gap-3">
 							{canAccessAddServiceModal && (

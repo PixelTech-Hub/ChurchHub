@@ -14,6 +14,7 @@ import { AdminEntity } from '../entities/admin.entity';
 import { FindChurchAdminDto } from '../dto/find-admin.dto';
 import { CreateChurchAdminDto } from '../dto/create-churchadmin.dto';
 import { UpdateChurchAdminDto } from '../dto/update-churchadmin.dto';
+import { ChurchEntity } from 'src/modules/churches/entities/church.entity';
 
 type Where = Record<string, string | number | boolean>;
 @Injectable()
@@ -21,6 +22,8 @@ export class AdminService {
 	constructor(
 		@InjectRepository(AdminEntity)
 		private adminRepository: Repository<AdminEntity>,
+		@InjectRepository(ChurchEntity)
+		private readonly churchRepository: Repository<ChurchEntity>,
 	) { }
 	private relations: string[] = [];
 
@@ -179,6 +182,24 @@ export class AdminService {
 		// --
 		delete currentUser.password;
 		return currentUser;
+	}
+
+	async findAllUsersByChurchId(churchId: string): Promise<AdminEntity[]> {
+		// First, check if the church exists
+		const church = await this.churchRepository.findOne({ where: { id: churchId } });
+		if (!church) {
+			throw new NotFoundException(`Church with id ${churchId} not found`);
+		}
+
+		// Fetch all church branches for this church
+		const admin = await this.adminRepository.find({
+			where: { churchId },
+			order: {
+				createdAt: 'DESC' // Order by creation date, newest first
+			}
+		});
+
+		return admin;
 	}
 
 }

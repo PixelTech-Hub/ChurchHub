@@ -19,6 +19,7 @@ import { filterItems } from "../../../utils/filterItem";
 import { ITEMS_PER_PAGE } from "../../../app/api";
 import generatePDF from "../../../utils/generatePDF";
 import { EntityChurchAdminRoleEnum } from "../../../enums/admin.enum";
+import SearchItem from "../../../helpers/SearchItem";
 
 const ChurchMinistryPage: FC = ({ }) => {
 	const [isReloading, setIsReloading] = useState(false);
@@ -96,7 +97,7 @@ const ChurchMinistryPage: FC = ({ }) => {
 	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
 
 
-	
+
 	return (
 		<NavbarSidebarLayout isFooter={false}>
 			<div className="block items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex ">
@@ -121,7 +122,10 @@ const ChurchMinistryPage: FC = ({ }) => {
 						</h1>
 					</div>
 					<div className="block items-center sm:flex">
-						<SearchChurchMinistry onSearch={handleSearch} />
+						<SearchItem
+							onSearch={handleSearch}
+							value="Search for Church Ministries..."
+						/>
 						<div className="flex lg:flex-row flex-col w-full lg:items-center sm:justify-end gap-3">
 							{canAccessAddMinistryModal && <AddChurchMinistryModal />}
 							<Button

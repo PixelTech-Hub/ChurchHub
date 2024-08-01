@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Users } from '../../types/Users';
-import { USER_AUTH_LOGIN_API, USER_AUTH_SIGNUP_API, USER_DETAIL_API } from '../../app/api';
+import { USER_AUTH_LOGIN_API, USER_AUTH_SIGNUP_API, USER_DETAIL_API, USERS_DETAIL_API } from '../../app/api';
 
 
 const loginUser = async (userData: Users) => {
@@ -52,6 +52,30 @@ const signupUser = async (userData: Users) => {
     }
 };
 
+const getAllUsers = async (churchId: string) => {
+	const accessToken = localStorage.getItem('accessToken');
+	try {
+		if (!accessToken) {
+			throw new Error('No access token found');
+		}
+
+		const response = await fetch(`${USERS_DETAIL_API}/${churchId}`, {
+			headers: {
+				'Authorization': `Bearer ${accessToken}`,
+				'Accept': 'application/json'
+			}
+		});
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Get Church Branch By ID Error:", error);
+		throw error;
+	}
+};
+
 const getLoggedInUser = async (): Promise<Users> => {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
@@ -85,6 +109,7 @@ const getLoggedInUser = async (): Promise<Users> => {
 const userService = {
 	loginUser,
     signupUser,
-	getLoggedInUser
+	getLoggedInUser,
+    getAllUsers
 }
 export default userService;
