@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { getAllChurchServices } from "../../features/church-services/serviceSlice";
 import { filterItems } from "../../utils/filterItem";
 import generatePDF from "../../utils/generatePDF";
+import { EntityChurchAdminRoleEnum } from "../../enums/admin.enum";
 
 
 const ITEMS_PER_PAGE = 10;
@@ -26,6 +27,7 @@ const ChurchService: FC = () => {
 	const dispatch = useAppDispatch();
 	const services = useAppSelector((state) => state.service.allChurchServices || []);
 	const churchId = useAppSelector((state) => state.church.userChurch);
+	const churchStaffRole = useAppSelector((state) => state.auth.data?.role)
 
 
 
@@ -61,29 +63,46 @@ const ChurchService: FC = () => {
 
 
 
-	  const handleDownloadPDF = async () => {
+	const handleDownloadPDF = async () => {
 		setIsDownloading(true);
 		setLoading(true);
 		try {
-		  generatePDF({
-			columns: [
-			  { header: 'Service Name', accessor: 'name' },
-			  { header: 'Start At', accessor: 'start_time' },
-			  { header: 'End At', accessor: 'end_time' },
-			  { header: 'Language', accessor: 'language' },
-			],
-			data: filteredChurchServices,
-			filename: 'church_service.pdf'
-		  });
+			generatePDF({
+				columns: [
+					{ header: 'Service Name', accessor: 'name' },
+					{ header: 'Start At', accessor: 'start_time' },
+					{ header: 'End At', accessor: 'end_time' },
+					{ header: 'Language', accessor: 'language' },
+				],
+				data: filteredChurchServices,
+				filename: 'church_service.pdf'
+			});
 		} catch (error) {
-		  console.error('Error generating PDF:', error);
+			console.error('Error generating PDF:', error);
 		} finally {
-		  setIsDownloading(false);
-		  setLoading(false);
+			setIsDownloading(false);
+			setLoading(false);
 		}
-	  };
+	};
 
-	//   console.log('================================', services)
+	const canAccessAddServiceModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	const canAccessDeleteServiceModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
+
+
+	const canAccessUpdateServiceModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(churchStaffRole as EntityChurchAdminRoleEnum);
 
 	return (
 		<NavbarSidebarLayout isFooter={false}>
@@ -114,7 +133,9 @@ const ChurchService: FC = () => {
 							value="Serarch for Church Services..."
 						/>
 						<div className="flex lg:flex-row flex-col w-full lg:items-center sm:justify-end gap-3">
-							<AddChurchServiceModal />
+							{canAccessAddServiceModal && (
+								<AddChurchServiceModal />
+							)}
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -161,6 +182,8 @@ const ChurchService: FC = () => {
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
+								canAccessDeleteServiceModal={canAccessDeleteServiceModal}
+								canAccessUpdateServiceModal={canAccessUpdateServiceModal}
 							/>
 						</div>
 					</div>

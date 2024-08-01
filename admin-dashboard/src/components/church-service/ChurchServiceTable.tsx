@@ -1,8 +1,6 @@
 import { FC } from "react"
 import { ChurchServices } from "../../types/ChurchServices";
-import { Button, Pagination, Table } from "flowbite-react";
-import { Link } from "react-router-dom";
-import { HiArrowRight } from "react-icons/hi";
+import { Pagination, Table } from "flowbite-react";
 import DeleteChurchServiceModal from "./DeleteChurchServiceModal";
 import UpdateChurchServiceModal from "./UpdateChurchServiceModal";
 
@@ -13,6 +11,8 @@ interface ChurchServiceTableProps {
 	totalPages: number;
 	currentPage: number;
 	setCurrentPage: (page: number) => void;
+	canAccessDeleteServiceModal: any
+	canAccessUpdateServiceModal: any
 }
 
 const ChurchServiceTable: FC<ChurchServiceTableProps> = ({
@@ -21,7 +21,9 @@ const ChurchServiceTable: FC<ChurchServiceTableProps> = ({
 	loading,
 	filteredServices,
 	setCurrentPage,
-	totalPages
+	totalPages,
+	canAccessDeleteServiceModal,
+	canAccessUpdateServiceModal
 }) => {
 
 	if (loading) {
@@ -56,22 +58,26 @@ const ChurchServiceTable: FC<ChurchServiceTableProps> = ({
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
 								{service.start_time}
 							</Table.Cell>
-							
+
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white capitalize">
-							{service.end_time}
+								{service.end_time}
 							</Table.Cell>
 							<Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
-							{service.language}
+								{service.language}
 							</Table.Cell>
-							
+
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
+									{canAccessDeleteServiceModal && (
+										<DeleteChurchServiceModal
+											serviceId={service.id ?? ''}
+											serviceName={service.name}
+										/>
+									)}
+									{canAccessUpdateServiceModal && (
+										<UpdateChurchServiceModal service={service} />
+									)}
 
-									<DeleteChurchServiceModal
-										serviceId={service.id ?? ''}
-										serviceName={service.name}
-									/>
-									<UpdateChurchServiceModal service={service} />
 								</div>
 							</Table.Cell>
 						</Table.Row>
