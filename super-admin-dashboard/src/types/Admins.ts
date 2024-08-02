@@ -7,6 +7,6 @@ export interface Admin {
 	name?: string;
 	email?: string;
 	password?: string;
-	isEmailVerified?: string;
+	isEmailVerified?: boolean;
 	role?: string;
   }

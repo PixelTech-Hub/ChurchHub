@@ -11,6 +11,7 @@ import { getAllAdmins } from "../../features/auth/authSlice";
 import { filterItems } from "../../utils/filterItem";
 import generatePDF from "../../utils/generatePDF";
 import { EntityChurchAdminRoleEnum } from "../../enums/admin.enum";
+import AddChurchAdminModal from "../../components/admin/AddChurchAdminModal";
 
 
 const SystemAdminPage = () => {
@@ -95,7 +96,7 @@ const SystemAdminPage = () => {
 	].includes(currentUserRole as EntityChurchAdminRoleEnum);
 
 
-	console.log('hello', admins)
+	// console.log('hello', admins)
 
 	return (
 		<NavbarSidebarLayout isFooter={false}>
@@ -124,7 +125,8 @@ const SystemAdminPage = () => {
 							value="Search for System Admins..."
 						/>
 						<div className="flex w-full items-center sm:justify-end gap-4">
-							{/* <AddChurchAdminModal /> */}
+							{canAccessAddAdminModal && <AddChurchAdminModal />}
+							
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -172,6 +174,7 @@ const SystemAdminPage = () => {
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
 								fetchSystemAdmins={getAllAdmins}
+								canAccessDeletAdminModal={canAccessDeletAdminModal}
 							/>
 						</div>
 					</div>

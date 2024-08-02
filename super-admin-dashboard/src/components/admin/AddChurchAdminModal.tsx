@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Users } from "../../types/Users";
-import { Churches } from "../../types/Churches";
 import { toast } from "react-toastify";
-import { CHURCH_ADMIN_SIGNUP_API_URL, CHURCH_API_URL } from "../../app/api";
-import { Button, Label, Modal, Select, TextInput } from "flowbite-react";
+import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { signup } from "../../features/auth/authSlice";
+import { Admin } from "../../types/Admins";
 
 
 const AddChurchAdminModal = () => {
@@ -13,15 +14,13 @@ const AddChurchAdminModal = () => {
 
 	// Individual state for each form field
 	const [fullName, setFullName] = useState("");
-	const [title, setTitle] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [role, setRole] = useState("");
-	const [churchId, setChurchId] = useState("");
-	const [churches, setChurches] = useState<Churches[]>([]);
 
 	const [errors, setErrors] = useState<Partial<Record<keyof Users, string>>>({});
-	const [loading, setLoading] = useState(false);
+	const {isLoading} = useAppSelector(state => state.auth)
+	const dispatch = useAppDispatch()
 
 
 
@@ -85,9 +84,7 @@ const AddChurchAdminModal = () => {
 		switch (field) {
 			case 'name': return name;
 			case 'email': return email;
-			case 'churchId': return churchId;
 			case 'role': return role;
-			case 'title': return title;
 			case 'password': return password;
 			default: return '';
 		}
@@ -97,44 +94,27 @@ const AddChurchAdminModal = () => {
 
 	const getStepFields = (stepNumber: number): (keyof Users)[] => {
 		switch (stepNumber) {
-			case 1: return ['name', 'email', 'churchId'];
-			case 2: return ['role', 'title', 'password'];
+			case 1: return ['name', 'email'];
+			case 2: return ['role', 'password'];
 			default: return [];
 		}
 	};
 
-	useEffect(() => {
-		fetchAllChurches();
-	}, [churches]);
 
 
 
 
-	const fetchAllChurches = async () => {
-		try {
-			const response = await fetch(CHURCH_API_URL);
-			if (response.ok) {
-				const data = await response.json();
-				setChurches(data.data);
-			} else {
-				console.error("Failed to fetch church staffs");
-			}
-		} catch (error) {
-			console.error("Error fetching church staffs:", error);
-		}
-	};
+	
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (validateStep()) {
-			setLoading(true);
+			// setLoading(true);
 			console.log("processing...");
-			const formDataToSubmit: Partial<Users> = {
-				churchId,
+			const formDataToSubmit: Partial<Admin> = {
 				name: fullName,
 				email,
 				role,
-				title,
 				password,
 				isEmailVerified: false,
 				isEnabled: true,
@@ -143,34 +123,20 @@ const AddChurchAdminModal = () => {
 			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
 
 			try {
-				const response = await fetch(CHURCH_ADMIN_SIGNUP_API_URL, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formDataToSubmit),
-				});
-
-				if (!response.ok) {
-					const errorData = await response.json();
-					console.error('Server error response:', errorData);
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				setFullName("")
-				setEmail("")
-				setRole("")
-				setTitle("")
-				setPassword("")
-
-				toast.success('Church Admin added successfully');
-				setOpen(false);
-				// Reset form fields here
-			} catch (error) {
-				console.error('Submission failed:', error);
-				toast.error('Failed to add church admin');
-			} finally {
-				setLoading(false);
-			}
+                await dispatch(signup(formDataToSubmit)).unwrap();
+                // Reset form fields here
+                setOpen(false);
+                setFullName("")
+                setEmail("")
+                setPassword("")
+                setRole("")
+                toast.success('Admin added successfully');
+            } catch (error) {
+                console.error('Submission failed:', error);
+                toast.error('Failed to add church staff');
+            } finally {
+                // setLoading(false);
+            }
 		} else {
 			console.log("Form has errors");
 			toast.error('Please correct the errors in the form');
@@ -214,48 +180,6 @@ const AddChurchAdminModal = () => {
 									required
 								/>
 							</div>
-							<div className="col-span-2">
-								{/* {churches?.map((item) => {
-									if (typeof item.id === 'string') {
-										return (
-											<div key={item.id} className="flex items-center">
-												<input
-													type="checkbox"
-													id={`church-${item.id}`}
-													name="church"
-													value={item.id}
-													onChange={() => setChurchId(item.id as string)}
-													className="mr-2"
-												/>
-												<Label htmlFor={`church-${item.id}`}>{item.name}</Label>
-											</div>
-										);
-									}
-									return null;
-								})} */}
-								<Select
-									id="church"
-									name="church"
-									value={churchId}
-									onChange={(e) => setChurchId(e.target.value)}
-									required
-								>
-									<option value="">Select Church</option>
-									{churches?.map((item) => (
-										<option 
-											value={item.id} key={item.id}>
-												{item.name}
-											</option>
-									))}
-
-								</Select>
-							</div>
-							{errors.churchId && (
-								<p className="mt-1 text-sm text-red-500">
-									{errors.churchId}
-								</p>
-							)}
-
 						</div>
 					</>
 				);
@@ -266,7 +190,7 @@ const AddChurchAdminModal = () => {
 							<div className="col-span-2">
 								<Label>Role</Label>
 								<div className="flex gap-4 mt-2">
-									{['super admin', 'admin', 'editor', 'viewer'].map((status) => (
+									{['admin', 'editor', 'viewer'].map((status) => (
 										<div key={status} className="flex items-center">
 											<input
 												type="radio"
@@ -285,21 +209,6 @@ const AddChurchAdminModal = () => {
 									<p className="mt-1 text-sm text-red-500">{errors.role}</p>
 								}
 							</div>
-							<div className='mt-4'>
-								<Label htmlFor="title">Title</Label>
-								<TextInput
-									id="title"
-									name="title"
-									value={title}
-									onChange={(e) => setTitle(e.target.value)}
-									color={errors.title ? 'failure' : undefined}
-									helperText={errors.title}
-									required
-								/>
-							</div>
-							{errors.title &&
-								<p className="mt-1 text-sm text-red-500">{errors.title}</p>
-							}
 							<div className='mt-4'>
 								<Label htmlFor="password">Password</Label>
 								<TextInput
@@ -350,7 +259,7 @@ const AddChurchAdminModal = () => {
 							</Button>
 						) : (
 							<Button color="success" onClick={handleSubmit}>
-								{!loading ? 'Submit' : 'Processing...'}
+								{!isLoading ? 'Submit' : 'Processing...'}
 							</Button>
 						)}
 					</div>

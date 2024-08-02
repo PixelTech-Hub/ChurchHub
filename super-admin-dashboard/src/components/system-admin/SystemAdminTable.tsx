@@ -15,9 +15,10 @@ interface SystemAdminTableProps {
 	currentPage: number;
 	setCurrentPage: (page: number) => void;
 	fetchSystemAdmins: () => void;
+	canAccessDeletAdminModal: boolean;
 }
 
-const SystemAdminTable: FC<SystemAdminTableProps> = ({ currentPage, filteredSystemAdmins, loading, paginatedSystemAdmins, setCurrentPage, totalPages }) => {
+const SystemAdminTable: FC<SystemAdminTableProps> = ({ currentPage, filteredSystemAdmins, loading, paginatedSystemAdmins, setCurrentPage, totalPages, canAccessDeletAdminModal }) => {
 	if (loading) {
 		return <p>Loading....</p>;
 	}
@@ -74,11 +75,14 @@ const SystemAdminTable: FC<SystemAdminTableProps> = ({ currentPage, filteredSyst
 							</Table.Cell>
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
-									<Link to={`/church-admin/${admin.id}`} className="">
-										<Button color="success">
-											<HiArrowRight className="mr-2 text-lg" />
-										</Button>
-									</Link>
+									{canAccessDeletAdminModal && (
+										<Link to={`/church-admin/${admin.id}`} className="">
+											<Button color="success">
+												<HiArrowRight className="mr-2 text-lg" />
+											</Button>
+										</Link>
+									)}
+
 								</div>
 							</Table.Cell>
 						</Table.Row>
