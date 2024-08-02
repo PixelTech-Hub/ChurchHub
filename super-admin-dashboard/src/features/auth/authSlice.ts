@@ -1,95 +1,167 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import userService from "./authServices";
-import { Users } from "../../types/Users";
+import { Admin } from "../../types/Admins";
 
-export interface UserState {
-	data: Users | null;
-	accessToken: string | null;
-	isLoading: boolean;
-	isAuthenticated: boolean;
-	error: string | null;
+export interface AdminState {
+    currentAdmin: Admin | null;
+    allAdmins: Admin[];
+    accessToken: string | null;
+    isLoading: boolean;
+    isAuthenticated: boolean;
+    error: string | null;
 }
 
-const initialState: UserState = {
-	data: null,
-	accessToken: null,
-	isLoading: false,
-	isAuthenticated: false,
-	error: null
+const initialState: AdminState = {
+    currentAdmin: null,
+    allAdmins: [],
+    accessToken: null,
+    isLoading: false,
+    isAuthenticated: false,
+    error: null
 }
 
 export const login = createAsyncThunk(
-	"auth/user/login",
-	async (user: Users, { rejectWithValue }) => {
-		console.log('Login thunk started with user:', user)
-		try {
-			const response = await userService.loginUser(user);
-			console.log('Login response:', response)
-
-			// The response already contains the data we need, no need to check for 'success'
-			if (response && response.accessToken) {
-				console.log('Login successful, returning data:', response)
-				return response;  // Return the whole response, not just response.data
-			} else {
-				console.log('Login failed, no accessToken in response')
-				return rejectWithValue('Login failed: No access token received');
-			}
-		} catch (error) {
-			console.error("Login error:", error)
-			if (error instanceof Error) {
-				return rejectWithValue(error.message || 'An unexpected error occurred');
-			}
-			return rejectWithValue('An unexpected error occurred');
-		}
-	}
+    "auth/admin/login",
+    async (admin: Admin, { rejectWithValue }) => {
+        try {
+            const response = await userService.loginAdmin(admin);
+            if (response && response.accessToken) {
+                return response;
+            } else {
+                return rejectWithValue('Login failed: No access token received');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'An unexpected error occurred');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
 );
+
+// export const signup = createAsyncThunk(
+//     "auth/user/signup",
+//     async (user: Users, { rejectWithValue }) => {
+//         try {
+//             const response = await userService.signupUser(user);
+//             if (response) {
+//                 return response;
+//             } else {
+//                 return rejectWithValue('Signup failed...');
+//             }
+//         } catch (error) {
+//             if (error instanceof Error) {
+//                 return rejectWithValue(error.message || 'An unexpected error occurred');
+//             }
+//             return rejectWithValue('An unexpected error occurred');
+//         }
+//     }
+// );
+
+// export const getLoggedInUser = createAsyncThunk(
+//     "auth/user/getLoggedInUser",
+//     async (_, { rejectWithValue }) => {
+//         try {
+//             const userData = await userService.getLoggedInUser();
+//             return userData;
+//         } catch (error) {
+//             if (error instanceof Error) {
+//                 return rejectWithValue(error.message || 'Failed to fetch user data');
+//             }
+//             return rejectWithValue('An unexpected error occurred');
+//         }
+//     }
+// );
+
 
 
 export const authSlice = createSlice({
-	name: "auth",
-	initialState,
-	reducers: {
-		logout: (state) => {
-			state.data = null;
-			state.accessToken = null;
-			state.isAuthenticated = false;
-			localStorage.clear();
-		},
-		initializeFromLocalStorage: (state) => {
-        const userData = localStorage.getItem('userData');
-        const token = localStorage.getItem('token');
-        if (userData && token) {
-            state.data = JSON.parse(userData);
-            state.accessToken = token;
-            state.isAuthenticated = true;
+    name: "auth",
+    initialState,
+    reducers: {
+        logout: (state) => {
+            state.currentAdmin = null;
+            state.accessToken = null;
+            state.isAuthenticated = false;
+            localStorage.removeItem('userData');
+            localStorage.removeItem('accessToken');
+        },
+        initializeFromLocalStorage: (state) => {
+            const userData = localStorage.getItem('userData');
+            const token = localStorage.getItem('accessToken');
+            if (userData && token) {
+                state.currentAdmin = JSON.parse(userData);
+                state.accessToken = token;
+                state.isAuthenticated = true;
+            }
         }
-    }
-	},
-	extraReducers(builder) {
-		builder
-			.addCase(login.pending, (state) => {
-				state.isLoading = true;
-				state.error = null;
-				state.isAuthenticated = false;
-			})
-			.addCase(login.fulfilled, (state, action) => {
-				state.isLoading = false;
-				state.error = null;
-				state.data = action.payload.data;
-				state.accessToken = action.payload.accessToken;
-				state.isAuthenticated = true;
-				localStorage.setItem('token', action.payload.accessToken); // Store token in localStorage
-				localStorage.setItem('userData', JSON.stringify(action.payload.data));
-			})
-			.addCase(login.rejected, (state, action) => {
-				state.isLoading = false;
-				state.error = action.payload as string;
-				state.data = null;
-				state.accessToken = null;
-				state.isAuthenticated = false;
-			});
-	},
+    },
+    extraReducers(builder) {
+        builder
+            .addCase(login.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+                state.isAuthenticated = false;
+            })
+            .addCase(login.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.error = null;
+                state.currentAdmin = action.payload.data;
+                state.accessToken = action.payload.accessToken;
+                state.isAuthenticated = true;
+                localStorage.setItem('accessToken', action.payload.accessToken);
+                localStorage.setItem('userData', JSON.stringify(action.payload.data));
+            })
+            .addCase(login.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+                state.currentAdmin = null;
+                state.accessToken = null;
+                state.isAuthenticated = false;
+            })
+            // .addCase(signup.pending, (state) => {
+            //     state.isLoading = true; 
+            //     state.error = null;
+            // })
+            // .addCase(signup.fulfilled, (state, action) => {
+            //     state.isLoading = false;
+            //     state.currentUser = action.payload.data;
+            // })
+            // .addCase(signup.rejected, (state, action) => {
+            //     state.isLoading = false;
+            //     state.error = action.error.message || "Failed to sign up";
+            // })
+            // .addCase(getAllChurchUsers.pending, (state) => {
+            //     state.isLoading = true;
+            //     state.error = null;
+            // })
+            // .addCase(getAllChurchUsers.fulfilled, (state, action) => {
+            //     state.isLoading = false;
+            //     state.allUsers = action.payload;
+            // })
+            // .addCase(getAllChurchUsers.rejected, (state, action) => {
+            //     state.isLoading = false;
+            //     state.error = action.error.message || "Failed to fetch church users";
+            // })
+            // .addCase(getLoggedInUser.pending, (state) => {
+            //     state.isLoading = true;
+            //     state.error = null;
+            // })
+            // .addCase(getLoggedInUser.fulfilled, (state, action) => {
+            //     state.isLoading = false;
+            //     state.error = null;
+            //     state.currentUser = action.payload;
+            //     state.isAuthenticated = true;
+            //     localStorage.setItem('userData', JSON.stringify(action.payload));
+            // })
+            // .addCase(getLoggedInUser.rejected, (state, action) => {
+            //     state.isLoading = false;
+            //     state.error = action.payload as string;
+            //     state.currentUser = null;
+            //     state.isAuthenticated = false;
+            // });
+    },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, initializeFromLocalStorage } = authSlice.actions;
 export default authSlice.reducer;

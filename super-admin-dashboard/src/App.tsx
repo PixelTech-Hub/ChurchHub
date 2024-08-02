@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import DashboardPage from "./pages";
 import ForgotPasswordPage from "./pages/authentication/forgot-password";
@@ -36,16 +36,21 @@ import ChurchPage from "./pages/churches";
 import SingleChurchPage from "./pages/churches/SingleChurchPage";
 import ChurchAdminPage from "./pages/church-admin";
 import SystemAdminPage from "./pages/system-admin";
+import { useAppDispatch } from "./app/hooks";
+import { initializeFromLocalStorage } from "./features/auth/authSlice";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
   // const auth = useAppSelector((state) => state.auth);
 
- 
   const location = useLocation();
+  const dispatch = useAppDispatch();
 
-  const auth = localStorage.getItem('token');
+  const auth = localStorage.getItem('accessToken');
 
+  useEffect(() => {
+    dispatch(initializeFromLocalStorage());
+  }, [dispatch]);
 
   if (!auth) {
     // Redirect to the sign-in page, but save the current location
@@ -192,7 +197,7 @@ const App: FC = function () {
             element={
               <ProtectedRoute>
                 <ChurchMembersPage />
-               </ProtectedRoute>
+              </ProtectedRoute>
             }
 
           />
@@ -240,15 +245,15 @@ const App: FC = function () {
           <Route
             path="/kanban"
             element={
-              
-                <KanbanPage />
+
+              <KanbanPage />
             }
           />
           <Route
             path="/e-commerce/billing"
             element={
               // <ProtectedRoute>
-                <EcommerceBillingPage />
+              <EcommerceBillingPage />
               // </ProtectedRoute>
             }
           />
@@ -264,7 +269,7 @@ const App: FC = function () {
             path="/e-commerce/products"
             element={
               // <ProtectedRoute>
-                <EcommerceProductsPage />
+              <EcommerceProductsPage />
               // </ProtectedRoute>
             }
           />
