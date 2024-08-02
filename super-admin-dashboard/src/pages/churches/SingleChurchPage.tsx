@@ -1,57 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Churches } from '../../types/Churches';
-import axios from 'axios';
-import { CHURCH_API_URL } from '../../app/api';
 import NavbarSidebarLayout from '../../layouts/navbar-sidebar';
-import { Breadcrumb, Card, Button, Timeline, Toast, Table, Avatar } from 'flowbite-react';
+import { Breadcrumb, Card, Button, Timeline, Toast, Avatar } from 'flowbite-react';
 import { HiHome, HiMail, HiGlobe, HiPhone, HiEye, HiLightBulb, HiHeart, HiCheck, HiX } from 'react-icons/hi';
 import { MdEdit } from 'react-icons/md';
 import { Switch } from '@headlessui/react';
 import { FaUserCircle } from 'react-icons/fa';
 import UpdateChurch from '../../components/churches/UpdateChurch';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { getSingleChurch, updateChurch } from '../../features/churches/churchSlice';
 
 const SingleChurchPage = () => {
-	const { id: churchId } = useParams<{ id: string }>();
-	const [church, setChurch] = useState<Churches | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
 	const [isToggling, setIsToggling] = useState(false);
 	const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
-	useEffect(() => {
-		fetchChurchDetails();
-	}, [churchId]);
+// Use setToastMessage in your functions to show messages
 
-	const fetchChurchDetails = async () => {
-		try {
-			setIsLoading(true);
-			const response = await axios.get<Churches>(`${CHURCH_API_URL}/${churchId}`);
-			setChurch(response.data);
-			setIsLoading(false);
-		} catch (error) {
-			console.error('Error fetching church details:', error);
-			setToastMessage({ type: 'error', message: 'Failed to fetch church details' });
-			setIsLoading(false);
+	const { id: churchId } = useParams<{ id: string }>();
+	const dispatch = useAppDispatch();
+	const { singleChurch: church, loading, error } = useAppSelector((state) => state.church);
+
+	useEffect(() => {
+		if (churchId) {
+			dispatch(getSingleChurch(churchId));
+		}
+	}, [dispatch, churchId]);
+
+	const updateChurchField = async (field: keyof Churches, value: string | number) => {
+		if (churchId) {
+			try {
+				await dispatch(updateChurch({ id: churchId, churchData: { [field]: value } })).unwrap();
+				// Handle success (you might want to show a toast message here)
+			} catch (error) {
+				console.error('Error updating church field:', error);
+				// Handle error (show error toast message)
+			}
 		}
 	};
 
-	const updateChurchField = async (field: keyof Churches, value: string | number) => {
-		try {
-		  const response = await axios.patch(`${CHURCH_API_URL}/${churchId}`, {
-			[field]: value
-		  });
-		  if (response.status === 200) {
-			setChurch(prevChurch => prevChurch ? { ...prevChurch, [field]: value } : null);
-			setToastMessage({ type: 'success', message: `${field} updated successfully` });
-		  }
-		} catch (error) {
-		  console.error('Error updating church field:', error);
-		  setToastMessage({ type: 'error', message: `Failed to update ${field}` });
-		}
-	  };
-
-	if (isLoading) {
+	if (loading) {
 		return <div className="flex justify-center items-center h-screen">Loading...</div>;
+	}
+
+	if (error) {
+		return <div className="flex justify-center items-center h-screen">Error: {error}</div>;
 	}
 
 	if (!church) {
@@ -59,27 +52,15 @@ const SingleChurchPage = () => {
 	}
 
 	const toggleChurchStatus = async () => {
-		if (!church || isToggling) return;
+		if (!church || loading) return;
 
-		setIsToggling(true);
 		try {
 			const newStatus = !church.isEnabled;
-			const response = await axios.patch(`${CHURCH_API_URL}/${churchId}`, { isEnabled: newStatus });
-
-			if (response.status === 200) {
-				setChurch(prevChurch => prevChurch ? { ...prevChurch, isEnabled: newStatus } : null);
-				setToastMessage({
-					type: 'success',
-					message: `Church status ${newStatus ? 'enabled' : 'disabled'} successfully`
-				});
-			} else {
-				throw new Error('Failed to update church status');
-			}
+			await dispatch(updateChurch({ id: churchId!, churchData: { isEnabled: newStatus } })).unwrap();
+			// Handle success (show success toast message)
 		} catch (error) {
 			console.error('Error updating church status:', error);
-			setToastMessage({ type: 'error', message: 'Failed to update church status' });
-		} finally {
-			setIsToggling(false);
+			// Handle error (show error toast message)
 		}
 	};
 
@@ -99,7 +80,7 @@ const SingleChurchPage = () => {
 				</Breadcrumb>
 
 				<div className="flex items-center justify-between mb-4">
-					<h2 className="text-2xl font-bold">Church Status</h2>
+					<h2 className="text-2xl font-bold">{church.name}</h2>
 					<Switch
 						checked={church.isEnabled}
 						onChange={toggleChurchStatus}
@@ -154,7 +135,7 @@ const SingleChurchPage = () => {
 											<UpdateChurch
 												fieldName="vision"
 												value={church.vision}
-												onUpdate={updateChurchField}
+												onUpdate={(field, value) => updateChurchField(field as keyof Churches, value)}
 											/>
 										</Timeline.Body>
 									</Timeline.Content>
