@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Users } from "../../types/Users";
 import { toast } from "react-toastify";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { signup } from "../../features/auth/authSlice";
-import { Admin } from "../../types/Admins";
-
+import { getAllChurches } from "../../features/churches/churchSlice";
+import { createNewChurchStaff } from "../../features/church-staff/staffSlice";
 
 const AddChurchAdminModal = () => {
 	const [isOpen, setOpen] = useState<boolean>(false);
@@ -15,14 +14,21 @@ const AddChurchAdminModal = () => {
 	// Individual state for each form field
 	const [fullName, setFullName] = useState("");
 	const [email, setEmail] = useState("");
+	const [title, setTitle] = useState("");
 	const [password, setPassword] = useState("");
 	const [role, setRole] = useState("");
+	const [selectedChurch, setSelectedChurch] = useState("");
 
 	const [errors, setErrors] = useState<Partial<Record<keyof Users, string>>>({});
-	const {isLoading} = useAppSelector(state => state.auth)
+	const { isLoading } = useAppSelector(state => state.auth)
 	const dispatch = useAppDispatch()
 
+	const { data: churches } = useAppSelector(state => state.church);
 
+
+	useEffect(() => {
+		dispatch(getAllChurches());
+	}, [dispatch, churches]);
 
 	const validateField = (name: keyof Users, value: any) => {
 		let error = '';
@@ -33,9 +39,8 @@ const AddChurchAdminModal = () => {
 			case 'name':
 				if (!value) error = 'Full name is required';
 				break;
-			case 'title':
 			case 'churchId':
-				if (!value) error = 'Select a church atleast is required';
+				if (!value) error = 'Selecting a church is required';
 				break;
 			case 'title':
 				if (!value) error = 'Your title is required';
@@ -46,6 +51,7 @@ const AddChurchAdminModal = () => {
 			case 'password':
 				if (!value) error = 'Password is required';
 				break;
+
 			default:
 				if (typeof value === 'string' && !value.trim()) error = 'This field is required';
 		}
@@ -84,7 +90,9 @@ const AddChurchAdminModal = () => {
 		switch (field) {
 			case 'name': return name;
 			case 'email': return email;
+			case 'churchId': return selectedChurch;
 			case 'role': return role;
+			case 'title': return title;
 			case 'password': return password;
 			default: return '';
 		}
@@ -94,8 +102,8 @@ const AddChurchAdminModal = () => {
 
 	const getStepFields = (stepNumber: number): (keyof Users)[] => {
 		switch (stepNumber) {
-			case 1: return ['name', 'email'];
-			case 2: return ['role', 'password'];
+			case 1: return ['name', 'email', 'churchId'];
+			case 2: return ['title', 'role', 'password'];
 			default: return [];
 		}
 	};
@@ -104,16 +112,18 @@ const AddChurchAdminModal = () => {
 
 
 
-	
+
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (validateStep()) {
 			// setLoading(true);
 			console.log("processing...");
-			const formDataToSubmit: Partial<Admin> = {
+			const formDataToSubmit: Users = {
+				churchId: selectedChurch,
 				name: fullName,
 				email,
+				title,
 				role,
 				password,
 				isEmailVerified: false,
@@ -123,20 +133,21 @@ const AddChurchAdminModal = () => {
 			// console.log('Data being sent to server:', JSON.stringify(formDataToSubmit, null, 2));
 
 			try {
-                await dispatch(signup(formDataToSubmit)).unwrap();
-                // Reset form fields here
-                setOpen(false);
-                setFullName("")
-                setEmail("")
-                setPassword("")
-                setRole("")
-                toast.success('Admin added successfully');
-            } catch (error) {
-                console.error('Submission failed:', error);
-                toast.error('Failed to add church staff');
-            } finally {
-                // setLoading(false);
-            }
+				await dispatch(createNewChurchStaff(formDataToSubmit)).unwrap();
+				// Reset form fields here
+				setOpen(false);
+				setFullName("")
+				setEmail("")
+				setPassword("")
+				setRole("")
+				setSelectedChurch("");
+				toast.success('Admin added successfully');
+			} catch (error) {
+				console.error('Submission failed:', error);
+				toast.error('Failed to add church staff');
+			} finally {
+				// setLoading(false);
+			}
 		} else {
 			console.log("Form has errors");
 			toast.error('Please correct the errors in the form');
@@ -180,6 +191,24 @@ const AddChurchAdminModal = () => {
 									required
 								/>
 							</div>
+							<div className="col-span-2">
+								<Label htmlFor="church">Select Church</Label>
+								<select
+									id="church"
+									name="church"
+									value={selectedChurch}
+									onChange={(e) => setSelectedChurch(e.target.value)}
+									className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+								>
+									<option value="">Select a church</option>
+									{churches?.map((church) => (
+										<option key={church.id} value={church.id}>
+											{church.name}
+										</option>
+									))}
+								</select>
+								{errors.churchId && <p className="mt-1 text-sm text-red-500">{errors.churchId}</p>}
+							</div>
 						</div>
 					</>
 				);
@@ -187,6 +216,22 @@ const AddChurchAdminModal = () => {
 				return (
 					<>
 						<div className="grid grid-cols-2 gap-4">
+						<div className='mt-4'>
+								<Label htmlFor="title">Title</Label>
+								<TextInput
+									id="title"
+									name="title"
+									type="text"
+									value={title}
+									onChange={(e) => setTitle(e.target.value)}
+									color={errors.title ? 'failure' : undefined}
+									helperText={errors.title}
+									required
+								/>
+							</div>
+							{errors.title &&
+								<p className="mt-1 text-sm text-red-500">{errors.title}</p>
+							}
 							<div className="col-span-2">
 								<Label>Role</Label>
 								<div className="flex gap-4 mt-2">
