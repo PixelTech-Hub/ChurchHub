@@ -39,24 +39,24 @@ export const login = createAsyncThunk(
     }
 );
 
-// export const signup = createAsyncThunk(
-//     "auth/user/signup",
-//     async (user: Users, { rejectWithValue }) => {
-//         try {
-//             const response = await userService.signupUser(user);
-//             if (response) {
-//                 return response;
-//             } else {
-//                 return rejectWithValue('Signup failed...');
-//             }
-//         } catch (error) {
-//             if (error instanceof Error) {
-//                 return rejectWithValue(error.message || 'An unexpected error occurred');
-//             }
-//             return rejectWithValue('An unexpected error occurred');
-//         }
-//     }
-// );
+export const signup = createAsyncThunk(
+    "auth/admin/signup",
+    async (admin: Admin, { rejectWithValue }) => {
+        try {
+            const response = await userService.signupAdmin(admin);
+            if (response) {
+                return response;
+            } else {
+                return rejectWithValue('Signup failed...');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'An unexpected error occurred');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
 
 // export const getLoggedInUser = createAsyncThunk(
 //     "auth/user/getLoggedInUser",
@@ -119,18 +119,18 @@ export const authSlice = createSlice({
                 state.accessToken = null;
                 state.isAuthenticated = false;
             })
-            // .addCase(signup.pending, (state) => {
-            //     state.isLoading = true; 
-            //     state.error = null;
-            // })
-            // .addCase(signup.fulfilled, (state, action) => {
-            //     state.isLoading = false;
-            //     state.currentUser = action.payload.data;
-            // })
-            // .addCase(signup.rejected, (state, action) => {
-            //     state.isLoading = false;
-            //     state.error = action.error.message || "Failed to sign up";
-            // })
+            .addCase(signup.pending, (state) => {
+                state.isLoading = true; 
+                state.error = null;
+            })
+            .addCase(signup.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.currentAdmin = action.payload.data;
+            })
+            .addCase(signup.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || "Failed to sign up";
+            })
             // .addCase(getAllChurchUsers.pending, (state) => {
             //     state.isLoading = true;
             //     state.error = null;

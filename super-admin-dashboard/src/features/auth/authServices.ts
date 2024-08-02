@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ADMIN_LOGIN_API_URL } from '../../app/api';
+import { ADMIN_LOGIN_API_URL, ADMIN_SIGNUP_API_URL } from '../../app/api';
 import { Admin } from '../../types/Admins';
 
 
@@ -29,28 +29,28 @@ const loginAdmin = async (adminData: Admin) => {
 	}
 };
 
-// const signupUser = async (userData: Users) => {
-//     try {
-//         const response = await axios.post(USER_AUTH_SIGNUP_API, userData, {
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Accept': 'application/json'
-//             }
-//         });
+const signupAdmin = async (adminData: Admin) => {
+    try {
+        const response = await axios.post(ADMIN_SIGNUP_API_URL, adminData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
 
-//         if (response.status === 201) {
-//             return response.data;
-//         }
-//     } catch (error) {
-//         if (axios.isAxiosError(error)) {
-//             console.error('Error details:', error.response?.data);
-//             console.error('Status code:', error.response?.status);
-//             console.error('Headers:', error.response?.headers);
-//             throw new Error(error.response?.data?.message || 'An error occurred during signup');
-//         }
-//         throw new Error('An unexpected error occurred');
-//     }
-// };
+        if (response.status === 201) {
+            return response.data;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', error.response?.data);
+            console.error('Status code:', error.response?.status);
+            console.error('Headers:', error.response?.headers);
+            throw new Error(error.response?.data?.message || 'An error occurred during signup');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+}
 
 // const getAllUsers = async (churchId: string) => {
 // 	const accessToken = localStorage.getItem('accessToken');
@@ -107,6 +107,7 @@ const loginAdmin = async (adminData: Admin) => {
 // };
 
 const userService = {
-	loginAdmin
+	loginAdmin,
+	signupAdmin
 }
 export default userService;
