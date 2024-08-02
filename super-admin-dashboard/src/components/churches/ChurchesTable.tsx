@@ -5,6 +5,8 @@ import { HiArrowRight } from "react-icons/hi"
 import { Churches } from "../../types/Churches";
 import { CHURCH_API_URL } from "../../app/api";
 import { Switch } from '@headlessui/react';
+import { updateChurch } from "../../features/churches/churchSlice";
+import { useAppDispatch } from "../../app/hooks";
 
 interface ChurchTableProps {
 	paginatedChurches: Churches[];
@@ -14,9 +16,12 @@ interface ChurchTableProps {
 	currentPage: number;
 	setCurrentPage: (page: number) => void;
 	fetchChurches: () => void;
+	canAccessDeletStaffModal: boolean
 }
 
-const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurches, loading, currentPage, setCurrentPage, totalPages, fetchChurches }) => {
+const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurches, loading, currentPage, setCurrentPage, totalPages, fetchChurches, canAccessDeletStaffModal }) => {
+
+	const dispatch = useAppDispatch()
 
 	if (loading) {
 		<p>Loading....</p>
@@ -30,22 +35,10 @@ const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurch
 	}
 	const toggleChurchStatus = async (churchId: string, currentStatus: boolean) => {
 		try {
-			const response = await fetch(`${CHURCH_API_URL}/${churchId}`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ isEnabled: !currentStatus }),
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to update church status');
-			}
-
-			// Refresh the churches data after successful update
-			// You might need to lift this state up to the parent component
-			// and pass it down as a prop if fetchChurches is not accessible here
-			fetchChurches();
+			await dispatch(updateChurch({
+				id: churchId,
+				churchData: { isEnabled: !currentStatus }
+			})).unwrap();
 		} catch (error) {
 			console.error('Error updating church status:', error);
 			// You might want to show an error message to the user here
@@ -83,25 +76,28 @@ const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurch
 							</Table.Cell>
 
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
-								<div className="flex items-center gap-x-3">
-									<Switch
-										checked={church.isEnabled}
-										onChange={() => toggleChurchStatus(church.id ?? '', church.isEnabled ?? false)}
-										className={`${church.isEnabled ? 'bg-green-600' : 'bg-red-500'
-											} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-									>
-										<span className="sr-only">Enable church</span>
-										<span
-											className={`${church.isEnabled ? 'translate-x-6' : 'translate-x-1'
-												} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-										/>
-									</Switch>
-									<Link to={`/churches/${church.id}`} className="">
-										<Button color="success">
-											<HiArrowRight className="mr-2 text-lg" />
-										</Button>
-									</Link>
-								</div>
+								{canAccessDeletStaffModal && (
+									<div className="flex items-center gap-x-3">
+										<Switch
+											checked={church.isEnabled}
+											onChange={() => toggleChurchStatus(church.id ?? '', church.isEnabled ?? false)}
+											className={`${church.isEnabled ? 'bg-green-600' : 'bg-red-500'
+												} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+										>
+											<span className="sr-only">Enable church</span>
+											<span
+												className={`${church.isEnabled ? 'translate-x-6' : 'translate-x-1'
+													} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+											/>
+										</Switch>
+										<Link to={`/churches/${church.id}`} className="">
+											<Button color="success">
+												<HiArrowRight className="mr-2 text-lg" />
+											</Button>
+										</Link>
+									</div>
+								)}
+
 							</Table.Cell>
 						</Table.Row>
 					))}

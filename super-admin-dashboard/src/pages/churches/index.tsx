@@ -3,57 +3,48 @@ import NavbarSidebarLayout from "../../layouts/navbar-sidebar"
 import { HiDownload, HiHome, HiRefresh } from "react-icons/hi"
 import SearchItem from "../../helpers/SearchItem"
 import { useEffect, useState } from "react"
-import { Churches } from "../../types/Churches"
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import ChurchesTable from "../../components/churches/ChurchesTable"
 import AddChurchModal from "../../components/churches/AddChurchModal"
-import { CHURCH_API_URL } from "../../app/api"
+import useSearch from "../../hooks/useSearch"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import { getAllChurches } from "../../features/churches/churchSlice"
+import { filterItems } from "../../utils/filterItem"
+import { ITEMS_PER_PAGE } from "../../app/api"
+import generatePDF from "../../utils/generatePDF"
+import { EntityChurchAdminRoleEnum } from "../../enums/admin.enum"
 
-const ITEMS_PER_PAGE = 10;
+
 
 
 const ChurchPage = () => {
-	const [churches, setChurches] = useState<Churches[]>([]);
-	const [searchTerm, setSearchTerm] = useState("");
 	const [isReloading, setIsReloading] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
+	const { searchTerm, handleSearch } = useSearch();
 
-	const fetchChurches = async () => {
-		setLoading(true);
-		try {
-			const response = await fetch(`${CHURCH_API_URL}`);
-			if (response.ok) {
-				const data = await response.json();
-				setChurches(data?.data); // Assuming data.data contains the array of church staffs
-				setLoading(false)
-			} else {
-				console.error("Failed to fetch church services");
-				setLoading(false)
-			}
-		} catch (error) {
-			console.error("Error fetching churches:", error);
-			setChurches([]);
-		} finally {
-			setLoading(false);
+	const dispatch = useAppDispatch();
+	const churches = useAppSelector((state) => {
+		if (Array.isArray(state.church.data)) {
+			return state.church.data;
 		}
-	};
+		return [];
+	});
+	const currentAdminRole = useAppSelector((state) => state.auth.currentAdmin?.role);
+
+
 
 
 	useEffect(() => {
-		fetchChurches();
-	}, [churches]);
+			dispatch(getAllChurches());
+	}, [dispatch, churches]);
 
 	useEffect(() => {
-		// Reset to first page when search term changes
 		setCurrentPage(1);
-	}, [searchTerm]);
+	}, [searchTerm, churches]);
 
-	const filteredChurches = churches?.filter((church) =>
-		church.name?.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+
+	const filteredChurches = filterItems(churches, searchTerm, "name");
 
 	const totalPages = Math.ceil(filteredChurches.length / ITEMS_PER_PAGE);
 
@@ -62,54 +53,28 @@ const ChurchPage = () => {
 		currentPage * ITEMS_PER_PAGE
 	);
 
-	const handleSearch = (term: string) => {
-		setSearchTerm(term);
-	};
-
 
 	const handleReload = () => {
 		setIsReloading(true);
-		fetchChurches().finally(() => {
-		  setIsReloading(false);
-		});
-	  };
+			dispatch(getAllChurches()).finally(() => {
+				setIsReloading(false);
+			});
+	};
 
 	const handleDownloadPDF = async () => {
 		setIsDownloading(true);
 		setLoading(true);
 		try {
-			const doc = new jsPDF();
-	
-			doc.setFontSize(18);
-			doc.text('All Churches', 14, 15);
-	
-			const tableData = filteredChurches.map(church => [
-				church.name,
-				church.email,
-				church.core_values,
-				church.mission,
-				church.office_no,
-				church.website
-			]);
-	
-			(doc as any).autoTable({
-				head: [['Name', 'Email', 'Values', 'Mission', 'Number', 'Website']],
-				body: tableData,
-				startY: 25,
-				headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-				columnStyles: {
-					0: { cellWidth: 30 },
-					1: { cellWidth: 40 },
-					2: { cellWidth: 30 },
-					3: { cellWidth: 30 },
-					4: { cellWidth: 30 },
-					5: { cellWidth: 30 }
-				},
-				styles: { overflow: 'linebreak', cellPadding: 2 },
-				theme: 'striped'
+			generatePDF({
+				columns: [
+					{ header: 'Name', accessor: 'name' },
+					{ header: 'Email', accessor: 'email' },
+					{ header: 'Contact', accessor: 'office_no' },
+					{ header: 'Status', accessor: 'isEnabled' },
+				],
+				data: filteredChurches,
+				filename: 'churches.pdf'
 			});
-	
-			doc.save('churches.pdf');
 		} catch (error) {
 			console.error('Error generating PDF:', error);
 		} finally {
@@ -118,9 +83,17 @@ const ChurchPage = () => {
 		}
 	};
 
-	// console.log(paginatedChurches)
+	const canAccessAddStaffModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(currentAdminRole as EntityChurchAdminRoleEnum);
 
-	//toggle church status
+
+	const canAccessDeletStaffModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+	].includes(currentAdminRole as EntityChurchAdminRoleEnum);
 	
 	return (
 		<NavbarSidebarLayout isFooter={false}>
@@ -148,10 +121,11 @@ const ChurchPage = () => {
 					<div className="block items-center sm:flex">
 						<SearchItem
 							onSearch={handleSearch}
-							value="Serarch for Churches..."
+							value="Search for Churches..."
 						/>
 						<div className="flex lg:flex-row flex-col w-full lg:items-center sm:justify-end gap-3">
-							<AddChurchModal />
+							{canAccessAddStaffModal && <AddChurchModal />}
+							
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -198,7 +172,8 @@ const ChurchPage = () => {
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
-								fetchChurches={fetchChurches}
+								fetchChurches={getAllChurches}
+								canAccessDeletStaffModal={canAccessDeletStaffModal}
 							/>
 						</div>
 					</div>

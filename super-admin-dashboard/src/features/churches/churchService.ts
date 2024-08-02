@@ -90,7 +90,7 @@ const updateChurch = async (churchId: string, churchData: Churches) => {
         }
 
         const response = await fetch(`${CHURCH_API_URL}/${churchId}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
