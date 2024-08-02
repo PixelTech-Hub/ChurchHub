@@ -1,4 +1,5 @@
-export const API_BASE_URL = 'http://localhost:8000';
+// export const API_BASE_URL = 'http://localhost:8000';
+export const API_BASE_URL = 'https://churchhub-api.gulubcc.org';
 export const ITEMS_PER_PAGE = 10
 
 

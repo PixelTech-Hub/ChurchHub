@@ -45,3 +45,6 @@ const InfoItem: FC<{
 		</div>
 	);
 };
+
+
+export default InfoItem

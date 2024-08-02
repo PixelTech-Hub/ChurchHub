@@ -51,11 +51,7 @@ const DeleteChurchMemberModal: FC<DeleteStaffProp> = function ({memberId, fullNa
 				isOpen={isOpen}
 				setIsOpen={setIsOpen}
 				isLoading={isLoading}
-				setIsLoading={setIsLoading}
-			>
-
-
-			</DeleteItem>
+			/>
 		</>
 	);
 };

@@ -2,9 +2,7 @@
 import { FC, FormEvent, useState } from "react";
 import DeleteItem from "../modals/DeleteItem";
 import { toast } from "react-toastify";
-import { API_BASE_URL } from "../../app/api";
-import axios from "axios";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import {  useAppSelector } from "../../app/hooks";
 
 
 type DeleteStaffProp = {
@@ -12,10 +10,10 @@ type DeleteStaffProp = {
 	staffName: string;
 }
 
-const DeleteChurchStaffModal:FC<DeleteStaffProp> = function ({staffId,  staffName }) {
+const DeleteChurchStaffModal:FC<DeleteStaffProp> = function ({  staffName }) {
 	const [isOpen, setIsOpen] = useState(false);
-	const dispatch = useAppDispatch();
-    const { data, isLoading } = useAppSelector((state) => state.auth);
+	// const dispatch = useAppDispatch();
+    const { isLoading } = useAppSelector((state) => state.auth);
 
     const handleDeleteChurchStaff = async (e: FormEvent<HTMLElement>) => {
 		e.preventDefault();
@@ -47,10 +45,7 @@ const DeleteChurchStaffModal:FC<DeleteStaffProp> = function ({staffId,  staffNam
 				setIsOpen={setIsOpen}
 				isLoading={isLoading}
 				// setIsLoading={setIsLoading}
-			>
-
-
-			</DeleteItem>
+			/>
 		</>
 	);
 };

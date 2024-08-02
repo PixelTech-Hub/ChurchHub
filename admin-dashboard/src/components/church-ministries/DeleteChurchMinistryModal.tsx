@@ -9,12 +9,12 @@ type DeleteMinistryProp = {
 	name: string;
 }
 
-const DeleteChurchMinistryModal: FC<DeleteMinistryProp> = function ({ministryId, name}) {
+const DeleteChurchMinistryModal: FC<DeleteMinistryProp> = function ({ ministryId, name }) {
 	const [isOpen, setIsOpen] = useState(false);
-    const dispatch = useAppDispatch();
-    const { deleting } = useAppSelector((state) => state.ministry);
+	const dispatch = useAppDispatch();
+	const { deleting } = useAppSelector((state) => state.ministry);
 
-    const handleDeleteChurchMinistry = async (e: FormEvent<HTMLElement>) => {
+	const handleDeleteChurchMinistry = async (e: FormEvent<HTMLElement>) => {
 		e.preventDefault();
 		try {
 			await dispatch(deleteChurchMinistry(ministryId)).unwrap();
@@ -39,12 +39,10 @@ const DeleteChurchMinistryModal: FC<DeleteMinistryProp> = function ({ministryId,
 				isOpen={isOpen}
 				setIsOpen={setIsOpen}
 				isLoading={deleting}
-			>
+			/>
 
-
-			</DeleteItem>
 		</>
-  )
+	)
 }
 
 export default DeleteChurchMinistryModal

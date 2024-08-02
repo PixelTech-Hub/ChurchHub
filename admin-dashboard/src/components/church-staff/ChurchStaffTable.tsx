@@ -1,4 +1,4 @@
-import { Pagination, Table } from "flowbite-react";
+import {  Pagination, Table } from "flowbite-react";
 import { FC } from "react";
 import { Users } from "../../types/Users";
 

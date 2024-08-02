@@ -16,17 +16,17 @@ const ExampleSidebar: FC = function () {
   const { isOpenOnSmallScreens: isSidebarOpenOnSmallScreens } =
     useSidebarContext();
 
-  const [currentPage, setCurrentPage] = useState("");
-  const [isEcommerceOpen, setEcommerceOpen] = useState(true);
+  // const [currentPage, setCurrentPage] = useState("");
+  const [isChurchInitiative, setIsChurchInitiative] = useState(true);
   const [isUsersOpen, setUsersOpen] = useState(true);
 
   useEffect(() => {
     const newPage = window.location.pathname;
 
-    setCurrentPage(newPage);
-    setEcommerceOpen(newPage.includes("/e-commerce/"));
+    // setCurrentPage(newPage);
+    setIsChurchInitiative(newPage.includes("/"));
     setUsersOpen(newPage.includes("/users/"));
-  }, [setCurrentPage, setEcommerceOpen, setUsersOpen]);
+  }, [ setIsChurchInitiative, setUsersOpen]);
 
   return (
     <div
@@ -84,7 +84,7 @@ const ExampleSidebar: FC = function () {
                 <Sidebar.Collapse
                   icon={HiShoppingBag}
                   label="Church Initiatives"
-                  open={isEcommerceOpen}
+                  open={isChurchInitiative}
                 >
                   <Sidebar.Item
                     href="/church-branches"

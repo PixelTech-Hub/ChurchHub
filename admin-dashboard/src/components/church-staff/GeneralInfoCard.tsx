@@ -1,22 +1,17 @@
 import { Button, Card, Label, Textarea, TextInput } from "flowbite-react";
 import { FC, useState, useEffect } from "react";
-import { AuthData } from "../../types/AuthData";
-import axios from "axios";
-import { API_BASE_URL } from "../../app/api";
+import { useAppSelector } from "../../app/hooks";
 
 interface GeneralInfoCardProps {
 	staff: any;
 	onUpdate: (updatedStaff: any) => void;
 }
 
-interface Church {
-	name: string;
-	// Add other properties as needed
-  }
+
 
 const GeneralInfoCard: FC<GeneralInfoCardProps> = function ({ staff, onUpdate }) {
-	const [authData, setAuthData] = useState<AuthData | null>(null);
-	const [church, setChurch] = useState<Church | null>(null);
+
+	const church = useAppSelector(state => state.church.userChurch)
 	// const [loading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		first_name: "",
@@ -57,33 +52,6 @@ const GeneralInfoCard: FC<GeneralInfoCardProps> = function ({ staff, onUpdate })
 	};
 
 
-	useEffect(() => {
-		const storedData = localStorage.getItem('auth');
-		if (storedData) {
-			try {
-				const parsedData: AuthData = JSON.parse(storedData);
-				setAuthData(parsedData);
-			} catch (error) {
-				console.error('Error parsing auth data:', error);
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchChurchName();
-	}, []);
-
-	console.log('church....', church)
-
-
-	const fetchChurchName = async () => {
-		try {
-		  const response = await axios.get(`${API_BASE_URL}/churches/${authData?.data.churchId}`);
-		  setChurch(response.data);
-		} catch (error) {
-		  console.error('Error fetching staff details:', error);
-		}
-	  };
 
 	return (
 		<Card>

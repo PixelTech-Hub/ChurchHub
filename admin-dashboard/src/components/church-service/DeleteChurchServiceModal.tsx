@@ -42,10 +42,7 @@ const DeleteChurchServiceModal: FC<DeleteServiceProp> = ({ serviceId, serviceNam
 				isOpen={isOpen}
 				setIsOpen={setIsOpen}
 				isLoading={deleting}
-			>
-
-
-			</DeleteItem>
+			/>
 		</>
 	)
 }

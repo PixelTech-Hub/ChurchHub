@@ -27,7 +27,6 @@ import MailingReplyPage from "./pages/mailing/reply";
 import MailingReadPage from "./pages/mailing/read";
 import MailingInboxPage from "./pages/mailing/inbox";
 import MailingComposePage from "./pages/mailing/compose";
-import SingleChurchStaff from "./pages/church-staff/SingleChurchStaff";
 import SingleChurchMember from "./pages/church-members/SingleChurchMember";
 import ChurchMinistryPage from "./pages/church-staff/church-ministries/ChurchMinistryPage";
 import SingleChurchMinistry from "./pages/SingleChurchMinistry";
@@ -153,7 +152,7 @@ const App: FC = function () {
             }
 
           />
-          <Route
+          {/* <Route
             path="/users/church-staffs/:id"
             element={
               <ProtectedRoute>
@@ -161,7 +160,7 @@ const App: FC = function () {
               </ProtectedRoute>
             }
 
-          />
+          /> */}
           <Route
             path="/users/church-members"
             element={
