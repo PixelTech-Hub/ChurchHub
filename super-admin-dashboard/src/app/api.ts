@@ -15,3 +15,8 @@ export const ADMIN_LOGGED_API_URL = `${API_BASE_URL}/admin/auth/me`;
 //CHURCH ADMIN
 export const CHURCH_ADMIN_API_URL = `${API_BASE_URL}/users`;
 export const CHURCH_ADMIN_SIGNUP_API_URL = `${API_BASE_URL}/users/auth/signup`;
+
+//CHURCH STAFF
+export const USER_AUTH_LOGIN_API = `${API_BASE_URL}/users/auth/login`;
+export const USER_AUTH_SIGNUP_API = `${API_BASE_URL}/users/auth/signup`;
+export const USERS_DETAIL_API = `${API_BASE_URL}/users`;

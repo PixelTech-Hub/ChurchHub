@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users } from "../../types/Users";
-import { CHURCH_ADMIN_API_URL, ITEMS_PER_PAGE } from "../../app/api";
-import jsPDF from 'jspdf';
+import { ITEMS_PER_PAGE } from "../../app/api";
 import 'jspdf-autotable';
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Breadcrumb, Button } from "flowbite-react";
@@ -9,105 +7,96 @@ import { HiDownload, HiHome, HiRefresh } from "react-icons/hi";
 import SearchItem from "../../helpers/SearchItem";
 import ChurchAdminTable from "../../components/admin/ChurchAdminTable";
 import AddChurchAdminModal from "../../components/admin/AddChurchAdminModal";
+import useSearch from "../../hooks/useSearch";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { getAllChurchStaffs } from "../../features/church-staff/staffSlice";
+import { filterItems } from "../../utils/filterItem";
+import generatePDF from "../../utils/generatePDF";
+import { EntityChurchAdminRoleEnum } from "../../enums/admin.enum";
 
 
 const ChurchAdminPage = () => {
-	const [users, setUsers] = useState<Users[]>([]);
-	const [searchTerm, setSearchTerm] = useState("");
 	const [isReloading, setIsReloading] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
+	const { searchTerm, handleSearch } = useSearch();
 
-	const fetchChurchAdmins = async () => {
-		try {
-			const response = await fetch(CHURCH_ADMIN_API_URL);
-			// console.log('response', response)
-			if (response.ok) {
-				const data = await response.json();
-				setUsers(data.data); // Assuming data.data contains the array of church staffs
-				setLoading(false)
-			} else {
-				console.error("Failed to fetch church administrator");
-				setLoading(false)
-			}
-		} catch (error) {
-			console.error("Error fetching church administrator:", error);
-			setLoading(false)
+	const dispatch = useAppDispatch();
+	const staffs = useAppSelector((state) => {
+		if (Array.isArray(state.staffs.allUsers)) {
+			return state.staffs.allUsers;
 		}
-	};
+		return [];
+	});
+	const currentUserRole = useAppSelector((state) => state.auth.currentAdmin?.role);
+
 
 
 
 	useEffect(() => {
-		fetchChurchAdmins();
-	}, [users]);
+	
+			dispatch(getAllChurchStaffs());
+		
+	}, [dispatch]);
 
 	useEffect(() => {
-		// Reset to first page when search term changes
 		setCurrentPage(1);
-	}, [searchTerm, users]);
+	}, [searchTerm]);
 
-	const filteredChurchAdmins = users.filter((user) =>
-		user.name?.toLowerCase().includes(searchTerm.toLowerCase())
-	);
 
-	const totalPages = Math.ceil(filteredChurchAdmins.length / ITEMS_PER_PAGE);
+	const filteredChurchStaffs = filterItems(staffs, searchTerm, "name");
 
-	const paginatedChurchAdmins = filteredChurchAdmins.slice(
+	const totalPages = Math.ceil(filteredChurchStaffs.length / ITEMS_PER_PAGE);
+
+	const paginatedChurchStaffs = filteredChurchStaffs.slice(
 		(currentPage - 1) * ITEMS_PER_PAGE,
 		currentPage * ITEMS_PER_PAGE
 	);
 
-	const handleSearch = (term: string) => {
-		setSearchTerm(term);
-	};
-
-
 
 	const handleReload = () => {
 		setIsReloading(true);
-		fetchChurchAdmins().finally(() => {
-			setIsReloading(false);
-		});
+			dispatch(getAllChurchStaffs()).finally(() => {
+				setIsReloading(false);
+			});
 	};
 
 	const handleDownloadPDF = async () => {
 		setIsDownloading(true);
-		setLoading(true)
+		setLoading(true);
 		try {
-			const doc = new jsPDF();
-
-			doc.text('Church Admins', 14, 15);
-
-			const tableData = filteredChurchAdmins.map(user => [
-				user.name,
-				user.email,
-				user.title,
-				user.role,
-				user.church?.name || '',
-				user.isEnabled,
-			]);
-
-			(doc as any).autoTable({
-				head: [['Full Name', 'Email', 'Title', 'Role', 'Church', 'Status']],
-				body: tableData,
-				startY: 20,
+			generatePDF({
+				columns: [
+					{ header: 'Name', accessor: 'name' },
+					{ header: 'Email', accessor: 'email' },
+					{ header: 'Position', accessor: 'title' },
+					{ header: 'Role', accessor: 'role' },
+				],
+				data: filteredChurchStaffs,
+				filename: 'church_staffs.pdf'
 			});
-
-			doc.save('church_admins.pdf');
 		} catch (error) {
 			console.error('Error generating PDF:', error);
-			setIsDownloading(false);
-			setLoading(false)
 		} finally {
 			setIsDownloading(false);
-			setLoading(false)
+			setLoading(false);
 		}
 	};
 
+	const canAccessAddAdminModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+		EntityChurchAdminRoleEnum.editor
+	].includes(currentUserRole as EntityChurchAdminRoleEnum);
 
-	// console.log('CHurch administration', users)
+
+	const canAccessDeletAdminModal = [
+		EntityChurchAdminRoleEnum.superadmin,
+		EntityChurchAdminRoleEnum.admin,
+	].includes(currentUserRole as EntityChurchAdminRoleEnum);
+
+
 
 	return (
 		<NavbarSidebarLayout isFooter={false}>
@@ -136,7 +125,8 @@ const ChurchAdminPage = () => {
 							value="Serarch for Church Admins..."
 						/>
 						<div className="flex w-full items-center sm:justify-end gap-4">
-							<AddChurchAdminModal />
+							{canAccessAddAdminModal && <AddChurchAdminModal />}
+							
 							<Button
 								color="light"
 								onClick={handleReload}
@@ -177,13 +167,14 @@ const ChurchAdminPage = () => {
 					<div className="inline-block min-w-full align-middle">
 						<div className="overflow-hidden shadow">
 							<ChurchAdminTable
-								paginatedChurchAdmins={paginatedChurchAdmins}
-								filteredChurchAdmins={filteredChurchAdmins}
+								paginatedChurchAdmins={paginatedChurchStaffs}
+								filteredChurchAdmins={filteredChurchStaffs}
 								loading={loading}
 								totalPages={totalPages}
 								currentPage={currentPage}
 								setCurrentPage={setCurrentPage}
-								fetchChurchAdmins={fetchChurchAdmins}
+								fetchChurchAdmins={getAllChurchStaffs}
+								canAccessDeletAdminModal={canAccessDeletAdminModal}
 							/>
 						</div>
 					</div>

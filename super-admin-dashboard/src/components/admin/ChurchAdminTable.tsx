@@ -12,9 +12,10 @@ interface ChurchAdminTableProps {
     currentPage: number;
     setCurrentPage: (page: number) => void;
     fetchChurchAdmins: () => void;
+    canAccessDeletAdminModal: boolean
 }
 
-const ChurchAdminTable: FC<ChurchAdminTableProps> = ({ currentPage, filteredChurchAdmins, loading, paginatedChurchAdmins, setCurrentPage, totalPages }) => {
+const ChurchAdminTable: FC<ChurchAdminTableProps> = ({ currentPage, filteredChurchAdmins, loading, paginatedChurchAdmins, setCurrentPage, totalPages, canAccessDeletAdminModal }) => {
     if (loading) {
         return <p>Loading....</p>;
     }
@@ -75,16 +76,19 @@ const ChurchAdminTable: FC<ChurchAdminTableProps> = ({ currentPage, filteredChur
                                 {admin.role}
                             </Table.Cell>
                             <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
-                                {admin.church?.name || 'N/A'}
+                                {admin.church?.name || ''}
                             </Table.Cell>
                             <Table.Cell className="space-x-2 whitespace-nowrap p-4">
-                                <div className="flex items-center gap-x-3">
+                                {canAccessDeletAdminModal && (
+                                    <div className="flex items-center gap-x-3">
                                     <Link to={`/church-admin/${admin.id}`} className="">
                                         <Button color="success">
                                             <HiArrowRight className="mr-2 text-lg" />
                                         </Button>
                                     </Link>
                                 </div>
+                                )}
+                                
                             </Table.Cell>
                         </Table.Row>
                     ))}

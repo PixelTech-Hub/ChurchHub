@@ -13,5 +13,5 @@ export interface Users {
 	password?: string;
 	isEmailVerified?: boolean;
 	role?: string;
-	church?: Churches[]
+	church?: Churches
   }

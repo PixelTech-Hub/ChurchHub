@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit"
 import authReducer from "../features/auth/authSlice"
 import churchReducer from "../features/churches/churchSlice"
+import  ChurchStaffReducer from "../features/church-staff/staffSlice"
 
 export const store = configureStore({
 	reducer: {
 		auth: authReducer,
-		church: churchReducer
+		church: churchReducer,
+		staffs: ChurchStaffReducer,
 	},
 
 })
