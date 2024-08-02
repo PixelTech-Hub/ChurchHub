@@ -3,7 +3,8 @@ import { toast } from "react-toastify";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
 import { Churches } from "../../types/Churches";
-import { CHURCH_API_URL } from "../../app/api";
+import { createChurch } from "../../features/churches/churchSlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 const AddChurchModal = () => {
     const [isOpen, setOpen] = useState(false);
@@ -15,11 +16,13 @@ const AddChurchModal = () => {
     const [mission, setMission] = useState("");
     const [values, setValues] = useState("");
 
-    const [loading, setLoading] = useState(false);
+
+    const dispatch = useAppDispatch();
+    const { loading } = useAppSelector(state => state.church)
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         console.log("processing...");
         const formDataToSubmit: Partial<Churches> = {
             name,
@@ -31,21 +34,8 @@ const AddChurchModal = () => {
             vision,
             website,
         };
-
         try {
-            const response = await fetch(CHURCH_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formDataToSubmit),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Server error response:', errorData);
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            await dispatch(createChurch(formDataToSubmit)).unwrap();
             // Reset form fields here
             setOpen(false);
             setName("");
@@ -55,22 +45,23 @@ const AddChurchModal = () => {
             setVision("");
             setMission("");
             setValues("");
-            setLoading(false);
             toast.success('Church created successfully');
+            toast.success('Church Staff added successfully');
         } catch (error) {
             console.error('Submission failed:', error);
-            toast.error('Failed to create a new church');
+            toast.error('Failed to add church staff');
         } finally {
-            setLoading(false);
-            setOpen(false);
+            // setLoading(false);
         }
+
+
     };
 
     return (
         <>
             <Button color="primary" onClick={() => setOpen(!isOpen)}>
                 <FaPlus className="mr-3 text-sm" />
-                Create Church 
+                Create Church
             </Button>
             <Modal onClose={() => setOpen(false)} show={isOpen}>
                 <form onSubmit={handleSubmit}>
@@ -78,57 +69,57 @@ const AddChurchModal = () => {
                         <strong>Create A New Church</strong>
                     </Modal.Header>
                     <Modal.Body>
-					<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-							<div className='col-span-2'>
-								<Label htmlFor="branchName">Church Name</Label>
-								<TextInput
-									id="name"
-									name="name"
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-									required
-								/>
-							</div>
-							<div className='col-span-2'>
-								<Label htmlFor="email">Email Address</Label>
-								<TextInput
-									type='email'
-									id="email"
-									name="email"
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-									className="mt-1"
-								/>
-							</div>
-							<div className='col-span-2'>
-								<Label htmlFor="website">Website URL</Label>
-								<TextInput
-									id="website"
-									name="website"
-									type="text"
-									value={website}
-									onChange={(e) => setWebsite(e.target.value)}
-									className="mt-1"
-								/>
-							</div>
-							<div className='col-span-2'>
-								<Label htmlFor="contact">Contact</Label>
-								<TextInput
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                            <div className='col-span-2'>
+                                <Label htmlFor="branchName">Church Name</Label>
+                                <TextInput
+                                    id="name"
+                                    name="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className='col-span-2'>
+                                <Label htmlFor="email">Email Address</Label>
+                                <TextInput
+                                    type='email'
+                                    id="email"
+                                    name="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="mt-1"
+                                />
+                            </div>
+                            <div className='col-span-2'>
+                                <Label htmlFor="website">Website URL</Label>
+                                <TextInput
+                                    id="website"
+                                    name="website"
+                                    type="text"
+                                    value={website}
+                                    onChange={(e) => setWebsite(e.target.value)}
+                                    className="mt-1"
+                                />
+                            </div>
+                            <div className='col-span-2'>
+                                <Label htmlFor="contact">Contact</Label>
+                                <TextInput
 
-									id="contact"
-									name="contact"
-									type="tel"
-									value={contact}
-									onChange={(e) => setContact(e.target.value)}
-									className="mt-1"
-								/>
-							</div>
-						</div>
+                                    id="contact"
+                                    name="contact"
+                                    type="tel"
+                                    value={contact}
+                                    onChange={(e) => setContact(e.target.value)}
+                                    className="mt-1"
+                                />
+                            </div>
+                        </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <div className='flex flex-1 w-full justify-between'>
-                            <Button color="primary" type="submit" disabled={loading}>
-                                {loading ? 'Submitting...' : 'Submit'}
+                            <Button color="primary" type="submit" >
+                                {!loading ? 'Submitting...' : 'Submit'}
                             </Button>
                             <Button color="failure" onClick={() => setOpen(false)} type="button">
                                 Cancel

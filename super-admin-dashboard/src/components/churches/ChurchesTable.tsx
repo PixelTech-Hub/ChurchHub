@@ -3,7 +3,6 @@ import { Button, Pagination, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiArrowRight } from "react-icons/hi"
 import { Churches } from "../../types/Churches";
-import { CHURCH_API_URL } from "../../app/api";
 import { Switch } from '@headlessui/react';
 import { updateChurch } from "../../features/churches/churchSlice";
 import { useAppDispatch } from "../../app/hooks";
@@ -19,7 +18,7 @@ interface ChurchTableProps {
 	canAccessDeletStaffModal: boolean
 }
 
-const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurches, loading, currentPage, setCurrentPage, totalPages, fetchChurches, canAccessDeletStaffModal }) => {
+const ChurchesTable: FC<ChurchTableProps> = ({ paginatedChurches, filteredChurches, loading, currentPage, setCurrentPage, totalPages, canAccessDeletStaffModal }) => {
 
 	const dispatch = useAppDispatch()
 
