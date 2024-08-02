@@ -58,20 +58,31 @@ export const signup = createAsyncThunk(
     }
 );
 
-// export const getLoggedInUser = createAsyncThunk(
-//     "auth/user/getLoggedInUser",
-//     async (_, { rejectWithValue }) => {
-//         try {
-//             const userData = await userService.getLoggedInUser();
-//             return userData;
-//         } catch (error) {
-//             if (error instanceof Error) {
-//                 return rejectWithValue(error.message || 'Failed to fetch user data');
-//             }
-//             return rejectWithValue('An unexpected error occurred');
-//         }
-//     }
-// );
+export const getLoggedInAdmin = createAsyncThunk(
+    "auth/user/getLoggedInUser",
+    async (_, { rejectWithValue }) => {
+        try {
+            const userData = await userService.getLoggedInAdmin();
+            return userData;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'Failed to fetch user data');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const getAllAdmins = createAsyncThunk(
+    "auth/user/get-all", 
+    async (_, { rejectWithValue }) => {
+        try {
+            return await userService.getAllAdmins();
+        } catch (error) {
+            return rejectWithValue((error as Error).message);
+        }
+    }
+);
 
 
 
@@ -131,35 +142,35 @@ export const authSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.error.message || "Failed to sign up";
             })
-            // .addCase(getAllChurchUsers.pending, (state) => {
-            //     state.isLoading = true;
-            //     state.error = null;
-            // })
-            // .addCase(getAllChurchUsers.fulfilled, (state, action) => {
-            //     state.isLoading = false;
-            //     state.allUsers = action.payload;
-            // })
-            // .addCase(getAllChurchUsers.rejected, (state, action) => {
-            //     state.isLoading = false;
-            //     state.error = action.error.message || "Failed to fetch church users";
-            // })
-            // .addCase(getLoggedInUser.pending, (state) => {
-            //     state.isLoading = true;
-            //     state.error = null;
-            // })
-            // .addCase(getLoggedInUser.fulfilled, (state, action) => {
-            //     state.isLoading = false;
-            //     state.error = null;
-            //     state.currentUser = action.payload;
-            //     state.isAuthenticated = true;
-            //     localStorage.setItem('userData', JSON.stringify(action.payload));
-            // })
-            // .addCase(getLoggedInUser.rejected, (state, action) => {
-            //     state.isLoading = false;
-            //     state.error = action.payload as string;
-            //     state.currentUser = null;
-            //     state.isAuthenticated = false;
-            // });
+            .addCase(getAllAdmins.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(getAllAdmins.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.allAdmins = action.payload;
+            })
+            .addCase(getAllAdmins.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || "Failed to fetch church users";
+            })
+            .addCase(getLoggedInAdmin.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(getLoggedInAdmin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.error = null;
+                state.currentAdmin = action.payload;
+                state.isAuthenticated = true;
+                localStorage.setItem('userData', JSON.stringify(action.payload));
+            })
+            .addCase(getLoggedInAdmin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+                state.currentAdmin = null;
+                state.isAuthenticated = false;
+            });
     },
 });
 

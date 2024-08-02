@@ -14,8 +14,6 @@ import isSmallScreen from "../helpers/is-small-screen";
 import axios from "axios";
 import { API_BASE_URL } from "../app/api";
 import { Churches } from "../types/Churches";
-import NotificationBellDropdown from "./layout/NotificationBellDropdown";
-import AppDrawerDropdown from "./layout/AppDrawerDropdown";
 import UserDropdown from "./layout/UserDropdown";
 import { AuthData } from "../types/AuthData";
 
@@ -108,8 +106,8 @@ const ExampleNavbar: FC = function () {
                 <span className="sr-only">Search</span>
                 <HiSearch className="h-6 w-6" />
               </button>
-              <NotificationBellDropdown />
-              <AppDrawerDropdown />
+              {/* <NotificationBellDropdown /> */}
+              {/* <AppDrawerDropdown /> */}
               <DarkThemeToggle />
             </div>
             <div className="hidden lg:block">

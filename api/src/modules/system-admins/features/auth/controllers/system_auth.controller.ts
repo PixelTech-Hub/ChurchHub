@@ -2,10 +2,14 @@ import {
 	Body,
 	ClassSerializerInterceptor,
 	Controller,
+	Get,
 	Post,
+	Request,
+	UseGuards,
 	UseInterceptors,
 } from '@nestjs/common';
 import {
+	ApiBearerAuth,
 	ApiNotAcceptableResponse,
 	ApiOkResponse,
 	ApiTags,
@@ -16,6 +20,8 @@ import { LoginDto } from 'src/common/dto/login.dto';
 import { CreateChurchAdminDto } from 'src/modules/admins/dto/create-churchadmin.dto';
 import { SystemAuthService } from '../services/system_auth.service';
 import { CreateSystemAdminDto } from 'src/modules/system-admins/dto/create-system-admin.dto';
+import { SystemAdminEntity } from 'src/modules/system-admins/entities/system_admin.entity';
+import { JwtAuthGuard } from 'src/modules/admins/features/auth/guards/jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Admin Authentication')
@@ -34,6 +40,14 @@ export class SystemAuthController {
 	@ApiNotAcceptableResponse()
 	async login(@Body() dto: LoginDto): Promise<UserConnection> {
 		return this.authService.login(dto);
+	}
+
+	@Get('me')
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOkResponse({ type: SystemAdminEntity, description: 'Get logged in admin details' })
+	async getLoggedInUser(@Request() req): Promise<SystemAdminEntity> {
+		return this.authService.getLoggedInAdminDetails(req.user.sub);
 	}
 
 	// 	@Post('verify-email')

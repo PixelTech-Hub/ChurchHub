@@ -11,12 +11,7 @@ import { ExceptionEnum } from 'src/common/enums/exception.enum';
 import { CONFIG_PASSWORD_HASH_SALT } from 'src/config/app.config';
 import { UserConnection } from '../models/user-connection.model';
 import { JwtTokenPayloadModel } from 'src/common/models/jwt-token-payload.model';
-import { AdminService } from 'src/modules/admins/services/admin.service';
-import { CreateChurchAdminDto } from 'src/modules/admins/dto/create-churchadmin.dto';
 import { Email } from 'src/common/models/email.model';
-import { AdminEntity } from 'src/modules/admins/entities/admin.entity';
-import { EntityChurchAdminRoleEnum } from 'src/modules/admins/enums/admin.enum';
-import { UpdatePasswordWithTokenDto } from 'src/common/models/update-password-with-token.dto';
 import { SystemAdminService } from 'src/modules/system-admins/services/system_admin.service';
 import { CreateSystemAdminDto } from 'src/modules/system-admins/dto/create-system-admin.dto';
 import { SystemAdminEntity } from 'src/modules/system-admins/entities/system_admin.entity';
@@ -72,6 +67,14 @@ export class SystemAuthService {
 			data: admin,
 		};
 	}
+
+	async getLoggedInAdminDetails(adminId: string): Promise<SystemAdminEntity> {
+        const admin = await this.systemAdminService.findOneByField(adminId, 'id');
+        if (!admin) {
+            throw new NotFoundException(ExceptionEnum.userNotFound);
+        }
+        return admin;
+    }
 
 	// async verifyEmailOtp(
 	// 	dto: VerifyEmailOtpDto,

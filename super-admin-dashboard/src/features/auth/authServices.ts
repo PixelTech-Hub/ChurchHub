@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ADMIN_LOGIN_API_URL, ADMIN_SIGNUP_API_URL } from '../../app/api';
+import { ADMIN_API_URL, ADMIN_LOGGED_API_URL, ADMIN_LOGIN_API_URL, ADMIN_SIGNUP_API_URL } from '../../app/api';
 import { Admin } from '../../types/Admins';
 
 
@@ -52,62 +52,64 @@ const signupAdmin = async (adminData: Admin) => {
     }
 }
 
-// const getAllUsers = async (churchId: string) => {
-// 	const accessToken = localStorage.getItem('accessToken');
-// 	try {
-// 		if (!accessToken) {
-// 			throw new Error('No access token found');
-// 		}
+const getAllAdmins = async () => {
+	const accessToken = localStorage.getItem('accessToken');
+	try {
+		if (!accessToken) {
+			throw new Error('No access token found');
+		}
 
-// 		const response = await fetch(`${USERS_DETAIL_API}/${churchId}`, {
-// 			headers: {
-// 				'Authorization': `Bearer ${accessToken}`,
-// 				'Accept': 'application/json'
-// 			}
-// 		});
-// 		if (!response.ok) {
-// 			throw new Error(`HTTP error! status: ${response.status}`);
-// 		}
-// 		const data = await response.json();
-// 		return data;
-// 	} catch (error) {
-// 		console.error("Get Church Branch By ID Error:", error);
-// 		throw error;
-// 	}
-// };
+		const response = await fetch(ADMIN_API_URL, {
+			headers: {
+				'Authorization': `Bearer ${accessToken}`,
+				'Accept': 'application/json'
+			}
+		});
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		const data = await response.json();
+		return data.data;
+	} catch (error) {
+		console.error("Get all Admins Error:", error);
+		throw error;
+	}
+};
 
-// const getLoggedInUser = async (): Promise<Users> => {
-//     const accessToken = localStorage.getItem('accessToken');
-//     if (!accessToken) {
-//         throw new Error('No access token found. User is not logged in.');
-//     }
+const getLoggedInAdmin = async (): Promise<Admin> => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        throw new Error('No access token found. User is not logged in.');
+    }
 
-//     try {
-//         const response = await axios.get(USER_DETAIL_API, {
-//             headers: {
-//                 'Authorization': `Bearer ${accessToken}`,
-//                 'Accept': 'application/json'
-//             }
-//         });
+    try {
+        const response = await axios.get(ADMIN_LOGGED_API_URL, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Accept': 'application/json'
+            }
+        });
 
-//         if (response.status === 200) {
-//             return response.data;
-//         } else {
-//             throw new Error('Failed to fetch user data');
-//         }
-//     } catch (error) {
-//         if (axios.isAxiosError(error)) {
-//             console.error('Error details:', error.response?.data);
-//             console.error('Status code:', error.response?.status);
-//             console.error('Headers:', error.response?.headers);
-//             throw new Error(error.response?.data?.message || 'An error occurred while fetching user data');
-//         }
-//         throw new Error('An unexpected error occurred');
-//     }
-// };
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error('Failed to fetch user data');
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', error.response?.data);
+            console.error('Status code:', error.response?.status);
+            console.error('Headers:', error.response?.headers);
+            throw new Error(error.response?.data?.message || 'An error occurred while fetching user data');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+};
 
 const userService = {
 	loginAdmin,
-	signupAdmin
+	signupAdmin,
+	getAllAdmins,
+	getLoggedInAdmin
 }
 export default userService;

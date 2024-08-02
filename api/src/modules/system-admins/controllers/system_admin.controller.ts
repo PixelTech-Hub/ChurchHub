@@ -6,6 +6,7 @@ import { ChurchAdminAuthGuard } from '../features/auth/guards/admin.auth.guard';
 import { SystemAdminService } from '../services/system_admin.service';
 import { SystemAdminEntity } from '../entities/system_admin.entity';
 import { FindSystemAdminDto } from '../dto/find-system-admin.dto';
+import { JwtAuthGuard } from 'src/modules/admins/features/auth/guards/jwt-auth.guard';
 
 
 
@@ -13,13 +14,13 @@ import { FindSystemAdminDto } from '../dto/find-system-admin.dto';
 
 
 @Controller('system_admin')
-// @ApiBearerAuth()
+@ApiBearerAuth()
 @ApiTags('System Admins')
 export class SystemAdminController {
 	constructor(private readonly systemAdminService: SystemAdminService) { }
 
 	@Get()
-	// @UseGuards()
+	@UseGuards(JwtAuthGuard)
 	@ApiOkResponse()
 	findAllForAdmins(
 		@Query() dto: FindSystemAdminDto,
@@ -32,7 +33,7 @@ export class SystemAdminController {
 	}
 
 	@Get(':id')
-	// @UseGuards(CompanyAdminAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@ApiOkResponse({ type: SystemAdminEntity })
 	findOneForOrganizationAdmins(
 		@Param('id') id: string,
@@ -41,6 +42,7 @@ export class SystemAdminController {
 	}
 
 	@Delete(':id')
+	@UseGuards(JwtAuthGuard)
 	// @UseGuards(ChurchAdminAuthGuard)
 	@ApiOkResponse({ type: SystemAdminEntity })
 	removeForOrganizationAdmins(
