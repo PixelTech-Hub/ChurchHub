@@ -2,13 +2,9 @@
 import classNames from "classnames";
 import { Sidebar, TextInput } from "flowbite-react";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
 import {
   HiChartPie,
-  HiChartSquareBar,
-  HiInboxIn,
   HiSearch,
-  HiShoppingBag,
   HiUsers,
   HiViewGrid,
 } from "react-icons/hi";
@@ -21,17 +17,7 @@ const ExampleSidebar: FC = function () {
   const { isOpenOnSmallScreens: isSidebarOpenOnSmallScreens } =
     useSidebarContext();
 
-  const [currentPage, setCurrentPage] = useState("");
-  const [isEcommerceOpen, setEcommerceOpen] = useState(true);
-  const [isUsersOpen, setUsersOpen] = useState(true);
-
-  useEffect(() => {
-    const newPage = window.location.pathname;
-
-    setCurrentPage(newPage);
-    setEcommerceOpen(newPage.includes("/e-commerce/"));
-    setUsersOpen(newPage.includes("/users/"));
-  }, [setCurrentPage, setEcommerceOpen, setUsersOpen]);
+  
 
   return (
     <div
@@ -59,9 +45,7 @@ const ExampleSidebar: FC = function () {
                 <Sidebar.Item
                   href="/"
                   icon={HiChartPie}
-                  className={
-                    "/" === currentPage ? "bg-gray-100 dark:bg-gray-700" : ""
-                  }
+                 
                 >
                   Dashboard
                 </Sidebar.Item>

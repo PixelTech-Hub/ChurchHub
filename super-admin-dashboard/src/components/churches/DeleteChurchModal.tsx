@@ -51,10 +51,7 @@ const DeleteChurchModal:FC<DeleteChurchProp> = ({churchId, churchName}) => {
 				setIsOpen={setIsOpen}
 				isLoading={isLoading}
 				setIsLoading={setIsLoading}
-			>
-
-
-			</DeleteItem>
+			/>
 		</>
   )
 }

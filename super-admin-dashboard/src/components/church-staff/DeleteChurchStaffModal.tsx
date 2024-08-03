@@ -54,10 +54,7 @@ const DeleteChurchStaffModal = function ({staffId,  staffFirstName }: DeleteStaf
 				setIsOpen={setIsOpen}
 				isLoading={isLoading}
 				setIsLoading={setIsLoading}
-			>
-
-
-			</DeleteItem>
+			/>
 		</>
 	);
 };

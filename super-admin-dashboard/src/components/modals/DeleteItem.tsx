@@ -11,7 +11,7 @@ interface DeleteProps {
 	setIsLoading: any
 }
 
-const DeleteItem = ({ handleSubmit, isLoading, setIsLoading, isOpen, setIsOpen, title }: DeleteProps) => {
+const DeleteItem = ({ handleSubmit, isLoading, isOpen, setIsOpen, title }: DeleteProps) => {
 	return (
 		<>
 			<Button color="failure" onClick={() => setIsOpen(!isOpen)}>

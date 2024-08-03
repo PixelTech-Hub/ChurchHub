@@ -14,7 +14,6 @@ import AppWrapper from "./components/app-wrapper";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import ChurchStaffPage from "./pages/church-staff";
-import ChurchMembersPage from "./pages/church-members/ChurchMembersPage";
 import UserProfilePage from "./pages/users/profile";
 import UserSettingsPage from "./pages/users/settings";
 import UserListPage from "./pages/users/list";
@@ -28,10 +27,7 @@ import MailingReadPage from "./pages/mailing/read";
 import MailingInboxPage from "./pages/mailing/inbox";
 import MailingComposePage from "./pages/mailing/compose";
 import SingleChurchStaff from "./pages/church-staff/SingleChurchStaff";
-import SingleChurchMember from "./pages/church-members/SingleChurchMember";
-import ChurchMinistryPage from "./pages/church-staff/church-ministries/ChurchMinistryPage";
 import SingleChurchMinistry from "./pages/SingleChurchMinistry";
-import { ChurchService } from "./pages/main";
 import ChurchPage from "./pages/churches";
 import SingleChurchPage from "./pages/churches/SingleChurchPage";
 import ChurchAdminPage from "./pages/church-admin";
@@ -147,24 +143,7 @@ const App: FC = function () {
             }
 
           />
-          <Route
-            path="/church-services"
-            element={
-              <ProtectedRoute>
-                <ChurchService />
-              </ProtectedRoute>
-            }
 
-          />
-          <Route
-            path="/church-ministries"
-            element={
-              <ProtectedRoute>
-                <ChurchMinistryPage />
-              </ProtectedRoute>
-            }
-
-          />
           <Route
             path="/church-ministries/:id"
             element={
@@ -192,24 +171,8 @@ const App: FC = function () {
             }
 
           />
-          <Route
-            path="/users/church-members"
-            element={
-              <ProtectedRoute>
-                <ChurchMembersPage />
-              </ProtectedRoute>
-            }
-
-          />
-          <Route
-            path="/users/church-members/:id"
-            element={
-              <ProtectedRoute>
-                <SingleChurchMember />
-              </ProtectedRoute>
-            }
-
-          />
+         
+          
           <Route
             path="/mailing/compose"
             element={

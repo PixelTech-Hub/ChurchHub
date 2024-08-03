@@ -55,11 +55,14 @@ const SingleChurchPage = () => {
 		if (!church || loading) return;
 
 		try {
+			setIsToggling(true)
 			const newStatus = !church.isEnabled;
 			await dispatch(updateChurch({ id: churchId!, churchData: { isEnabled: newStatus } })).unwrap();
+			setIsToggling(false)
 			// Handle success (show success toast message)
 		} catch (error) {
 			console.error('Error updating church status:', error);
+			setIsToggling(false)
 			// Handle error (show error toast message)
 		}
 	};
