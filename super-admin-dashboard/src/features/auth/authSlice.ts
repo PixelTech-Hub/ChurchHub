@@ -85,6 +85,36 @@ export const getAllAdmins = createAsyncThunk(
 );
 
 
+export const updateAdmin = createAsyncThunk(
+    "auth/admin/update",
+    async ({ adminId, updateData }: { adminId: string, updateData: Partial<Admin> }, { rejectWithValue }) => {
+        try {
+            const response = await userService.updateAdmin(adminId, updateData);
+            return response;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'An unexpected error occurred');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const updatePassword = createAsyncThunk(
+    "auth/admin/updatePassword",
+    async ({ currentPassword, newPassword }: { currentPassword: string, newPassword: string }, { rejectWithValue }) => {
+        try {
+            const response = await userService.updateAdminPassword(currentPassword, newPassword);
+            return response;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'An unexpected error occurred');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 
 export const authSlice = createSlice({
     name: "auth",
@@ -170,6 +200,38 @@ export const authSlice = createSlice({
                 state.error = action.payload as string;
                 state.currentAdmin = null;
                 state.isAuthenticated = false;
+            })
+            .addCase(updateAdmin.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updateAdmin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.error = null;
+                if (state.currentAdmin && state.currentAdmin.id === action.payload.id) {
+                    state.currentAdmin = action.payload;
+                    localStorage.setItem('userData', JSON.stringify(action.payload));
+                }
+                state.allAdmins = state.allAdmins.map(admin => 
+                    admin.id === action.payload.id ? action.payload : admin
+                );
+            })
+            .addCase(updateAdmin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(updatePassword.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updatePassword.fulfilled, (state) => {
+                state.isLoading = false;
+                state.error = null;
+                // You might want to add a success message to the state here if needed
+            })
+            .addCase(updatePassword.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
             });
     },
 });

@@ -1,67 +1,91 @@
 import { Button, Card, Label, TextInput } from "flowbite-react";
-import { FC } from "react";
+import { FC, useState, FormEvent } from "react";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { updatePassword } from "../../features/auth/authSlice";
+import { toast } from "react-toastify";
 
 const PasswordInformationCard: FC = function () {
-	return (
-	  <Card>
-		<h3 className="mb-4 text-xl font-bold dark:text-white">
-		  Password information
-		</h3>
-		<form action="#">
-		  <div className="grid grid-cols-6 gap-6">
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="current-password">Current password</Label>
-			  <TextInput
-				id="current-password"
-				name="current-password"
-				placeholder="••••••••"
-				type="password"
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="new-password">New password</Label>
-			  <TextInput
-				id="new-password"
-				name="new-password"
-				placeholder="••••••••"
-				type="password"
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="confirm-password">Confirm password</Label>
-			  <TextInput
-				id="confirm-password"
-				name="confirm-password"
-				placeholder="••••••••"
-				type="password"
-			  />
-			</div>
-			<div className="col-span-full">
-			  <div className="text-sm font-medium dark:text-white">
-				Password requirements:
-			  </div>
-			  <div className="mb-1 text-sm font-normal text-gray-500 dark:text-gray-400">
-				Ensure that these requirements are met:
-			  </div>
-			  <ul className="space-y-1 pl-4 text-gray-500 dark:text-gray-400">
-				<li className="text-xs font-normal">
-				  At least 10 characters (and up to 100 characters)
-				</li>
-				<li className="text-xs font-normal">
-				  At least one lowercase character
-				</li>
-				<li className="text-xs font-normal">
-				  Inclusion of at least one special character, e.g., ! @ # ?
-				</li>
-				<li className="text-xs font-normal">Some text here zoltan</li>
-			  </ul>
-			</div>
-			<div className="col-span-6">
-			  <Button color="primary">Save all</Button>
-			</div>
-		  </div>
-		</form>
-	  </Card>
-	);
-  };
-  export default PasswordInformationCard
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const dispatch = useAppDispatch();
+    const { isLoading } = useAppSelector((state) => state.auth);
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            toast.error('All fields are required');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error('New password and confirm password do not match');
+            return;
+        }
+
+        try {
+            await dispatch(updatePassword({ currentPassword, newPassword })).unwrap();
+            toast.success('Password updated successfully');
+			console.log('Password updated successfully');
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message || 'Failed to update password');
+            } else {
+                toast.error('An unexpected error occurred');
+            }
+        }
+    }
+
+    return (
+        <Card>
+            <h3 className="text-xl font-bold dark:text-white">
+                Update Password
+            </h3>
+            <form onSubmit={handleSubmit}>
+                <div className="space-y-3">
+                    <div className="col-span-6 grid grid-cols-1 sm:col-span-3">
+                        <Label htmlFor="current-password">Current password</Label>
+                        <TextInput
+                            id="current-password"
+                            name="current-password"
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            type="password"
+                        />
+                    </div>
+                    <div className="col-span-6 grid grid-cols-1 sm:col-span-3">
+                        <Label htmlFor="new-password">New password</Label>
+                        <TextInput
+                            id="new-password"
+                            name="new-password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            type="password"
+                        />
+                    </div>
+                    <div className="col-span-6 grid grid-cols-1 sm:col-span-3">
+                        <Label htmlFor="confirm-password">Confirm password</Label>
+                        <TextInput
+                            id="confirm-password"
+                            name="confirm-password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            type="password"
+                        />
+                    </div>
+                    <div className="col-span-6">
+                        <Button color="primary" type="submit" disabled={isLoading}>
+                            {isLoading ? 'Updating...' : 'Update Password'}
+                        </Button>
+                    </div>
+                </div>
+            </form>
+        </Card>
+    );
+};
+
+export default PasswordInformationCard;

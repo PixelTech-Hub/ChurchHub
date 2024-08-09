@@ -41,4 +41,29 @@ export class SystemAdminEntity extends BaseEntity {
 	@IsEnum(EntitySystemAdminRoleEnum, { message: 'Invalid system admin role' })
 	role: EntitySystemAdminRoleEnum;
 
+	@ApiProperty()
+	@IsString()
+	@Column({ type: 'varchar' })
+	phone_number: String
+
+	@ApiProperty()
+	@IsString()
+	@Column({ type: 'varchar' })
+	dob: String
+
+	@ApiProperty()
+	@IsString()
+	@Column({ type: 'varchar' })
+	position: String
+
+	@ApiProperty()
+	@IsString()
+	@Column({ type: 'varchar' })
+	department: String
+
+	@ApiProperty()
+	@IsString()
+	@Column({ type: 'varchar' })
+	address: String
+
 }

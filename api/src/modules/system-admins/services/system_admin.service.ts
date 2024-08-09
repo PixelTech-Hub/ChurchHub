@@ -180,4 +180,29 @@ export class SystemAdminService {
 		return currentUser;
 	}
 
+	async updateAdmin(
+		id: string,
+		dto: UpdateSystemAdminDto
+	): Promise<SystemAdminEntity> {
+		// Check if the admin exists
+		const existingAdmin = await this.findOneByField(id);
+		if (!existingAdmin) {
+			throw new NotFoundException(ExceptionEnum.adminNotFound);
+		}
+
+		// Update the admin
+		const updatedAdmin = {
+			...existingAdmin,
+			...dto,
+		};
+
+		// Save the updated admin
+		const savedAdmin = await this.systemAdminRepository.save(updatedAdmin);
+
+		// Remove the password from the returned object
+		delete savedAdmin.password;
+
+		return savedAdmin;
+	}
+
 }

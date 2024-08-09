@@ -9,4 +9,9 @@ export interface Admin {
 	password?: string;
 	isEmailVerified?: boolean;
 	role?: string;
+	phone_number?: string;
+	dob?: string;
+	position?: string;
+	department?: string;
+	address?: string;
   }

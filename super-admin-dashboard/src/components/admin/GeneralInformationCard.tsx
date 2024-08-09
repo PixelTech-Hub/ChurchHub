@@ -1,132 +1,102 @@
-import { Button, Card, Label, TextInput } from "flowbite-react";
-import { FC } from "react";
+import React, { useState, useCallback } from 'react';
+import { Card, Label, TextInput, Button } from 'flowbite-react';
+import { FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { Admin } from '../../types/Admins';
+import { updateAdmin } from '../../features/auth/authSlice';
+import { useAppDispatch } from '../../app/hooks';
+import { toast } from 'react-toastify';
 
-const GeneralInformationCard: FC = function () {
+interface CardProps {
+	admin: Admin;
+}
+
+type AdminField = keyof Admin;
+
+const GeneralInformationCard: React.FC<CardProps> = ({ admin }) => {
+	const dispatch = useAppDispatch();
+	const [editMode, setEditMode] = useState<AdminField | null>(null);
+	const [formData, setFormData] = useState<Admin>(admin);
+
+	const handleEdit = useCallback((field: AdminField) => {
+		setEditMode(field);
+	}, []);
+
+	const handleChange = useCallback((field: AdminField, value: string) => {
+		setFormData(prev => ({ ...prev, [field]: value }));
+	}, []);
+
+	const handleSave = useCallback((field: AdminField) => {
+		if (admin.id) {
+			dispatch(updateAdmin({
+				adminId: admin.id,
+				updateData: { [field]: formData[field] }
+			}));
+			toast.success(`${field} updated successfully`);
+			setEditMode(null);
+		} else {
+			toast.error('Admin ID is undefined');
+		}
+	}, [admin.id, dispatch, formData]);
+
+	const handleCancel = useCallback(() => {
+		setFormData(admin);
+		setEditMode(null);
+	}, [admin]);
+
+	const renderField = useCallback((label: string, field: AdminField, type: string = 'text') => (
+		<div className="mb-4">
+			<Label htmlFor={field}>{label}</Label>
+			<div className="relative mt-1">
+				<TextInput
+					id={field}
+					name={field}
+					value={formData[field] as string}
+					onChange={(e) => handleChange(field, e.target.value)}
+					required
+					type={type}
+					className="pr-10"
+					disabled={editMode !== field}
+				/>
+				<div className="absolute inset-y-0 right-0 flex items-center pr-3">
+					{editMode === field ? (
+						<>
+							<Button size="xs" color="green" onClick={() => handleSave(field)} className="mr-1">
+								<FaSave />
+							</Button>
+							<Button size="xs" className="bg-red-500" onClick={handleCancel}>
+								<FaTimes color='white' className='bg-red-500' />
+							</Button>
+						</>
+					) : (
+						<Button
+							size="md"
+							color="light"
+							onClick={() => handleEdit(field)}
+						>
+							<FaEdit color='green' />
+						</Button>
+					)}
+				</div>
+			</div>
+		</div>
+	), [editMode, formData, handleCancel, handleChange, handleEdit, handleSave]);
+
 	return (
-	  <Card>
-		<h3 className="mb-4 text-xl font-bold dark:text-white">
-		  General information
-		</h3>
-		<form action="#">
-		  <div className="grid grid-cols-6 gap-6">
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="first-name">First Name</Label>
-			  <TextInput
-				id="first-name"
-				name="first-name"
-				placeholder="Bonnie"
-				required
-			  />
+		<Card>
+			<h3 className="mb-4 text-xl font-bold dark:text-white">
+				General Information
+			</h3>
+			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+				{renderField('Full Name', 'name')}
+				{renderField('Email Address', 'email', 'email')}
+				{renderField('Phone Number', 'phone_number', 'tel')}
+				{renderField('Birthday', 'dob', 'date')}
+				{renderField('Role', 'position')}
+				{renderField('Department', 'department')}
+				{renderField('Address', 'address')}
 			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="last-name">Last Name</Label>
-			  <TextInput
-				id="last-name"
-				name="last-name"
-				placeholder="Green"
-				required
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="country">Country</Label>
-			  <TextInput
-				id="country"
-				name="country"
-				placeholder="United States"
-				required
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="city">City</Label>
-			  <TextInput
-				id="city"
-				name="city"
-				placeholder="San Francisco"
-				required
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="address">Address</Label>
-			  <TextInput
-				id="address"
-				name="address"
-				placeholder="California"
-				required
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="email">Email</Label>
-			  <TextInput
-				id="email"
-				name="email"
-				placeholder="example@company.com"
-				required
-				type="email"
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="phone-number">Phone Number</Label>
-			  <TextInput
-				id="phone-number"
-				name="phone-number"
-				placeholder="e.g., +(12)3456 789"
-				required
-				type="tel"
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="birthday">Birthday</Label>
-			  <TextInput
-				id="birthday"
-				name="birthday"
-				placeholder="e.g., 15/08/1990"
-				required
-				type="date"
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="organization">Organization</Label>
-			  <TextInput
-				id="organization"
-				name="organization"
-				placeholder="Company name"
-				required
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="role">Role</Label>
-			  <TextInput
-				id="role"
-				name="role"
-				placeholder="React Developer"
-				required
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="department">Department</Label>
-			  <TextInput
-				id="department"
-				name="department"
-				placeholder="Development"
-				required
-			  />
-			</div>
-			<div className="col-span-6 grid grid-cols-1 gap-y-2 sm:col-span-3">
-			  <Label htmlFor="zip-code">ZIP/postal code</Label>
-			  <TextInput
-				id="zip-code"
-				name="zip-code"
-				placeholder="12345"
-				required
-			  />
-			</div>
-			<div className="col-span-6">
-			  <Button color="primary">Save all</Button>
-			</div>
-		  </div>
-		</form>
-	  </Card>
+		</Card>
 	);
-  };
+};
 
-  export default GeneralInformationCard
+export default GeneralInformationCard;

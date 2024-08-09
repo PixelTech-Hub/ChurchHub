@@ -3,6 +3,7 @@ import {
 	ClassSerializerInterceptor,
 	Controller,
 	Get,
+	Patch,
 	Post,
 	Request,
 	UseGuards,
@@ -22,6 +23,7 @@ import { SystemAuthService } from '../services/system_auth.service';
 import { CreateSystemAdminDto } from 'src/modules/system-admins/dto/create-system-admin.dto';
 import { SystemAdminEntity } from 'src/modules/system-admins/entities/system_admin.entity';
 import { JwtAuthGuard } from 'src/modules/admins/features/auth/guards/jwt-auth.guard';
+import { UpdatePasswordDto } from 'src/common/dto/update-password.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Admin Authentication')
@@ -42,12 +44,31 @@ export class SystemAuthController {
 		return this.authService.login(dto);
 	}
 
+	
+
 	@Get('me')
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
 	@ApiOkResponse({ type: SystemAdminEntity, description: 'Get logged in admin details' })
 	async getLoggedInUser(@Request() req): Promise<SystemAdminEntity> {
 		return this.authService.getLoggedInAdminDetails(req.user.sub);
+	}
+
+	@Patch('update-password')
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOkResponse({ description: 'Password updated successfully' })
+	async updatePassword(
+		@Request() req,
+		@Body() updatePasswordDto: UpdatePasswordDto,
+	) {
+		await this.authService.updatePassword(
+			req.user.sub, // Using sub from JWT payload as user ID
+			updatePasswordDto.currentPassword,
+			updatePasswordDto.newPassword,
+		);
+		return { message: 'Password updated successfully' };
+
 	}
 
 	// 	@Post('verify-email')

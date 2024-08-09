@@ -205,6 +205,25 @@ export class SystemAuthService {
 	// 	// --
 	// 	return this.getConnection(admin);
 	// }
+	async updatePassword(adminId: string, currentPassword: string, newPassword: string): Promise<void> {
+		const user = await this.systemAdminService.findOneByField(adminId, 'id');
+		if (!user) {
+			throw new NotFoundException(ExceptionEnum.adminNotFound);
+		}
+
+		const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+		if (!isPasswordValid) {
+			throw new NotAcceptableException(ExceptionEnum.wrongPassword);
+		}
+
+		const hashedNewPassword = await bcrypt.hash(
+			newPassword,
+			CONFIG_PASSWORD_HASH_SALT,
+		);
+
+		user.password = hashedNewPassword;
+		await this.systemAdminService.save(user);
+	}
 
 	async getConnection(
 		admin: SystemAdminEntity,

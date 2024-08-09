@@ -45,7 +45,7 @@ const getChurchById = async (churchId: string) => {
         });
 
         // console.log('Response status:', response.status);
-        // console.log('Response headers:', response.headers);
+        console.log('Response headers:', response);
 
         if (!response.ok) {
             const errorBody = await response.text();

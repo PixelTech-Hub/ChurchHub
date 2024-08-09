@@ -1,5 +1,5 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { EntityNameEnum } from 'src/common/enums/entity-name.enum';
 import { EntitySystemAdminRoleEnum } from '../enums/system_admin.enum';
 
@@ -27,4 +27,24 @@ export class CreateSystemAdminDto {
 	@IsEnum(EntitySystemAdminRoleEnum, { message: 'Invalid church admin role' })
 	role: EntitySystemAdminRoleEnum;
 
+
+	@IsOptional()
+	@ApiProperty()
+	readonly phone_number: string;
+
+	@IsOptional()
+	@ApiProperty()
+	readonly dob: string;
+
+	@IsOptional()
+	@ApiProperty()
+	readonly position: string;
+
+	@IsOptional()
+	@ApiProperty()
+	readonly department: string;
+
+	@IsOptional()
+	@ApiProperty()
+	readonly address: string;
 }
