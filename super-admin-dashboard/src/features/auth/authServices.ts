@@ -137,8 +137,6 @@ const updateAdmin = async (adminId: string, updateData: Partial<Admin>) => {
     }
 };
 
-// In authServices.ts
-
 // Add this new function
 const updateAdminPassword = async (currentPassword: string, newPassword: string) => {
     const accessToken = localStorage.getItem('accessToken');
@@ -172,6 +170,34 @@ const updateAdminPassword = async (currentPassword: string, newPassword: string)
     }
 };
 
+const getAdminById = async (adminId: string): Promise<Admin> => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        throw new Error('No access token found. User is not logged in.');
+    }
+
+    try {
+        const response = await axios.get(`${ADMIN_API_URL}/${adminId}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Accept': 'application/json',
+            },
+        });
+
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error('Failed to fetch admin details');
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', error.response?.data);
+            throw new Error(error.response?.data?.message || 'An error occurred while fetching admin details');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+};
+
 
 
 
@@ -182,6 +208,7 @@ const userService = {
 	getAllAdmins,
 	getLoggedInAdmin,
 	updateAdmin,
-	updateAdminPassword
+	updateAdminPassword,
+    getAdminById
 }
 export default userService;

@@ -202,4 +202,29 @@ export class AdminService {
 		return admin;
 	}
 
+	async updateChurchStaff(
+		id: string,
+		dto: UpdateChurchAdminDto
+	): Promise<AdminEntity> {
+		// Check if the admin exists
+		const existingAdmin = await this.findOneByField(id);
+		if (!existingAdmin) {
+			throw new NotFoundException(ExceptionEnum.adminNotFound);
+		}
+
+		// Update the admin
+		const updatedAdmin = {
+			...existingAdmin,
+			...dto,
+		};
+
+		// Save the updated admin
+		const savedAdmin = await this.adminRepository.save(updatedAdmin);
+
+		// Remove the password from the returned object
+		delete savedAdmin.password;
+
+		return savedAdmin;
+	}
+
 }

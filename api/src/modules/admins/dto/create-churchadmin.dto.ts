@@ -34,4 +34,11 @@ export class CreateChurchAdminDto {
 	@IsEnum(EntityChurchAdminRoleEnum, { message: 'Invalid church admin role' })
 	role: EntityChurchAdminRoleEnum;
 
+	@IsOptional()
+	@ApiProperty()
+	readonly contact: string;
+
+	@IsOptional()
+	@ApiProperty()
+	readonly dob: string;
 }

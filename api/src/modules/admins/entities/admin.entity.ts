@@ -62,6 +62,16 @@ export class AdminEntity extends BaseEntity {
 	otpExpiresAt: Date;
 
 	@ApiProperty()
+	@IsString()
+	@Column({ type: 'varchar' })
+	contact: string
+
+	@ApiProperty()
+	@IsString()
+	@Column({ type: 'varchar' })
+	dob: string
+
+	@ApiProperty()
 	@ManyToOne(() => ChurchEntity, {
 		onUpdate: 'CASCADE',
 		onDelete: 'CASCADE',

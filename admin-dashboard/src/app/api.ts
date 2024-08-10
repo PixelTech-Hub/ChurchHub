@@ -1,5 +1,5 @@
-// export const API_BASE_URL = 'http://localhost:8000';
-export const API_BASE_URL = 'https://churchhub-api.gulubcc.org';
+export const API_BASE_URL = 'http://localhost:8000';
+// export const API_BASE_URL = 'https://churchhub-api.gulubcc.org';
 export const ITEMS_PER_PAGE = 10
 
 
@@ -8,6 +8,8 @@ export const ITEMS_PER_PAGE = 10
 export const USER_AUTH_LOGIN_API = `${API_BASE_URL}/users/auth/login`;
 export const USER_AUTH_SIGNUP_API = `${API_BASE_URL}/users/auth/signup`;
 export const USER_DETAIL_API = `${API_BASE_URL}/users/auth/me`;
+export const SINGLE_URL_API = `${API_BASE_URL}/users`;
+export const USER_UPDATE_PASSWORD_API_URL = `${API_BASE_URL}/users/auth/update-password`;
 export const USERS_DETAIL_API = `${API_BASE_URL}/users/church`;
 
 

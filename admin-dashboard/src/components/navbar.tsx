@@ -34,7 +34,7 @@ const ExampleNavbar: FC = function () {
   }, [userData, dispatch]);
 
 
-  console.log('Dispatching getUserChurch', userData)
+  // console.log('Dispatching getUserChurch', userData)
 
   
 

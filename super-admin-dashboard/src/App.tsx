@@ -34,6 +34,7 @@ import ChurchAdminPage from "./pages/church-admin";
 import SystemAdminPage from "./pages/system-admin";
 import { useAppDispatch } from "./app/hooks";
 import { initializeFromLocalStorage } from "./features/auth/authSlice";
+import SingleSystemAdminPage from "./pages/system-admin/SingleSystemAdminPage";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -103,6 +104,15 @@ const App: FC = function () {
             element={
               <ProtectedRoute>
                 <SystemAdminPage />
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/hub-admin/:id"
+            element={
+              <ProtectedRoute>
+                <SingleSystemAdminPage />
               </ProtectedRoute>
             }
 

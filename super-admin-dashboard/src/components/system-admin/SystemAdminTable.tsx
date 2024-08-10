@@ -76,7 +76,7 @@ const SystemAdminTable: FC<SystemAdminTableProps> = ({ currentPage, filteredSyst
 							<Table.Cell className="space-x-2 whitespace-nowrap p-4">
 								<div className="flex items-center gap-x-3">
 									{canAccessDeletAdminModal && (
-										<Link to={`/church-admin/${admin.id}`} className="">
+										<Link to={`/hub-admin/${admin.id}`} className="">
 											<Button color="success">
 												<HiArrowRight className="mr-2 text-lg" />
 											</Button>

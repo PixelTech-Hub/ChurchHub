@@ -5,6 +5,7 @@ import { Users } from "../../types/Users";
 export interface UserState {
     currentUser: Users | null;
     allUsers: Users[];
+    singleUsers: Users | null;
     accessToken: string | null;
     isLoading: boolean;
     isAuthenticated: boolean;
@@ -14,6 +15,7 @@ export interface UserState {
 const initialState: UserState = {
     currentUser: null,
     allUsers: [],
+    singleUsers: null,
     accessToken: null,
     isLoading: false,
     isAuthenticated: false,
@@ -80,6 +82,48 @@ export const getAllChurchUsers = createAsyncThunk(
             return await userService.getAllUsers(churchId);
         } catch (error) {
             return rejectWithValue((error as Error).message);
+        }
+    }
+);
+
+export const updateChurchStaff = createAsyncThunk(
+    "auth/admin/update",
+    async ({ staffId, updateData }: { staffId: string, updateData: Partial<Users> }, { rejectWithValue }) => {
+        try {
+            const response = await userService.updateChurchStaff(staffId, updateData);
+            return response;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'An unexpected error occurred');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const updatePassword = createAsyncThunk(
+    "auth/admin/updatePassword",
+    async ({ currentPassword, newPassword }: { currentPassword: string, newPassword: string }, { rejectWithValue }) => {
+        try {
+            const response = await userService.updateChurchStaffPassword(currentPassword, newPassword);
+            return response;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'An unexpected error occurred');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const getChurchStaffById = createAsyncThunk(
+    'admin/getAdminById',
+    async (adminId: string, { rejectWithValue }) => {
+        try {
+            const admin = await userService.getChurchStaffById(adminId);
+            return admin;
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Failed to fetch admin details');
         }
     }
 );
@@ -168,6 +212,50 @@ export const authSlice = createSlice({
                 state.error = action.payload as string;
                 state.currentUser = null;
                 state.isAuthenticated = false;
+            })
+            .addCase(updateChurchStaff.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updateChurchStaff.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.error = null;
+                if (state.currentUser && state.currentUser.id === action.payload.id) {
+                    state.currentUser = action.payload;
+                    localStorage.setItem('userData', JSON.stringify(action.payload));
+                }
+                state.allUsers = state.allUsers.map(admin =>
+                    admin.id === action.payload.id ? action.payload : admin
+                );
+            })
+            .addCase(updateChurchStaff.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(updatePassword.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updatePassword.fulfilled, (state) => {
+                state.isLoading = false;
+                state.error = null;
+                // You might want to add a success message to the state here if needed
+            })
+            .addCase(updatePassword.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(getChurchStaffById.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(getChurchStaffById.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.singleUsers = action.payload; // Update the state with the fetched admin
+            })
+            .addCase(getChurchStaffById.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
             });
     },
 });

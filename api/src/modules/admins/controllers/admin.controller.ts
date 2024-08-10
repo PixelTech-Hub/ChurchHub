@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiTags, ApiOkResponse, ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { AdminService } from '../services/admin.service';
 import { FindChurchAdminDto } from '../dto/find-admin.dto';
@@ -7,6 +7,7 @@ import { ResultsMetadata } from 'src/common/models/results-metadata.model';
 import { CurrentUser } from '../features/auth/decorators/current-user.decorator';
 import { ChurchAdminAuthGuard } from '../features/auth/guards/admin.auth.guard';
 import { JwtAuthGuard } from '../features/auth/guards/jwt-auth.guard';
+import { UpdateChurchAdminDto } from '../dto/update-churchadmin.dto';
 
 
 
@@ -71,6 +72,14 @@ export class AdminController {
 		@Param('id') id: string,
 	): Promise<AdminEntity> {
 		return this.churchAdminService.findOneByField(id);
+	}
+
+	@Patch(':id')
+	async updateChurchAdmin(
+		@Param('id') id: string,
+		@Body() updateAdminDto: UpdateChurchAdminDto
+	) {
+		return this.churchAdminService.updateChurchStaff(id, updateAdminDto);
 	}
 
 	@Delete(':id')

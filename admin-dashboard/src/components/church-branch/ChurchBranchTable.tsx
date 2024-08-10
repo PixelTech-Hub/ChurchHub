@@ -32,7 +32,7 @@ const ChurchBranchTable: FC<ChurchBranchTableProps> = ({
 	if (filteredBranches.length === 0) {
 		return (
 			<div className="text-center py-4">
-				<p className="text-red-500 dark:text-gray-400">No Church Service Found</p>
+				<p className="text-red-500 dark:text-gray-400">No Church Branch Found</p>
 			</div>
 		);
 	}

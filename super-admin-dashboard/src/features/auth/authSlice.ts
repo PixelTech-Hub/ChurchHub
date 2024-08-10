@@ -5,6 +5,7 @@ import { Admin } from "../../types/Admins";
 export interface AdminState {
     currentAdmin: Admin | null;
     allAdmins: Admin[];
+    singleAdmin: Admin | null;
     accessToken: string | null;
     isLoading: boolean;
     isAuthenticated: boolean;
@@ -14,6 +15,7 @@ export interface AdminState {
 const initialState: AdminState = {
     currentAdmin: null,
     allAdmins: [],
+    singleAdmin: null,
     accessToken: null,
     isLoading: false,
     isAuthenticated: false,
@@ -74,7 +76,7 @@ export const getLoggedInAdmin = createAsyncThunk(
 );
 
 export const getAllAdmins = createAsyncThunk(
-    "auth/user/get-all", 
+    "auth/user/get-all",
     async (_, { rejectWithValue }) => {
         try {
             return await userService.getAllAdmins();
@@ -111,6 +113,18 @@ export const updatePassword = createAsyncThunk(
                 return rejectWithValue(error.message || 'An unexpected error occurred');
             }
             return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const getAdminById = createAsyncThunk(
+    'admin/getAdminById',
+    async (adminId: string, { rejectWithValue }) => {
+        try {
+            const admin = await userService.getAdminById(adminId);
+            return admin;
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Failed to fetch admin details');
         }
     }
 );
@@ -161,7 +175,7 @@ export const authSlice = createSlice({
                 state.isAuthenticated = false;
             })
             .addCase(signup.pending, (state) => {
-                state.isLoading = true; 
+                state.isLoading = true;
                 state.error = null;
             })
             .addCase(signup.fulfilled, (state, action) => {
@@ -212,7 +226,7 @@ export const authSlice = createSlice({
                     state.currentAdmin = action.payload;
                     localStorage.setItem('userData', JSON.stringify(action.payload));
                 }
-                state.allAdmins = state.allAdmins.map(admin => 
+                state.allAdmins = state.allAdmins.map(admin =>
                     admin.id === action.payload.id ? action.payload : admin
                 );
             })
@@ -230,6 +244,18 @@ export const authSlice = createSlice({
                 // You might want to add a success message to the state here if needed
             })
             .addCase(updatePassword.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(getAdminById.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(getAdminById.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.singleAdmin = action.payload; // Update the state with the fetched admin
+            })
+            .addCase(getAdminById.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             });

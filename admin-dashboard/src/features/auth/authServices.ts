@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Users } from '../../types/Users';
-import { USER_AUTH_LOGIN_API, USER_AUTH_SIGNUP_API, USER_DETAIL_API, USERS_DETAIL_API } from '../../app/api';
+import { SINGLE_URL_API, USER_AUTH_LOGIN_API, USER_AUTH_SIGNUP_API, USER_DETAIL_API, USER_UPDATE_PASSWORD_API_URL, USERS_DETAIL_API } from '../../app/api';
 
 
 const loginUser = async (userData: Users) => {
@@ -106,10 +106,106 @@ const getLoggedInUser = async (): Promise<Users> => {
     }
 };
 
+const updateChurchStaffPassword = async (currentPassword: string, newPassword: string) => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        throw new Error('No access token found. User is not logged in.');
+    }
+
+    try {
+        const response = await axios.patch(USER_UPDATE_PASSWORD_API_URL, 
+            { currentPassword, newPassword },
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }
+        );
+
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error('Failed to update password');
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', error.response?.data);
+            throw new Error(error.response?.data?.message || 'An error occurred while updating password');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+
+    
+};
+
+const updateChurchStaff = async (staffId: string, updateData: Partial<Users>) => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        throw new Error('No access token found. User is not logged in.');
+    }
+
+    try {
+        const response = await axios.patch(`${SINGLE_URL_API}/${staffId}`, updateData, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error('Failed to update admin details');
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', error.response?.data);
+            console.error('Status code:', error.response?.status);
+            console.error('Headers:', error.response?.headers);
+            throw new Error(error.response?.data?.message || 'An error occurred while updating admin details');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+};
+
+const getChurchStaffById = async (staffId: string): Promise<Users> => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        throw new Error('No access token found. User is not logged in.');
+    }
+
+    try {
+        const response = await axios.get(`${SINGLE_URL_API}/${staffId}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Accept': 'application/json',
+            },
+        });
+
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error('Failed to fetch admin details');
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', error.response?.data);
+            throw new Error(error.response?.data?.message || 'An error occurred while fetching admin details');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+};
+
 const userService = {
 	loginUser,
     signupUser,
 	getLoggedInUser,
-    getAllUsers
+    getAllUsers,
+    updateChurchStaffPassword,
+    getChurchStaffById,
+    updateChurchStaff
 }
 export default userService;

@@ -22,4 +22,14 @@ export class FindChurchAdminDto extends FindDto {
 	@IsOptional()
 	@ApiPropertyOptional()
 	churchId?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional()
+	contact?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional()
+	dob?: string;
 }

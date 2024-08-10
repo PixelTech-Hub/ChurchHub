@@ -53,7 +53,7 @@ const UserDropdown: FC = function () {
                     {userData ? userData?.email : 'user@example.com'}
                 </span>
             </Dropdown.Header>
-            {/* <Dropdown.Item href="users/settings">Settings</Dropdown.Item> */}
+            <Dropdown.Item href="users/settings">Settings</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
         </Dropdown>
