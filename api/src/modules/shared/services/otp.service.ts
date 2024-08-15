@@ -43,6 +43,7 @@ export class OtpService {
       email?: string;
     },
   ): Promise<boolean> {
+    console.log(`Attempting to send OTP ${otp} to ${to.email}`);
     const currentLanguage = undefined;
     const data = fs.readFileSync('src/resources/templates/email/otp.hbs');
     const template = handlebars.compile(data.toString());
@@ -65,6 +66,8 @@ export class OtpService {
           contactUsText,
         },
       });
+
+      console.log(`Email sent successfully: ${emailContent}`);
 
       return await this.mailerService.send(
         [to.email],

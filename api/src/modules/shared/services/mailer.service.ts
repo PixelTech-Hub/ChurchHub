@@ -29,6 +29,7 @@ export class MailerService {
     subject?: string,
     content?: string,
   ): Promise<boolean> {
+    console.log(`Preparing to send email to ${to.join(', ')}`);
     // Generate test SMTP service account from ethereal.email
     // create reusable transporter object using the default SMTP transport
     const isSecure: boolean = this.configService.get('EMAIL_SECURE');

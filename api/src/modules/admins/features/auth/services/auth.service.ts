@@ -18,6 +18,7 @@ import { AdminEntity } from 'src/modules/admins/entities/admin.entity';
 import { EntityChurchAdminRoleEnum } from 'src/modules/admins/enums/admin.enum';
 import { VerifyEmailOtpDto } from 'src/common/models/verify-email-otp.dto';
 import { OtpService } from 'src/modules/shared/services/otp.service';
+import { VerifyOtpDto } from 'src/common/dto/verifyOtp.dto';
 
 @Injectable()
 export class AuthService {
@@ -50,7 +51,18 @@ export class AuthService {
 		return { email: admin.email };
 	}
 
-	async login(dto: LoginDto): Promise<UserConnection> {
+	// async login(dto: LoginDto): Promise<UserConnection> {
+	// 	const admin = await this.usersService.findOneByField(dto.email, 'email');
+	// 	if (!admin)
+	// 		throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
+
+	// 	if (!(await bcrypt.compare(dto.password, admin.password)))
+	// 		throw new NotAcceptableException(ExceptionEnum.wrongPassword);
+
+	// 	return this.getConnection(admin);
+	// }
+
+	async login(dto: LoginDto): Promise<{ message: string }> {
 		const admin = await this.usersService.findOneByField(dto.email, 'email');
 		if (!admin)
 			throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
@@ -58,16 +70,44 @@ export class AuthService {
 		if (!(await bcrypt.compare(dto.password, admin.password)))
 			throw new NotAcceptableException(ExceptionEnum.wrongPassword);
 
-		return this.getConnection(admin);
+		// Generate OTP
+		const { otp, otpExpiresAt } = this.otpService.generate();
+
+		// Save OTP to user
+		admin.otp = otp;
+		admin.otpExpiresAt = otpExpiresAt;
+		await this.usersService.save(admin);
+
+		// Send OTP to user's email
+		await this.otpService.sendToEmail(otp, { name: admin.name, email: admin.email });
+
+		return { message: 'OTP sent to your email. Please verify to complete login.' };
 	}
+	async verifyOtpAndLogin(dto: VerifyOtpDto): Promise<UserConnection> {
+		const admin = await this.usersService.findOneByField(dto.email, 'email');
+		if (!admin)
+		  throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
+	
+		const isOtpValid = this.otpService.verify(admin, dto.otp);
+		if (!isOtpValid)
+		  throw new NotAcceptableException(ExceptionEnum.otpIncorrect);
+	
+		// Clear OTP after successful verification
+		admin.otp = null;
+		admin.otpExpiresAt = null;
+		await this.usersService.save(admin);
+	
+		return this.getConnection(admin);
+	  }
 
 	async getLoggedInUserDetails(userId: string): Promise<AdminEntity> {
-        const user = await this.usersService.findOneByField(userId, 'id');
-        if (!user) {
-            throw new NotFoundException(ExceptionEnum.userNotFound);
-        }
-        return user;
-    }
+		const user = await this.usersService.findOneByField(userId, 'id');
+		if (!user) {
+			throw new NotFoundException(ExceptionEnum.userNotFound);
+		}
+		return user;
+	}
+
 
 	async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
 		const user = await this.usersService.findOneByField(userId, 'id');
@@ -89,10 +129,10 @@ export class AuthService {
 		await this.usersService.save(user);
 	}
 
-	
 
 
-	
+
+
 
 	async getConnection(admin: AdminEntity): Promise<UserConnection> {
 		const accessToken: string = this.getAccessToken(admin);

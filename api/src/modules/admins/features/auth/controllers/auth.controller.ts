@@ -8,12 +8,16 @@ import {
 	UseInterceptors,
 	UseGuards,
 	Get,
+	HttpCode,
+	HttpStatus,
 } from '@nestjs/common';
 import {
 	ApiNotAcceptableResponse,
 	ApiOkResponse,
 	ApiTags,
 	ApiBearerAuth,
+	ApiOperation,
+	ApiResponse,
 } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import { UserConnection } from '../models/user-connection.model';
@@ -24,6 +28,7 @@ import { UpdatePasswordDto } from 'src/common/models/update-password.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { VerifyEmailOtpDto } from 'src/common/models/verify-email-otp.dto';
 import { AdminEntity } from 'src/modules/admins/entities/admin.entity';
+import { VerifyOtpDto } from 'src/common/dto/verifyOtp.dto';
 
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -38,11 +43,26 @@ export class AuthController {
 		return this.authService.signUp(dto);
 	}
 
+	// @Post('login')
+	// @ApiOkResponse({ type: UserConnection })
+	// @ApiNotAcceptableResponse()
+	// async login(@Body() dto: LoginDto): Promise<UserConnection> {
+	// 	return this.authService.login(dto);
+	// }
 	@Post('login')
-	@ApiOkResponse({ type: UserConnection })
-	@ApiNotAcceptableResponse()
-	async login(@Body() dto: LoginDto): Promise<UserConnection> {
-		return this.authService.login(dto);
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({ summary: 'Login and send OTP' })
+	@ApiResponse({ status: 200, description: 'OTP sent successfully' })
+	async login(@Body() loginDto: LoginDto) {
+		return this.authService.login(loginDto);
+	}
+
+	@Post('verify-otp')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({ summary: 'Verify OTP and complete login' })
+	@ApiResponse({ status: 200, type: UserConnection })
+	async verifyOtpAndLogin(@Body() verifyOtpDto: VerifyOtpDto): Promise<UserConnection> {
+		return this.authService.verifyOtpAndLogin(verifyOtpDto);
 	}
 
 	@Patch('update-password')
