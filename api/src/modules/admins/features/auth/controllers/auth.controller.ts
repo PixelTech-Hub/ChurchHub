@@ -43,12 +43,6 @@ export class AuthController {
 		return this.authService.signUp(dto);
 	}
 
-	// @Post('login')
-	// @ApiOkResponse({ type: UserConnection })
-	// @ApiNotAcceptableResponse()
-	// async login(@Body() dto: LoginDto): Promise<UserConnection> {
-	// 	return this.authService.login(dto);
-	// }
 	@Post('login')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Login and send OTP' })
@@ -64,6 +58,27 @@ export class AuthController {
 	async verifyOtpAndLogin(@Body() verifyOtpDto: VerifyOtpDto): Promise<UserConnection> {
 		return this.authService.verifyOtpAndLogin(verifyOtpDto);
 	}
+
+	// @Post('verify-email')
+	// @UseGuards(JwtAuthGuard)
+	// @HttpCode(HttpStatus.OK)
+	// @ApiOperation({ summary: 'Verify email address' })
+	// @ApiResponse({ status: 200, description: 'Email verified successfully' })
+	// async verifyEmail(@Body('token') token: string) {
+	// 	return this.authService.verifyEmail(token);
+	// }
+
+	// @Post('resend-verification-email')
+	// @UseGuards(JwtAuthGuard)
+	// @ApiBearerAuth()
+	// @HttpCode(HttpStatus.OK)
+	// @ApiOperation({ summary: 'Resend verification email' })
+	// @ApiResponse({ status: 200, description: 'Verification email sent' })
+	// async resendVerificationEmail(@Request() req) {
+	// 	const admin = await this.authService.getLoggedInUserDetails(req.user.sub);
+	// 	await this.authService.sendVerificationEmail(admin);
+	// 	return { message: 'Verification email sent successfully' };
+	// }
 
 	@Patch('update-password')
 	@UseGuards(JwtAuthGuard)

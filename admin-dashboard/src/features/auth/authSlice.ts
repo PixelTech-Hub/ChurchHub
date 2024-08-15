@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import userService from "./authServices";
 import { Users } from "../../types/Users";
 
@@ -10,6 +10,8 @@ export interface UserState {
     isLoading: boolean;
     isAuthenticated: boolean;
     error: string | null;
+    isOtpSent: boolean;
+    email: string | null;
 }
 
 const initialState: UserState = {
@@ -19,24 +21,31 @@ const initialState: UserState = {
     accessToken: null,
     isLoading: false,
     isAuthenticated: false,
-    error: null
+    error: null,
+    isOtpSent: false,
+    email: null,
 }
 
 export const login = createAsyncThunk(
-    "auth/user/login",
-    async (user: Users, { rejectWithValue }) => {
+    'auth/login',
+    async (userData: { email: string; password: string }, thunkAPI) => {
         try {
-            const response = await userService.loginUser(user);
-            if (response && response.accessToken) {
-                return response;
-            } else {
-                return rejectWithValue('Login failed: No access token received');
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message || 'An unexpected error occurred');
-            }
-            return rejectWithValue('An unexpected error occurred');
+            return await userService.loginUser(userData);
+        } catch (error: any) {
+            const message = error.message || 'An error occurred';
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+export const verifyOtp = createAsyncThunk(
+    'auth/verifyOtp',
+    async (verifyOtpData: { email: string; otp: string }, thunkAPI) => {
+        try {
+            return await userService.verifyOtp(verifyOtpData);
+        } catch (error: any) {
+            const message = error.message || 'An error occurred';
+            return thunkAPI.rejectWithValue(message);
         }
     }
 );
@@ -76,7 +85,7 @@ export const getLoggedInUser = createAsyncThunk(
 );
 
 export const getAllChurchUsers = createAsyncThunk(
-    "auth/user/get-all", 
+    "auth/user/get-all",
     async (churchId: string, { rejectWithValue }) => {
         try {
             return await userService.getAllUsers(churchId);
@@ -147,23 +156,24 @@ export const authSlice = createSlice({
                 state.accessToken = token;
                 state.isAuthenticated = true;
             }
-        }
+        },
+        setEmailAddress: (state, action: PayloadAction<string>) => {
+            state.email = action.payload;
+        },
+
     },
     extraReducers(builder) {
         builder
             .addCase(login.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
-                state.isAuthenticated = false;
+                // state.email =null;
             })
-            .addCase(login.fulfilled, (state, action) => {
+            .addCase(login.fulfilled, (state) => {
                 state.isLoading = false;
                 state.error = null;
-                state.currentUser = action.payload.data;
-                state.accessToken = action.payload.accessToken;
-                state.isAuthenticated = true;
-                localStorage.setItem('accessToken', action.payload.accessToken);
-                localStorage.setItem('userData', JSON.stringify(action.payload.data));
+                state.isOtpSent = true;
+                // state.email = action.payload;
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
@@ -171,9 +181,38 @@ export const authSlice = createSlice({
                 state.currentUser = null;
                 state.accessToken = null;
                 state.isAuthenticated = false;
+                state.email = null
+            })
+            .addCase(verifyOtp.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(verifyOtp.fulfilled, (state, action) => {
+                console.log('verifyOtp.fulfilled payload:', action.payload); // Add this line
+                state.isLoading = false;
+                state.error = null;
+                if (action.payload && action.payload.data && action.payload.accessToken) {
+                    state.currentUser = action.payload.data;
+                    state.accessToken = action.payload.accessToken;
+                    state.isAuthenticated = true;
+                    localStorage.setItem('accessToken', action.payload.accessToken);
+                    localStorage.setItem('userData', JSON.stringify(action.payload.data));
+                } else {
+                    state.error = 'Received unexpected data format from server';
+                }
+
+                console.log('##########::::', localStorage.getItem('userData'));
+                console.log('##########::::', localStorage.getItem('accessToken'));
+                
+            })
+            .addCase(verifyOtp.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+                state.currentUser = null;
+                state.accessToken = null;
+                state.isAuthenticated = false;
             })
             .addCase(signup.pending, (state) => {
-                state.isLoading = true; 
+                state.isLoading = true;
                 state.error = null;
             })
             .addCase(signup.fulfilled, (state, action) => {
@@ -260,5 +299,5 @@ export const authSlice = createSlice({
     },
 });
 
-export const { logout, initializeFromLocalStorage } = authSlice.actions;
+export const { logout, initializeFromLocalStorage, setEmailAddress } = authSlice.actions;
 export default authSlice.reducer;

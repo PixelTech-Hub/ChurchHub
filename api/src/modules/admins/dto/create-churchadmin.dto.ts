@@ -30,6 +30,10 @@ export class CreateChurchAdminDto {
 	@ApiProperty({ default: true })
 	readonly isEnabled: boolean;
 
+	@IsNotEmpty()
+	@ApiProperty({ default: false })
+	readonly isEmailVerified: boolean;
+
 	@ApiProperty({ enum: EntityNameEnum, enumName: 'Church Admin Role', default: EntityChurchAdminRoleEnum.viewer })
 	@IsEnum(EntityChurchAdminRoleEnum, { message: 'Invalid church admin role' })
 	role: EntityChurchAdminRoleEnum;

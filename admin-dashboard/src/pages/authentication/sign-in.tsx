@@ -3,7 +3,7 @@ import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
 import { useState, type FC } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { toast } from "react-toastify";
-import { login } from "../../features/auth/authSlice";
+import { login, setEmailAddress } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router";
 import hubLogo from '../../assets/logo.png'
 
@@ -40,6 +40,26 @@ const SignInPage: FC = function () {
     return isValid;
   };
 
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   if (!email || !password) {
+  //     toast.error("Please fill in all fields");
+  //     return;
+  //   }
+  //   if (validateForm()) {
+  //     // console.log("Hello Valid Form")
+  //     const result = await dispatch(login({ email, password }));
+  //     if (login.fulfilled.match(result)) {
+  //       toast.success('Token sent successfully');
+  //       dispatch(setEmail(email)); 
+  //       navigate("/authentication/verify-otp")
+  //       // console.log('result: ', result);
+  //     } else if (login.rejected.match(result)) {
+  //       toast.error(result.payload as string || 'Login failed');
+  //     }
+  //   }
+
+  // };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) {
@@ -47,17 +67,15 @@ const SignInPage: FC = function () {
       return;
     }
     if (validateForm()) {
-      // console.log("Hello Valid Form")
       const result = await dispatch(login({ email, password }));
       if (login.fulfilled.match(result)) {
-        toast.success('Logged in successfully');
-        navigate("/")
-        // console.log('result: ', result);
+        dispatch(setEmailAddress(email)); // Set the email in the Redux state
+        toast.success('OTP sent successfully');
+        navigate("/authentication/verify-otp");
       } else if (login.rejected.match(result)) {
         toast.error(result.payload as string || 'Login failed');
       }
     }
-
   };
 
   return (

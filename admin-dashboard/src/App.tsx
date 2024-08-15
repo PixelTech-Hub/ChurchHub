@@ -33,6 +33,7 @@ import SingleChurchMinistry from "./pages/SingleChurchMinistry";
 import { ChurchBranches, ChurchService } from "./pages/main";
 import { useDispatch } from "react-redux";
 import { initializeFromLocalStorage } from "./features/auth/authSlice";
+import VerifyOtpPage from "./pages/authentication/VerifyOtpPage";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -77,6 +78,7 @@ const App: FC = function () {
           {/* Public routes */}
           <Route path="/authentication/sign-in" element={<SignInPage />} />
           <Route path="/authentication/sign-up" element={<SignUpPage />} />
+          <Route path="/authentication/verify-otp" element={<VerifyOtpPage />} />
           <Route
             path="/authentication/forgot-password"
             element={<ForgotPasswordPage />}

@@ -53,11 +53,10 @@ export class AuthService {
 		return { email: admin.email };
 	}
 
-
 	async login(dto: LoginDto): Promise<{ message: string }> {
 		const admin = await this.usersService.findOneByField(dto.email, 'email');
 
-		
+
 		if (!admin)
 			throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
 
@@ -79,19 +78,19 @@ export class AuthService {
 	async verifyOtpAndLogin(dto: VerifyOtpDto): Promise<UserConnection> {
 		const admin = await this.usersService.findOneByField(dto.email, 'email');
 		if (!admin)
-		  throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
-	
+			throw new NotAcceptableException(ExceptionEnum.emailOrPasswordIncorrect);
+
 		const isOtpValid = this.otpService.verify(admin, dto.otp);
 		if (!isOtpValid)
-		  throw new NotAcceptableException(ExceptionEnum.otpIncorrect);
-	
+			throw new NotAcceptableException(ExceptionEnum.otpIncorrect);
+
 		// Clear OTP after successful verification
 		admin.otp = null;
 		admin.otpExpiresAt = null;
 		await this.usersService.save(admin);
-	
+
 		return this.getConnection(admin);
-	  }
+	}
 
 	async getLoggedInUserDetails(userId: string): Promise<AdminEntity> {
 		const user = await this.usersService.findOneByField(userId, 'id');
@@ -122,6 +121,45 @@ export class AuthService {
 		await this.usersService.save(user);
 	}
 
+
+	
+	async sendVerificationEmail(admin: AdminEntity): Promise<void> {
+		const payload = {
+		  sub: admin.id,
+		  email: admin.email
+		};
+		const token = this.jwtService.sign(payload, { expiresIn: '24h' });
+		const verificationLink = `${this.configService.get('http://localhost:5173')}/verify-email?token=${token}`;
+	
+		await this.mailService.verifyAdminEmail(
+		  admin.email,
+		  verificationLink,
+		  admin.name,
+		  admin.church?.name
+		);
+	  }
+	
+	  async verifyEmail(token: string): Promise<{ message: string }> {
+		try {
+		  const payload = this.jwtService.verify(token);
+		  const admin = await this.usersService.findOneByField(payload.sub, 'id');
+	
+		  if (!admin) {
+			throw new NotFoundException(ExceptionEnum.userNotFound);
+		  }
+	
+		  if (admin.isEmailVerified) {
+			return { message: 'Email already verified' };
+		  }
+	
+		  admin.isEmailVerified = true;
+		  await this.usersService.save(admin);
+	
+		  return { message: 'Email verified successfully' };
+		} catch (error) {
+		  throw new NotAcceptableException(ExceptionEnum.tokenInvalid);
+		}
+	  }
 
 
 
