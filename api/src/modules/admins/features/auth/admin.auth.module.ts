@@ -10,6 +10,7 @@ import { ChurchAdminsJwtStrategy } from './admin.jwt.strategy';
 import { OtpService } from 'src/modules/shared/services/otp.service';
 import { BulkSmsService } from 'src/modules/shared/services/bulk-sms.service';
 import { MailerService } from 'src/modules/shared/services/mailer.service';
+import { MailService } from 'src/modules/shared/services/mails.service';
 
 @Module({
 	imports: [
@@ -27,7 +28,8 @@ import { MailerService } from 'src/modules/shared/services/mailer.service';
 		ConfigService,
 		OtpService,
 		BulkSmsService,
-		MailerService
+		MailerService,
+		MailService
 	],
 	exports: [
 		JwtModule,
