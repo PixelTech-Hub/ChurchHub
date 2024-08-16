@@ -29,6 +29,8 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { VerifyEmailOtpDto } from 'src/common/models/verify-email-otp.dto';
 import { AdminEntity } from 'src/modules/admins/entities/admin.entity';
 import { VerifyOtpDto } from 'src/common/dto/verifyOtp.dto';
+import { EmailDto } from 'src/common/dto/email.dto';
+import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -57,6 +59,17 @@ export class AuthController {
 	@ApiResponse({ status: 200, type: UserConnection })
 	async verifyOtpAndLogin(@Body() verifyOtpDto: VerifyOtpDto): Promise<UserConnection> {
 		return this.authService.verifyOtpAndLogin(verifyOtpDto);
+	}
+
+	@Post('forgot-password')
+	async forgotPassword(@Body() dto: EmailDto) {
+		return this.authService.sendPasswordResetLink(dto);
+	}
+
+	@Post('reset-password')
+	async resetPassword(@Body() dto: ResetPasswordDto) {
+		await this.authService.resetPassword(dto);
+		return { message: 'Password has been reset successfully.' };
 	}
 
 	// @Post('verify-email')

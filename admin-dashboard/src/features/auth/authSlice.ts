@@ -187,7 +187,7 @@ export const authSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(verifyOtp.fulfilled, (state, action) => {
-                console.log('verifyOtp.fulfilled payload:', action.payload); // Add this line
+                // console.log('verifyOtp.fulfilled payload:', action.payload); // Add this line
                 state.isLoading = false;
                 state.error = null;
                 if (action.payload && action.payload.data && action.payload.accessToken) {
@@ -200,8 +200,8 @@ export const authSlice = createSlice({
                     state.error = 'Received unexpected data format from server';
                 }
 
-                console.log('##########::::', localStorage.getItem('userData'));
-                console.log('##########::::', localStorage.getItem('accessToken'));
+                // console.log('##########::::', localStorage.getItem('userData'));
+                // console.log('##########::::', localStorage.getItem('accessToken'));
                 
             })
             .addCase(verifyOtp.rejected, (state, action) => {

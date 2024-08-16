@@ -71,6 +71,10 @@ export class AdminEntity extends BaseEntity {
 	@Column({ type: 'varchar' })
 	dob: string
 
+	@Exclude()
+    @Column({ type: 'varchar', nullable: true })
+    resetToken: string | null;
+
 	@ApiProperty()
 	@ManyToOne(() => ChurchEntity, {
 		onUpdate: 'CASCADE',

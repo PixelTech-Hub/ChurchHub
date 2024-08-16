@@ -1,5 +1,6 @@
 export enum ExceptionEnum {
 	agentNotFound = 'agentNotFound',
+	invalidResetToken= 'Invalid Reset Token',
 	agentPhoneRequired = 'agentPhoneRequired',
 	agentPinCodeRequired = 'agentPinCodeRequired',
 	badRequest = 'badRequest',

@@ -20,6 +20,8 @@ import { VerifyEmailOtpDto } from 'src/common/models/verify-email-otp.dto';
 import { OtpService } from 'src/modules/shared/services/otp.service';
 import { VerifyOtpDto } from 'src/common/dto/verifyOtp.dto';
 import { MailService } from 'src/modules/shared/services/mails.service';
+import { EmailDto } from 'src/common/dto/email.dto';
+import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -122,44 +124,8 @@ export class AuthService {
 	}
 
 
-	
-	async sendVerificationEmail(admin: AdminEntity): Promise<void> {
-		const payload = {
-		  sub: admin.id,
-		  email: admin.email
-		};
-		const token = this.jwtService.sign(payload, { expiresIn: '24h' });
-		const verificationLink = `${this.configService.get('http://localhost:5173')}/verify-email?token=${token}`;
-	
-		await this.mailService.verifyAdminEmail(
-		  admin.email,
-		  verificationLink,
-		  admin.name,
-		  admin.church?.name
-		);
-	  }
-	
-	  async verifyEmail(token: string): Promise<{ message: string }> {
-		try {
-		  const payload = this.jwtService.verify(token);
-		  const admin = await this.usersService.findOneByField(payload.sub, 'id');
-	
-		  if (!admin) {
-			throw new NotFoundException(ExceptionEnum.userNotFound);
-		  }
-	
-		  if (admin.isEmailVerified) {
-			return { message: 'Email already verified' };
-		  }
-	
-		  admin.isEmailVerified = true;
-		  await this.usersService.save(admin);
-	
-		  return { message: 'Email verified successfully' };
-		} catch (error) {
-		  throw new NotAcceptableException(ExceptionEnum.tokenInvalid);
-		}
-	  }
+
+
 
 
 
@@ -177,4 +143,51 @@ export class AuthService {
 		};
 		return this.jwtService.sign(payload);
 	}
+
+
+
+	// ################################
+	async sendPasswordResetLink(dto: EmailDto): Promise<{ message: string }> {
+		const admin = await this.usersService.findOneByField(dto.email, 'email');
+		if (!admin) {
+		  throw new NotFoundException(ExceptionEnum.userNotFound);
+		}
+	
+		// Generate a reset token
+		const resetToken = this.jwtService.sign(
+		  { sub: admin.id },
+		  { expiresIn: '1h' } // Token expires in 1 hour
+		);
+	
+		// Save the reset token to the user (you might need to add a resetToken field to your user model)
+		admin.resetToken = resetToken;
+		await this.usersService.save(admin);
+	
+		// Send the email with the reset link
+		await this.mailService.sendPasswordResetLink(admin.email, resetToken, admin.name, admin.church?.name);
+	
+		return { message: 'Password reset link has been sent to your email.' };
+	  }
+	
+	  async resetPassword(dto: ResetPasswordDto): Promise<void> {
+		try {
+		  const payload = this.jwtService.verify(dto.token);
+		  const admin = await this.usersService.findOneByField(payload.sub, 'id');
+	
+		  if (!admin || admin.resetToken !== dto.token) {
+			throw new NotAcceptableException(ExceptionEnum.invalidResetToken);
+		  }
+	
+		  const hashedNewPassword = await bcrypt.hash(
+			dto.newPassword,
+			CONFIG_PASSWORD_HASH_SALT,
+		  );
+	
+		  admin.password = hashedNewPassword;
+		  admin.resetToken = null; // Clear the reset token
+		  await this.usersService.save(admin);
+		} catch (error) {
+		  throw new NotAcceptableException(ExceptionEnum.invalidResetToken);
+		}
+	  }
 }
