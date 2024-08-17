@@ -40,7 +40,7 @@ export class MailService {
     churchName: String
   ) {
     try {
-      const resetLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetToken}`;
+      const resetLink = `${this.configService.get('FRONTEND_URL')}/authentication/reset-password?token=${resetToken}`;
       console.log('Debug - Sending reset email with:', { adminName, email, resetLink });
       return await this.mailer.send(
         [email],

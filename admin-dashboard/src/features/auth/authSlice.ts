@@ -137,6 +137,37 @@ export const getChurchStaffById = createAsyncThunk(
     }
 );
 
+
+export const requestPasswordReset = createAsyncThunk(
+    "auth/requestPasswordReset",
+    async (email: string, { rejectWithValue }) => {
+        try {
+            const response = await userService.requestPasswordReset(email);
+            return response;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'Failed to request password reset');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk(
+    "auth/resetPassword",
+    async (resetData: { token: string; newPassword: string; confirmPassword: string }, { rejectWithValue }) => {
+        try {
+            const response = await userService.resetPassword(resetData.token, resetData.newPassword, resetData.confirmPassword);
+            return response;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'Failed to reset password');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 export const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -293,6 +324,32 @@ export const authSlice = createSlice({
                 state.singleUsers = action.payload; // Update the state with the fetched admin
             })
             .addCase(getChurchStaffById.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(requestPasswordReset.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(requestPasswordReset.fulfilled, (state) => {
+                state.isLoading = false;
+                state.error = null;
+                // You might want to add a success message to the state here
+            })
+            .addCase(requestPasswordReset.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(resetPassword.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(resetPassword.fulfilled, (state) => {
+                state.isLoading = false;
+                state.error = null;
+                // You might want to add a success message to the state here
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             });

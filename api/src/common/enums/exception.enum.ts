@@ -1,5 +1,7 @@
 export enum ExceptionEnum {
+	newPasswordSameAsOld = "New Password is the same as old password",
 	agentNotFound = 'agentNotFound',
+	resetTokenExpired="Reset Token has expired",
 	invalidResetToken= 'Invalid Reset Token',
 	agentPhoneRequired = 'agentPhoneRequired',
 	agentPinCodeRequired = 'agentPinCodeRequired',

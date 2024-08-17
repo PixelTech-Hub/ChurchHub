@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { login, setEmailAddress } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router";
 import hubLogo from '../../assets/logo.png'
+import { Link } from "react-router-dom";
 
 const SignInPage: FC = function () {
   const [email, setEmail] = useState("");
@@ -122,12 +123,12 @@ const SignInPage: FC = function () {
               <Checkbox id="rememberMe" name="rememberMe" />
               <Label htmlFor="rememberMe">Remember me</Label>
             </div>
-            {/* <a
-              href="#"
-              className="w-1/2 text-right text-sm text-primary-600 dark:text-primary-300"
+            <Link
+              to="/authentication/forgot-password"
+              className="text-sm text-red-600 hover:underline dark:text-primary-300 cursor-pointer"
             >
-              Lost Password?
-            </a> */}
+              Forgot Password?
+            </Link>
           </div>
           <div className="mb-6">
             <Button type="submit" className="w-full lg:w-auto">

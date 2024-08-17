@@ -171,22 +171,40 @@ export class AuthService {
 	
 	  async resetPassword(dto: ResetPasswordDto): Promise<void> {
 		try {
+		  // Verify the token
 		  const payload = this.jwtService.verify(dto.token);
 		  const admin = await this.usersService.findOneByField(payload.sub, 'id');
-	
+	  
 		  if (!admin || admin.resetToken !== dto.token) {
 			throw new NotAcceptableException(ExceptionEnum.invalidResetToken);
 		  }
-	
+	  
+		  // Check if the token has expired
+		  if (admin.resetTokenExpiresAt && new Date() > admin.resetTokenExpiresAt) {
+			throw new NotAcceptableException(ExceptionEnum.resetTokenExpired);
+		  }
+	  
+		  // Check if the new password is different from the current password
+		  const isCurrentPassword = await bcrypt.compare(dto.newPassword, admin.password);
+		  if (isCurrentPassword) {
+			throw new NotAcceptableException(ExceptionEnum.newPasswordSameAsOld);
+		  }
+	  
+		  // Hash the new password
 		  const hashedNewPassword = await bcrypt.hash(
 			dto.newPassword,
 			CONFIG_PASSWORD_HASH_SALT,
 		  );
-	
+	  
+		  // Update the admin's password and clear the reset token
 		  admin.password = hashedNewPassword;
-		  admin.resetToken = null; // Clear the reset token
+		  admin.resetToken = null;
+		  admin.resetTokenExpiresAt = null;
 		  await this.usersService.save(admin);
 		} catch (error) {
+		  if (error instanceof NotAcceptableException) {
+			throw error;
+		  }
 		  throw new NotAcceptableException(ExceptionEnum.invalidResetToken);
 		}
 	  }

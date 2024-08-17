@@ -72,8 +72,11 @@ export class AdminEntity extends BaseEntity {
 	dob: string
 
 	@Exclude()
-    @Column({ type: 'varchar', nullable: true })
-    resetToken: string | null;
+	@Column({ type: 'varchar', nullable: true })
+	resetToken: string | null;
+
+	@Column({ nullable: true })
+	resetTokenExpiresAt: Date;
 
 	@ApiProperty()
 	@ManyToOne(() => ChurchEntity, {

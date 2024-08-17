@@ -34,23 +34,24 @@ import { ChurchBranches, ChurchService } from "./pages/main";
 import { useDispatch } from "react-redux";
 import { initializeFromLocalStorage } from "./features/auth/authSlice";
 import VerifyOtpPage from "./pages/authentication/VerifyOtpPage";
+import PasswordResetSentPage from "./pages/authentication/PasswordRequestSentPage";
 
 // Protected route component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
   // const auth = useAppSelector((state) => state.auth);
 
- 
+
   const location = useLocation();
 
   const dispatch = useDispatch();
 
   const auth = localStorage.getItem('accessToken');
 
-    useEffect(() => {
-        dispatch(initializeFromLocalStorage());
-    }, [dispatch]);
+  useEffect(() => {
+    dispatch(initializeFromLocalStorage());
+  }, [dispatch]);
 
-  
+
 
   // if (auth) {
   //   // You might want to show a loading spinner here
@@ -79,18 +80,10 @@ const App: FC = function () {
           <Route path="/authentication/sign-in" element={<SignInPage />} />
           <Route path="/authentication/sign-up" element={<SignUpPage />} />
           <Route path="/authentication/verify-otp" element={<VerifyOtpPage />} />
-          <Route
-            path="/authentication/forgot-password"
-            element={<ForgotPasswordPage />}
-          />
-          <Route
-            path="/authentication/reset-password"
-            element={<ResetPasswordPage />}
-          />
-          <Route
-            path="/authentication/profile-lock"
-            element={<ProfileLockPage />}
-          />
+          <Route path="/authentication/password-reset-sent" element={<PasswordResetSentPage />} />
+          <Route path="/authentication/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/authentication/reset-password/:token?" element={<ResetPasswordPage />} />
+          <Route path="/authentication/profile-lock" element={<ProfileLockPage />} />
           <Route path="/pages/pricing" element={<PricingPage />} />
           <Route path="/pages/maintenance" element={<MaintenancePage />} />
           <Route path="/pages/404" element={<NotFoundPage />} />
@@ -117,7 +110,7 @@ const App: FC = function () {
             }
 
           />
-        
+
           <Route
             path="/church-services"
             element={
@@ -168,7 +161,7 @@ const App: FC = function () {
             element={
               <ProtectedRoute>
                 <ChurchMembersPage />
-               </ProtectedRoute>
+              </ProtectedRoute>
             }
 
           />
@@ -216,15 +209,15 @@ const App: FC = function () {
           <Route
             path="/kanban"
             element={
-              
-                <KanbanPage />
+
+              <KanbanPage />
             }
           />
           <Route
             path="/e-commerce/billing"
             element={
               // <ProtectedRoute>
-                <EcommerceBillingPage />
+              <EcommerceBillingPage />
               // </ProtectedRoute>
             }
           />
@@ -240,7 +233,7 @@ const App: FC = function () {
             path="/e-commerce/products"
             element={
               // <ProtectedRoute>
-                <EcommerceProductsPage />
+              <EcommerceProductsPage />
               // </ProtectedRoute>
             }
           />

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Users } from '../../types/Users';
-import { SINGLE_URL_API, USER_AUTH_LOGIN_API, USER_AUTH_SIGNUP_API, USER_DETAIL_API, USER_UPDATE_PASSWORD_API_URL, USERS_DETAIL_API, USERS_VERFIY_OTP } from '../../app/api';
+import { SINGLE_URL_API, USER_AUTH_LOGIN_API, USER_AUTH_SIGNUP_API, USER_DETAIL_API, USER_FORGOT_PASSWORD_API, USER_RESET_PASSWORD_API, USER_UPDATE_PASSWORD_API_URL, USERS_DETAIL_API, USERS_VERFIY_OTP } from '../../app/api';
 
 
 
@@ -217,6 +217,51 @@ const getChurchStaffById = async (staffId: string): Promise<Users> => {
     }
 };
 
+
+const requestPasswordReset = async (email: string) => {
+    try {
+        const response = await axios.post(USER_FORGOT_PASSWORD_API, { email }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data?.message || 'An error occurred while requesting password reset');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+};
+
+const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
+    try {
+        const response = await axios.post(USER_RESET_PASSWORD_API, {
+            token,
+            newPassword,
+            confirmPassword
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data?.message || 'An error occurred while resetting password');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+};
+
 const userService = {
     loginUser,
     verifyOtp,
@@ -225,6 +270,8 @@ const userService = {
     getAllUsers,
     updateChurchStaffPassword,
     getChurchStaffById,
-    updateChurchStaff
+    updateChurchStaff,
+    requestPasswordReset,
+    resetPassword
 }
 export default userService;
