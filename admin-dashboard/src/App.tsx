@@ -83,11 +83,10 @@ const App: FC = function () {
           <Route path="/authentication/password-reset-sent" element={<PasswordResetSentPage />} />
           <Route path="/authentication/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/authentication/reset-password/:token?" element={<ResetPasswordPage />} />
-          <Route path="/authentication/profile-lock" element={<ProfileLockPage />} />
-          <Route path="/pages/pricing" element={<PricingPage />} />
+          {/* <Route path="/pages/pricing" element={<PricingPage />} />
           <Route path="/pages/maintenance" element={<MaintenancePage />} />
           <Route path="/pages/404" element={<NotFoundPage />} />
-          <Route path="/pages/500" element={<ServerErrorPage />} />
+          <Route path="/pages/500" element={<ServerErrorPage />} /> */}
 
           {/* Protected routes */}
 
